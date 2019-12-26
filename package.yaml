@@ -27,6 +27,7 @@ dependencies:
 - http-conduit
 - time
 - iso8601-time
+- unicode-show
 
 
 library:
