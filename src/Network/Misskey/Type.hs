@@ -40,13 +40,13 @@ instance FromJSON PollChoice where
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple :: Bool
-                 , _poll_expiresAt :: UTCTime
+                 , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  }
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                <*> v .: "expiresAt"
+                                <*> v `parseData` "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
 
@@ -171,9 +171,9 @@ instance FromJSON User where
                                 <*> v .:  "emojis"
                                 <*> v .:  "host"
                                 <*> v .:? "description"
-                                <*> parseData "birthday"
-                                <*> parseData "createdAt"
-                                <*> parseData "updatedAt"
+                                <*> v `parseData` "birthday"
+                                <*> v `parseData` "createdAt"
+                                <*> v `parseData` "updatedAt"
                                 <*> v .:? "location"
                                 <*> v .:? "followersCount"
                                 <*> v .:? "followingCount"
@@ -187,13 +187,11 @@ instance FromJSON User where
                                 <*> v .:? "isLocked"
                                 <*> v .:? "hasUnreadSpecifiedNotes"
                                 <*> v .:? "hasUnreadMentions"
-        where
-            parseData s = do
-                b <- v .:? s
-                if isNothing b
-                then return Nothing
-                else return $ parseISO8601 $ fromJust b
-            birthday = parseData "birthday"
-
     parseJSON _          = mempty
 
+
+parseData v s = do
+    b <- v .:? s
+    if isNothing b
+    then return Nothing
+    else return $ parseISO8601 $ fromJust b
