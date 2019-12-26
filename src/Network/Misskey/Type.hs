@@ -63,21 +63,21 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
                  , _file_type       :: String       -- ^ The MIME type of this Drive file.
                  , _file_md5        :: String       -- ^ The MD5 hash of this Drive file.
                  , _file_size       :: Int          -- ^ The size of this Drive file. (bytes)
-                 , _file_url        :: Url          -- ^ The URL of this Drive file.
-                 , _file_folderId   :: Id           -- ^ The parent folder ID of this Drive file
+                 , _file_url        :: Maybe Url    -- ^ The URL of this Drive file.
+                 , _file_folderId   :: Maybe Id     -- ^ The parent folder ID of this Drive file
                  , _isSensitive     :: Bool         -- ^ Whether this Drive file is sensitive.
                  }
 
 instance FromJSON File where
-    parseJSON (Object v) = File <$> v .: "id"
+    parseJSON (Object v) = File <$> v .:  "id"
                                 <*> (fromJust <$> parseISO8601 <$> v .: "createdAt")
-                                <*> v .: "name"
-                                <*> v .: "type"
-                                <*> v .: "md5"
-                                <*> v .: "size"
-                                <*> v .: "url"
-                                <*> v .: "folderId"
-                                <*> v .: "isSensitive"
+                                <*> v .:  "name"
+                                <*> v .:  "type"
+                                <*> v .:  "md5"
+                                <*> v .:  "size"
+                                <*> v .:? "url"
+                                <*> v .:? "folderId"
+                                <*> v .:  "isSensitive"
     parseJSON _          = mempty
 
 -- | A Note object
@@ -85,7 +85,7 @@ instance FromJSON File where
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
 data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_createdAt          :: UTCTime
-                 , _note_text               :: String
+                 , _note_text               :: Maybe String
                  , _note_cw                 :: Maybe String
                  , _note_userId             :: UserId
                  , _note_user               :: User
@@ -108,7 +108,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
                                 <*> (fromJust <$> parseISO8601 <$> v.: "createdAt")
-                                <*> v .:  "text"
+                                <*> v .:? "text"
                                 <*> v .:? "cw"
                                 <*> v .:  "userId"
                                 <*> v .:  "user"
@@ -135,14 +135,14 @@ instance FromJSON Note where
 -- Docs: https://misskey.io/api-doc#operation/users/show
 data User = User { _id                      :: UserId -- ^ Original is 'id'
                  , _username                :: String
-                 , _name                    :: String
+                 , _name                    :: Maybe String
                  , _url                     :: Maybe Url
-                 , _avatarUrl               :: Url
-                 , _avatarColor             :: String -- ^ This is documented as 'any' in doc
+                 , _avatarUrl               :: Maybe Url
+                 , _avatarColor             :: Maybe String -- ^ This is documented as 'any' in doc
                  , _bannerUrl               :: Maybe Url
                  , _bannerColor             :: Maybe String -- ^ This is documented as 'any' in doc
-                 , _emojis                  :: [String]     -- ^ This is documented as 'any'
-                 , _host                    :: String
+                 , _emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
+                 , _host                    :: Maybe String
                  , _description             :: Maybe String
                  , _birthday                :: Maybe UTCTime
                  , _createdAt               :: Maybe UTCTime
@@ -165,14 +165,14 @@ data User = User { _id                      :: UserId -- ^ Original is 'id'
 instance FromJSON User where
     parseJSON (Object v) = User <$> v .:  "id"
                                 <*> v .:  "username"
-                                <*> v .:  "name"
+                                <*> v .:? "name"
                                 <*> v .:? "url"
-                                <*> v .:  "avatarUrl"
-                                <*> v .:  "avatarColor"
+                                <*> v .:? "avatarUrl"
+                                <*> v .:? "avatarColor"
                                 <*> v .:? "bannerUrl"
                                 <*> v .:? "bannerColor"
-                                <*> v .:  "emojis"
-                                <*> v .:  "host"
+                                <*> v .:? "emojis"
+                                <*> v .:? "host"
                                 <*> v .:? "description"
                                 <*> v `parseData` "birthday"
                                 <*> v `parseData` "createdAt"
