@@ -17,7 +17,7 @@ type Id = String
 -- | I can't find any documents as Geo wasn't on any response
 --
 -- I'll fix this later, just leave this as placeholder
-data Geo = Geo
+data Geo = Geo deriving (Show)
 
 instance FromJSON Geo where
     parseJSON (Object _) = return Geo
@@ -30,7 +30,7 @@ instance FromJSON Geo where
 data PollChoice = PollChoice { _pollChoice_text     :: String
                              , _pollChoice_votes    :: Int
                              , _isVoted             :: Bool
-                             }
+                             } deriving (Show)
 
 instance FromJSON PollChoice where
     parseJSON (Object v) = PollChoice <$> v .: "text"
@@ -45,7 +45,7 @@ instance FromJSON PollChoice where
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
                  , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
-                 }
+                 } deriving (Show)
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
@@ -66,7 +66,7 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
                  , _file_url        :: Maybe Url    -- ^ The URL of this Drive file.
                  , _file_folderId   :: Maybe Id     -- ^ The parent folder ID of this Drive file
                  , _isSensitive     :: Bool         -- ^ Whether this Drive file is sensitive.
-                 }
+                 } deriving (Show)
 
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
@@ -103,7 +103,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_tags               :: Maybe [String]
                  , _note_poll               :: Maybe Poll
                  , _note_geo                :: Maybe Geo
-                 }
+                 } deriving (Show)
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
@@ -160,7 +160,7 @@ data User = User { _id                      :: UserId -- ^ Original is 'id'
                  , _isLocked                :: Maybe Bool
                  , _hasUnreadSpecifiedNotes :: Maybe Bool
                  , _hasUnreadMentions       :: Maybe Bool
-                 }
+                 } deriving (Show)
 
 instance FromJSON User where
     parseJSON (Object v) = User <$> v .:  "id"
