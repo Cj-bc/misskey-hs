@@ -25,6 +25,8 @@ instance FromJSON Geo where
 
 
 -- | A choice for Poll
+--
+-- This is used inside Poll datatype
 data PollChoice = PollChoice { _pollChoice_text     :: String
                              , _pollChoice_votes    :: Int
                              , _isVoted             :: Bool
@@ -36,10 +38,11 @@ instance FromJSON PollChoice where
                                       <*> v .: "isVoted"
     parseJSON _          = mempty
 
+
 -- | A poll along with Note
 --
 -- This is generated from raw API output so that might contain some mistakes
-data Poll = Poll { _poll_multiple :: Bool
+data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
                  , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  }
