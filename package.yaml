@@ -26,6 +26,7 @@ dependencies:
 - http-client
 - http-conduit
 - time
+- transformers
 - iso8601-time
 - unicode-show
 - lens-simple
