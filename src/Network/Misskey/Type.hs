@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Network.Misskey.Type where
 
@@ -9,6 +10,7 @@ import Data.Aeson
 import Data.Time (UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
 import Data.Maybe (fromJust, isNothing)
+import GHC.Generics
 
 
 type Url = String
@@ -25,7 +27,32 @@ data MisskeyEnv = MisskeyEnv { _token :: String
                              }
 makeLenses ''MisskeyEnv
 
--- | I can't find any documents as Geo wasn't on any response
+
+data APIErrorInfo = APIErrorInfo { param :: String
+                                 , reason :: String
+                                 } deriving (Generic, Show)
+
+instance FromJSON APIErrorInfo
+
+-- | Error response of all API
+data APIError = APIError { code     :: String
+                         , message  :: String
+                         , id       :: String
+                         , kind     :: Maybe String -- Undocumented
+                         , info     :: Maybe APIErrorInfo -- Undocumented
+                         } deriving (Generic, Show)
+
+instance FromJSON APIError where
+    parseJSON (Object v) = v .: "error" >>= parseError
+        where
+            parseError (Object v) = APIError <$> v .:  "code"
+                                    <*> v .:  "message"
+                                    <*> v .:  "id"
+                                    <*> v .:? "kind"
+                                    <*> v .:? "info"
+
+
+-- | I can't find any documents. Also, Geo wasn't on any response
 --
 -- I'll fix this later, just leave this as placeholder
 data Geo = Geo deriving (Show)
