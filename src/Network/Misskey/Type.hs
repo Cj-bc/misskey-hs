@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE DeriveGeneric #-}
 
 module Network.Misskey.Type where
 
 import Lens.Simple
-import Data.ByteString
+import Data.ByteString (ByteString)
 import Data.Aeson
+import Data.Aeson.TH (deriveJSON)
 import Data.Time (UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
 import Data.Maybe (fromJust, isNothing)
@@ -30,9 +30,9 @@ makeLenses ''MisskeyEnv
 
 data APIErrorInfo = APIErrorInfo { param :: String
                                  , reason :: String
-                                 } deriving (Generic, Show)
+                                 } deriving (Show)
 
-instance FromJSON APIErrorInfo
+$(deriveJSON defaultOptions ''APIErrorInfo)
 
 -- | Error response of all API
 data APIError = APIError { code     :: String
@@ -40,7 +40,7 @@ data APIError = APIError { code     :: String
                          , id       :: String
                          , kind     :: Maybe String -- Undocumented
                          , info     :: Maybe APIErrorInfo -- Undocumented
-                         } deriving (Generic, Show)
+                         } deriving (Show)
 
 instance FromJSON APIError where
     parseJSON (Object v) = v .: "error" >>= parseError
@@ -65,16 +65,12 @@ instance FromJSON Geo where
 -- | A choice for Poll
 --
 -- This is used inside Poll datatype
-data PollChoice = PollChoice { _pollChoice_text     :: String
-                             , _pollChoice_votes    :: Int
-                             , _isVoted             :: Bool
+data PollChoice = PollChoice { pollChoice_text     :: String
+                             , pollChoice_votes    :: Int
+                             , pollChoice_isVoted  :: Bool
                              } deriving (Show)
 
-instance FromJSON PollChoice where
-    parseJSON (Object v) = PollChoice <$> v .: "text"
-                                      <*> v .: "votes"
-                                      <*> v .: "isVoted"
-    parseJSON _          = mempty
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 
 
 -- | A poll along with Note
