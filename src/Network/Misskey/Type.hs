@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Network.Misskey.Type where
 
+import Lens.Simple
 import Data.ByteString
 import Data.Aeson
 import Data.Time (UTCTime)
@@ -13,6 +15,15 @@ type Url = String
 type UserId  = String
 type NoteId = String
 type Id = String
+
+
+-- | Environment to execute misskey API
+--
+--TODO: Should I validate if URL is valid?
+data MisskeyEnv = MisskeyEnv { _token :: String
+                             , _url   :: Url
+                             }
+makeLenses ''MisskeyEnv
 
 -- | I can't find any documents as Geo wasn't on any response
 --

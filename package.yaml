@@ -28,6 +28,7 @@ dependencies:
 - time
 - iso8601-time
 - unicode-show
+- lens-simple
 
 
 library:
