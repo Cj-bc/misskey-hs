@@ -144,33 +144,33 @@ instance FromJSON Note where
 -- | User object
 --
 -- Docs: https://misskey.io/api-doc#operation/users/show
-data User = User { _id                      :: UserId -- ^ Original is 'id'
-                 , _username                :: String
-                 , _name                    :: Maybe String
-                 , _url                     :: Maybe Url
-                 , _avatarUrl               :: Maybe Url
-                 , _avatarColor             :: Maybe String -- ^ This is documented as 'any' in doc
-                 , _bannerUrl               :: Maybe Url
-                 , _bannerColor             :: Maybe String -- ^ This is documented as 'any' in doc
-                 , _emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
-                 , _host                    :: Maybe String
-                 , _description             :: Maybe String
-                 , _birthday                :: Maybe UTCTime
-                 , _createdAt               :: Maybe UTCTime
-                 , _updatedAt               :: Maybe UTCTime
-                 , _location                :: Maybe String
-                 , _followersCount          :: Maybe Int
-                 , _followingCount          :: Maybe Int
-                 , _notesCount              :: Maybe Int
-                 , _isBot                   :: Maybe Bool
-                 , _pinnedNoteIds           :: Maybe [NoteId]
-                 , _pinnedNotes             :: Maybe [Note]
-                 , _isCat                   :: Maybe Bool
-                 , _isAdmin                 :: Maybe Bool
-                 , _isModerator             :: Maybe Bool
-                 , _isLocked                :: Maybe Bool
-                 , _hasUnreadSpecifiedNotes :: Maybe Bool
-                 , _hasUnreadMentions       :: Maybe Bool
+data User = User { _user_id                      :: UserId -- ^ Original is 'id'
+                 , _user_username                :: String
+                 , _user_name                    :: Maybe String
+                 , _user_url                     :: Maybe Url
+                 , _user_avatarUrl               :: Maybe Url
+                 , _user_avatarColor             :: Maybe String -- ^ This is documented as 'any' in doc
+                 , _user_bannerUrl               :: Maybe Url
+                 , _user_bannerColor             :: Maybe String -- ^ This is documented as 'any' in doc
+                 , _user_emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
+                 , _user_host                    :: Maybe String
+                 , _user_description             :: Maybe String
+                 , _user_birthday                :: Maybe UTCTime
+                 , _user_createdAt               :: Maybe UTCTime
+                 , _user_updatedAt               :: Maybe UTCTime
+                 , _user_location                :: Maybe String
+                 , _user_followersCount          :: Maybe Int
+                 , _user_followingCount          :: Maybe Int
+                 , _user_notesCount              :: Maybe Int
+                 , _user_isBot                   :: Maybe Bool
+                 , _user_pinnedNoteIds           :: Maybe [NoteId]
+                 , _user_pinnedNotes             :: Maybe [Note]
+                 , _user_isCat                   :: Maybe Bool
+                 , _user_isAdmin                 :: Maybe Bool
+                 , _user_isModerator             :: Maybe Bool
+                 , _user_isLocked                :: Maybe Bool
+                 , _user_hasUnreadSpecifiedNotes :: Maybe Bool
+                 , _user_hasUnreadMentions       :: Maybe Bool
                  } deriving (Show)
 
 instance FromJSON User where
