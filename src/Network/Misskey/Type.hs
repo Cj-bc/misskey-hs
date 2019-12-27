@@ -163,6 +163,11 @@ instance FromJSON Note where
     parseJSON _          = mempty
 
 
+data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
+                                       , userTwitterInfo_screenName :: String}
+                       deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 16 } ''UserTwitterInfo)
 
 -- | User object
 --
@@ -194,6 +199,18 @@ data User = User { _user_id                      :: UserId -- ^ Original is 'id'
                  , _user_isLocked                :: Maybe Bool
                  , _user_hasUnreadSpecifiedNotes :: Maybe Bool
                  , _user_hasUnreadMentions       :: Maybe Bool
+                 -- Those fields below are undocumented
+                 , _user_github                  :: Maybe a
+                 , _user_twitter                 :: Maybe UserTwitterInfo
+                 , _user_discord                 :: Maybe a
+                 , _user_fields                  :: [a] -- I don't know what values are
+                 , _user_twoFactorEnabled        :: Bool
+                 , _user_usePasswordLessLogin    :: Bool
+                 , _user_securityKeys            :: Bool
+                 , _user_isSilenced              :: Bool
+                 , _user_isSuspended             :: Bool
+                 , _user_pinnedPage              :: Page
+                 , _user_pinnedPageId            :: String
                  } deriving (Show)
 
 instance FromJSON User where
