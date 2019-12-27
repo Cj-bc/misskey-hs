@@ -114,6 +114,53 @@ instance FromJSON File where
                                 <*> v .:  "isSensitive"
     parseJSON _          = mempty
 
+
+data PageContent = PageContent { pageContent_id         :: Id
+                               , pageContent_var        :: Maybe n -- I don't know what is n
+                               , pageContent_text       :: String
+                               , pageContent_type       :: String
+                               , pageContent_event      :: Maybe n
+                               , pageContent_action     :: String
+                               , pageContent_content    :: Maybe n
+                               , pageContent_message    :: Maybe n
+                               , pageContent_primary    :: Bool
+                               }
+
+data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
+                                       , pageVArg_type  :: String
+                                       , pageVArg_value :: String
+                                       }
+
+data PageVariable = PageVariable { pageV_id   :: Id
+                                 , pageV_args :: [PageVariableArg]
+                                 , pageV_name :: String
+                                 , pageV_type :: String
+                                 , pageV_value :: Maybe n
+                                 }
+
+-- | Page
+--
+-- Docs: https://misskey.io/api-doc#operation/pages/show
+data Page = Page { page_id  :: Id
+                 , page_createdAt :: UTCTime
+                 , page_updatedAt :: UTCTime
+                 , page_title        :: String
+                 , page_name         :: String
+                 , page_summary      :: Maybe String
+                 , page_content      :: [PageContent]
+                 , page_variables    :: [PageVariable]
+                 , page_userId       :: Id
+                 , page_user         :: User
+                 -- Those fields below are undocumented
+                 , page_hideTitleWhenPinned :: Bool
+                 , page_alignCenter         :: Bool
+                 , page_font                :: String
+                 , page_eyeCatchingImageId  :: Maybe n
+                 , page_eyeCatchingImage    :: Maybe n
+                 , page_attachedFiles       :: [f]
+                 , page_likedCount          :: Int
+                 }
+
 -- | A Note object
 --
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
