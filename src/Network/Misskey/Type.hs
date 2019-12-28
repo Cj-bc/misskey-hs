@@ -307,6 +307,17 @@ instance FromJSON User where
                                 <*> v .:? "isLocked"
                                 <*> v .:? "hasUnreadSpecifiedNotes"
                                 <*> v .:? "hasUnreadMentions"
+                                <*> v .:? "github"
+                                <*> v .:? "twitter"
+                                <*> v .:? "discord"
+                                <*> v .:? "fields"
+                                <*> v .:? "twoFactorEnabled"
+                                <*> v .:? "usePasswordLessLogin"
+                                <*> v .:? "securityKeys"
+                                <*> v .:? "isSilenced"
+                                <*> v .:? "isSuspended"
+                                <*> v .:? "pinnedPage"
+                                <*> v .:? "pinnedPageId"
     parseJSON _          = mempty
 
 
