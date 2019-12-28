@@ -12,7 +12,6 @@ Common Data types for misske-hs
 module Network.Misskey.Type where
 
 import Lens.Simple
-import Data.ByteString (ByteString)
 import Data.Aeson
 import Data.Aeson.TH (deriveJSON)
 import Data.Time (UTCTime)
@@ -109,7 +108,7 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
 
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
-                                <*> (fromJust <$> parseISO8601 <$> v .: "createdAt")
+                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
                                 <*> v .:  "name"
                                 <*> v .:  "type"
                                 <*> v .:  "md5"
@@ -193,8 +192,8 @@ data Page = Page { page_id  :: Id
 
 instance FromJSON Page where
     parseJSON (Object v) = Page <$> v .:  "id"
-                                <*> (fromJust <$> parseISO8601 <$> v .: "createdAt")
-                                <*> (fromJust <$> parseISO8601 <$> v .: "pudatedAt")
+                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
+                                <*> (fromJust . parseISO8601 <$> (v .: "updatedAt"))
                                 <*> v .:  "title"
                                 <*> v .:  "name"
                                 <*> v .:? "summary"
@@ -251,7 +250,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
-                                <*> (fromJust <$> parseISO8601 <$> v.: "createdAt")
+                                <*> (fromJust . parseISO8601 <$> (v.: "createdAt"))
                                 <*> v .:? "text"
                                 <*> v .:? "cw"
                                 <*> v .:  "userId"
@@ -315,8 +314,8 @@ data User = User { _user_id                      :: UserId
                  , _user_isAdmin                 :: Maybe Bool
                  , _user_isModerator             :: Maybe Bool
                  , _user_isLocked                :: Maybe Bool
-                 , _user_hasUnreadSpecifiedNotes :: Maybe Bool
-                 , _user_hasUnreadMentions       :: Maybe Bool
+                 , _user_hasUnreadSpecifiedNotes :: Maybe Bool -- This doesn't exist
+                 , _user_hasUnreadMentions       :: Maybe Bool -- This doesn't exist
                  -- Those fields below are undocumented
                  -- I don't know exact type(especially if it's 'Maybe' or not)
                  , _user_github                  :: Maybe String   -- This is temporary set to String

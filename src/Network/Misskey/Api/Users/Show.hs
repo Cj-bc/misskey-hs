@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 {-|
 Module      : Network.Misskey.Api.Users.Show
@@ -43,11 +42,12 @@ data APIRequest = UserId   String
 -- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: APIRequest -> ReaderT MisskeyEnv IO (Either APIError [User])
 usersShow req = let obj = case req of
-                            UserId i   -> object ["userId" .= i]
-                            UserIds is -> object ["userIds" .= is]
-                            UserName n -> object ["username" .= n]
-                            Host h     -> object ["host" .= h]
+                            UserId i   -> object ["userId"   .= i ]
+                            UserIds is -> object ["userIds"  .= is]
+                            UserName n -> object ["username" .= n ]
+                            Host h     -> object ["host"     .= h ]
                 in usersShowBase obj
+
 
 -- | Basement of usersShow
 usersShowBase :: Value -> ReaderT MisskeyEnv IO (Either APIError [User])
@@ -61,13 +61,15 @@ usersShowBase obj = do
                                 }
 
     response <- httpLbs request
+
+    let responseBody = getResponseBody response
     case getResponseStatusCode response of
-        200 -> case (decode' (getResponseBody response) :: Maybe User) of
+        200 -> case (decode' responseBody :: Maybe User) of
                 Just a ->  return $ Right [a]
                 Nothing -> error $ unlines ["userShowUsername: error while decoding User"
-                                           , show $ getResponseBody response]
-        _   -> case (decode' (getResponseBody response) :: Maybe APIError) of
+                                           , show responseBody]
+        _   -> case (decode' responseBody :: Maybe APIError) of
                 Just a -> return $ Left a
                 Nothing -> error $ unlines ["userShowUsername: error while decoding APIError"
-                                           , show $ getResponseBody response]
+                                           , show responseBody]
 
