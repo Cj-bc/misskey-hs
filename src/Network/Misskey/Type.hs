@@ -77,13 +77,15 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
-                 , _poll_expiresAt  :: Maybe UTCTime
+                 -- , _poll_expiresAt  :: Maybe UTCTime
+                 , _poll_expiresAt  :: String -- This is temporary set to String
                  , _choices         :: [PollChoice]
                  } deriving (Show)
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                <*> v `parseData` "expiresAt"
+                                -- <*> v `parseData` "expiresAt"
+                                <*> v .: "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
 
@@ -164,7 +166,8 @@ data Page = Page { page_id  :: Id
                  , page_content      :: [PageContent]
                  , page_variables    :: [PageVariable]
                  , page_userId       :: Id
-                 , page_user         :: User
+                 --, page_user         :: User
+                 , page_user         :: String -- This is temporary set to String
                  -- Those fields below are undocumented
                  , page_hideTitleWhenPinned :: Bool
                  , page_alignCenter         :: Bool
@@ -183,7 +186,8 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_text               :: Maybe String
                  , _note_cw                 :: Maybe String
                  , _note_userId             :: UserId
-                 , _note_user               :: User
+                 -- , _note_user               :: User
+                 , _note_user               :: String -- this is temporary set to String
                  , _note_replyId            :: Maybe Id
                  , _note_renoteId           :: Maybe Id
                  , _note_reply              :: Maybe Note
