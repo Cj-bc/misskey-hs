@@ -25,67 +25,17 @@ data APIRequest = UserId   String
                 | UserName String
                 | Host     String
 
+-- | Call API `users/show` and return result
+--
+-- This supports to post *only one of userId/userIds/username/host property*
+--
+-- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: APIRequest -> ReaderT MisskeyEnv IO (Either APIError [User])
-usersShow (UserId i)   = userShowId i
-usersShow (UserIds is) = userShowIds is
-usersShow (UserName n) = userShowUsername n
+usersShow req = let obj = case req of
+                            UserId i   -> object ["userId" .= i]
+                            UserIds is -> object ["userIds" .= is]
+                            UserName n -> object ["username" .= n]
+                            Host h     -> object ["host" .= h]
+                in usersShowBase obj
 
-
--- userShowUsername :: String -> ReaderT MisskeyEnv IO (Either APIError User)
-userShowUsername :: String -> ReaderT MisskeyEnv IO (Either APIError [User])
-userShowUsername name = do
-    env <- ask
-    initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
-    let requestObject = object [ "username" .= name ]
-        request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode requestObject
-                                , requestHeaders =
-                                      [("Content-Type", "application/json; charset=utf-8")]
-                                }
-
-    response <- liftIO (httpJSON request :: IO (Response Value))
-    case getResponseStatusCode response of
-        200 -> return $ Right $ [fromSuccess $ fromJSON (getResponseBody response)]
-        _   -> return $ Left  $ fromSuccess  $ fromJSON (getResponseBody response)
-
-    where
-        fromSuccess (Success a) = a
-
-
-
--- userShowIds :: [String] -> ReaderT MisskeyEnv IO (Either APIError [User])
-userShowIds :: [String] -> ReaderT MisskeyEnv IO (Either APIError [User])
-userShowIds ids = do
-    env <- ask
-    initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
-    let requestObject = object [ "userIds"  .= ids ]
-        request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode requestObject
-                                , requestHeaders =
-                                      [("Content-Type", "application/json; charset=utf-8")]
-                                }
-    liftIO $ do
-        putStrLn "======= DEBUG ======"
-        putStrLn $ show request
-        putStrLn "===================="
-
-    response <- httpLbs request
-    case getResponseStatusCode response of
-        200 -> return $ Right $ fromJust $ decode' $ getResponseBody response
-        _   -> return $ Left  $ fromJust $ decode' $ getResponseBody response
-
-
-userShowId :: String -> ReaderT MisskeyEnv IO (Either APIError [User])
-userShowId id = do
-    env <- ask
-    initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
-    let requestObject = object [ "userId"  .= id ]
-        request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode requestObject
-                                , requestHeaders =
-                                      [("Content-Type", "application/json; charset=utf-8")]
-                                }
-    response <- httpLbs request
-    case getResponseStatusCode response of
-        200 -> return $ Right $ fromJust $ decode' $ getResponseBody response
-        _   -> return $ Left  $ fromJust $ decode' $ getResponseBody response
+usersShowBase = undefined
