@@ -38,4 +38,25 @@ usersShow req = let obj = case req of
                             Host h     -> object ["host" .= h]
                 in usersShowBase obj
 
-usersShowBase = undefined
+-- | Basement of usersShow
+usersShowBase :: Value -> ReaderT MisskeyEnv IO (Either APIError [User])
+usersShowBase obj = do
+    env <- ask
+    initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
+    let request       = initReq { method = "POST"
+                                , requestBody = RequestBodyLBS $ encode obj
+                                , requestHeaders =
+                                      [("Content-Type", "application/json; charset=utf-8")]
+                                }
+
+    response <- httpLbs request
+    case getResponseStatusCode response of
+        200 -> case (decode' (getResponseBody response) :: Maybe User) of
+                Just a ->  return $ Right [a]
+                Nothing -> error $ unlines ["userShowUsername: error while decoding User"
+                                           , show $ getResponseBody response]
+        _   -> case (decode' (getResponseBody response) :: Maybe APIError) of
+                Just a -> return $ Left a
+                Nothing -> error $ unlines ["userShowUsername: error while decoding APIError"
+                                           , show $ getResponseBody response]
+
