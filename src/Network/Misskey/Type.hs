@@ -129,12 +129,16 @@ data PageContent = PageContent { pageContent_id         :: Id
                                , pageContent_content    :: Maybe String -- TODO: what type is this?
                                , pageContent_message    :: Maybe String -- TODO: what type is this?
                                , pageContent_primary    :: Bool
-                               }
+                               } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 12 } ''PageContent)
 
 data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_type  :: String
                                        , pageVArg_value :: String
-                                       }
+                                       } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
 
 -- TODO: Implement this
 --
@@ -148,7 +152,9 @@ data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_name :: String
                                  , pageV_type :: PageVariableType
                                  , pageV_value :: Maybe String -- TODO: what type is this?
-                                 }
+                                 } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
 
 -- | Page
 --
@@ -176,7 +182,30 @@ data Page = Page { page_id  :: Id
                  , page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
                  , page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
                  , page_likedCount          :: Int
-                 }
+                 } deriving (Show)
+
+
+instance FromJSON Page where
+    parseJSON (Object v) = Page <$> v .:  "id"
+                                <*> (fromJust <$> parseISO8601 <$> v .: "createdAt")
+                                <*> (fromJust <$> parseISO8601 <$> v .: "pudatedAt")
+                                <*> v .:  "title"
+                                <*> v .:  "name"
+                                <*> v .:? "summary"
+                                <*> v .:  "content"
+                                <*> v .:  "variables"
+                                <*> v .:  "userId"
+                                <*> v .:  "user"
+                                <*> v .:  "hideTitleWhenPinne"
+                                <*> v .:  "alignCenter"
+                                <*> v .:  "font"
+                                <*> v .:? "eyeCatchingImageId"
+                                <*> v .:? "eyeCatchingImage"
+                                <*> v .:  "attachedFiles"
+                                <*> v .:  "likedCount"
+
+
+
 
 -- | A Note object
 --
