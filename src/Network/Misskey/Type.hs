@@ -271,10 +271,10 @@ data User = User { _user_id                      :: UserId
                  , _user_hasUnreadMentions       :: Maybe Bool
                  -- Those fields below are undocumented
                  -- I don't know exact type(especially if it's 'Maybe' or not)
-                 , _user_github                  :: Maybe a
+                 , _user_github                  :: Maybe String   -- This is temporary set to String
                  , _user_twitter                 :: Maybe UserTwitterInfo
-                 , _user_discord                 :: Maybe a
-                 , _user_fields                  :: Maybe [a] -- I don't know what values are
+                 , _user_discord                 :: Maybe String   -- This is temporary set to String
+                 , _user_fields                  :: Maybe [String] -- This is temporary set to String
                  , _user_twoFactorEnabled        :: Maybe Bool
                  , _user_usePasswordLessLogin    :: Maybe Bool
                  , _user_securityKeys            :: Maybe Bool
