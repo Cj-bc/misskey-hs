@@ -1,6 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-|
+Module      : Network.Misskey.Type
+Description : Type definitions for misskey-hs
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Maintainer  : cj.bc-sd@outlook.jp
+Stability   : experimental
 
+Common Data types for misske-hs
+-}
 module Network.Misskey.Type where
 
 import Lens.Simple
@@ -28,6 +36,7 @@ data MisskeyEnv = MisskeyEnv { _token :: String
 makeLenses ''MisskeyEnv
 
 
+-- APIError {{{
 data APIErrorInfo = APIErrorInfo { param :: String
                                  , reason :: String
                                  } deriving (Show)
@@ -50,17 +59,9 @@ instance FromJSON APIError where
                                     <*> v .:  "id"
                                     <*> v .:? "kind"
                                     <*> v .:? "info"
+-- }}}
 
-
--- | I can't find any documents. Also, Geo wasn't on any response
---
--- I'll fix this later, just leave this as placeholder
-data Geo = Geo deriving (Show)
-
-instance FromJSON Geo where
-    parseJSON (Object _) = return Geo
-    parseJSON _          = mempty
-
+-- Poll {{{
 
 -- | A choice for Poll
 --
@@ -88,7 +89,9 @@ instance FromJSON Poll where
                                 <*> v .: "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
+-- }}}
 
+-- File {{{
 
 -- | A File
 --
@@ -115,6 +118,9 @@ instance FromJSON File where
                                 <*> v .:? "folderId"
                                 <*> v .:  "isSensitive"
     parseJSON _          = mempty
+-- }}}
+
+-- Page {{{
 
 
 -- TODO: Implement this
@@ -203,8 +209,18 @@ instance FromJSON Page where
                                 <*> v .:? "eyeCatchingImage"
                                 <*> v .:  "attachedFiles"
                                 <*> v .:  "likedCount"
+--- }}}
 
+-- Note {{{
 
+-- | I can't find any documents. Also, Geo wasn't on any response
+--
+-- I'll fix this later, just leave this as placeholder
+data Geo = Geo deriving (Show)
+
+instance FromJSON Geo where
+    parseJSON (Object _) = return Geo
+    parseJSON _          = mempty
 
 
 -- | A Note object
@@ -256,6 +272,9 @@ instance FromJSON Note where
                                 <*> v .:? "geo"
     parseJSON _          = mempty
 
+--- }}}
+
+-- User {{{
 
 data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
                                        , userTwitterInfo_screenName :: String}
@@ -354,6 +373,7 @@ instance FromJSON User where
                                 <*> v .:? "pinnedPageId"
     parseJSON _          = mempty
 
+--- }}}
 
 parseData v s = do
     b <- v .:? s

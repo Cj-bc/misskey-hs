@@ -1,5 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+
+{-|
+Module      : Network.Misskey.Api.Users.Show
+Description : Misskey API Endpoint and Request for users/show
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Maintainer  : cj.bc-sd@outlook.jp
+Stability   : experimental
+
+Call `users/show` Misskey API
+API document is: https://misskey.io/api-doc#operation/users/show
+-}
 module Network.Misskey.Api.Users.Show (
 usersShow
 , APIRequest(..)
