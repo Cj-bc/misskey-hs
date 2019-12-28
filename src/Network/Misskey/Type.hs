@@ -177,8 +177,7 @@ data Page = Page { page_id  :: Id
                  , page_content      :: [PageContent]
                  , page_variables    :: [PageVariable]
                  , page_userId       :: Id
-                 --, page_user         :: User
-                 , page_user         :: String -- This is temporary set to String
+                 , page_user         :: BaseUser
                  -- Those fields below are undocumented
                  , page_hideTitleWhenPinned :: Bool
                  , page_alignCenter         :: Bool
@@ -222,6 +221,23 @@ instance FromJSON Geo where
     parseJSON _          = mempty
 
 
+-- | Subset of 'User' that isn't depend on 'Note'/'Page'/Poll' etc
+--
+-- This is used instead of 'User' in 'Note'/'Page'/Poll'
+--
+-- *Caution* This definition is made from API result so might contain some mistakes
+data BaseUser = BaseUser { _baseUser_id          :: String
+                         , _baseUser_name        :: String
+                         , _baseUser_username    :: String
+                         , _baseUser_host        :: Maybe String
+                         , _baseUser_avatarUrl   :: String
+                         , _baseUser_avatarColor :: String
+                         , _baseUser_isCat       :: Bool
+                         , _baseUser_emojis      :: [String]
+                         } deriving (Show)
+
+$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
+
 -- | A Note object
 --
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
@@ -230,8 +246,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_text               :: Maybe String
                  , _note_cw                 :: Maybe String
                  , _note_userId             :: UserId
-                 -- , _note_user               :: User
-                 , _note_user               :: String -- this is temporary set to String
+                 , _note_user               :: BaseUser
                  , _note_replyId            :: Maybe Id
                  , _note_renoteId           :: Maybe Id
                  , _note_reply              :: Maybe Note
