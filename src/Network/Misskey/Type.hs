@@ -115,10 +115,13 @@ instance FromJSON File where
     parseJSON _          = mempty
 
 
+-- TODO: Implement this
+type PageContentType = String
+
 data PageContent = PageContent { pageContent_id         :: Id
                                , pageContent_var        :: Maybe n -- I don't know what is n
                                , pageContent_text       :: String
-                               , pageContent_type       :: String
+                               , pageContent_type       :: PageContentType
                                , pageContent_event      :: Maybe n
                                , pageContent_action     :: String
                                , pageContent_content    :: Maybe n
@@ -131,16 +134,27 @@ data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_value :: String
                                        }
 
+-- TODO: Implement this
+--
+-- This is temporary set to 'String', though it should be enum
+-- To Implement this, I should know all sort of variable type
+type PageVariableType = String
+
+-- | Page variable that can be declared for each page
 data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_args :: [PageVariableArg]
                                  , pageV_name :: String
-                                 , pageV_type :: String
+                                 , pageV_type :: PageVariableType
                                  , pageV_value :: Maybe n
                                  }
 
 -- | Page
 --
--- Docs: https://misskey.io/api-doc#operation/pages/show
+-- Docs:
+--
+--   * https://misskey.io/api-doc#operation/pages/show
+--
+--   * https://join.misskey.page/ja/wiki/usage/pages
 data Page = Page { page_id  :: Id
                  , page_createdAt :: UTCTime
                  , page_updatedAt :: UTCTime
@@ -216,17 +230,22 @@ data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
 
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 16 } ''UserTwitterInfo)
 
+-- TODO: Implement this
+--
+-- This seems to be `rgb(xxx,yyy,zzz)` which can be parsed
+type Color = String
+
 -- | User object
 --
 -- Docs: https://misskey.io/api-doc#operation/users/show
-data User = User { _user_id                      :: UserId -- ^ Original is 'id'
+data User = User { _user_id                      :: UserId
                  , _user_username                :: String
                  , _user_name                    :: Maybe String
                  , _user_url                     :: Maybe Url
                  , _user_avatarUrl               :: Maybe Url
-                 , _user_avatarColor             :: Maybe String -- ^ This is documented as 'any' in doc
+                 , _user_avatarColor             :: Maybe Color -- ^ This is documented as 'any' in doc
                  , _user_bannerUrl               :: Maybe Url
-                 , _user_bannerColor             :: Maybe String -- ^ This is documented as 'any' in doc
+                 , _user_bannerColor             :: Maybe Color -- ^ This is documented as 'any' in doc
                  , _user_emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
                  , _user_host                    :: Maybe String
                  , _user_description             :: Maybe String
