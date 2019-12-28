@@ -155,9 +155,9 @@ data Page = Page { page_id  :: Id
                  , page_hideTitleWhenPinned :: Bool
                  , page_alignCenter         :: Bool
                  , page_font                :: String
-                 , page_eyeCatchingImageId  :: Maybe n
-                 , page_eyeCatchingImage    :: Maybe n
-                 , page_attachedFiles       :: [f]
+                 , page_eyeCatchingImageId  :: Maybe String -- ^ TODO: Check whether this type correct
+                 , page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
+                 , page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
                  , page_likedCount          :: Int
                  }
 
