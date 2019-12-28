@@ -119,13 +119,13 @@ instance FromJSON File where
 type PageContentType = String
 
 data PageContent = PageContent { pageContent_id         :: Id
-                               , pageContent_var        :: Maybe n -- I don't know what is n
+                               , pageContent_var        :: Maybe String -- TODO: what type is this?
                                , pageContent_text       :: String
                                , pageContent_type       :: PageContentType
-                               , pageContent_event      :: Maybe n
+                               , pageContent_event      :: Maybe String -- TODO: what type is this?
                                , pageContent_action     :: String
-                               , pageContent_content    :: Maybe n
-                               , pageContent_message    :: Maybe n
+                               , pageContent_content    :: Maybe String -- TODO: what type is this?
+                               , pageContent_message    :: Maybe String -- TODO: what type is this?
                                , pageContent_primary    :: Bool
                                }
 
@@ -145,7 +145,7 @@ data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_args :: [PageVariableArg]
                                  , pageV_name :: String
                                  , pageV_type :: PageVariableType
-                                 , pageV_value :: Maybe n
+                                 , pageV_value :: Maybe String -- TODO: what type is this?
                                  }
 
 -- | Page
