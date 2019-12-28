@@ -266,17 +266,18 @@ data User = User { _user_id                      :: UserId
                  , _user_hasUnreadSpecifiedNotes :: Maybe Bool
                  , _user_hasUnreadMentions       :: Maybe Bool
                  -- Those fields below are undocumented
+                 -- I don't know exact type(especially if it's 'Maybe' or not)
                  , _user_github                  :: Maybe a
                  , _user_twitter                 :: Maybe UserTwitterInfo
                  , _user_discord                 :: Maybe a
-                 , _user_fields                  :: [a] -- I don't know what values are
-                 , _user_twoFactorEnabled        :: Bool
-                 , _user_usePasswordLessLogin    :: Bool
-                 , _user_securityKeys            :: Bool
-                 , _user_isSilenced              :: Bool
-                 , _user_isSuspended             :: Bool
-                 , _user_pinnedPage              :: Page
-                 , _user_pinnedPageId            :: String
+                 , _user_fields                  :: Maybe [a] -- I don't know what values are
+                 , _user_twoFactorEnabled        :: Maybe Bool
+                 , _user_usePasswordLessLogin    :: Maybe Bool
+                 , _user_securityKeys            :: Maybe Bool
+                 , _user_isSilenced              :: Maybe Bool
+                 , _user_isSuspended             :: Maybe Bool
+                 , _user_pinnedPage              :: Maybe Page
+                 , _user_pinnedPageId            :: Maybe String
                  } deriving (Show)
 
 instance FromJSON User where
