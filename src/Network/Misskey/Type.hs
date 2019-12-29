@@ -12,6 +12,7 @@ Common Data types for misske-hs
 module Network.Misskey.Type where
 
 import Lens.Simple
+import Control.Monad.Reader (ReaderT, runReaderT)
 import Data.Aeson
 import Data.Aeson.TH (deriveJSON)
 import Data.Time (UTCTime)
@@ -59,6 +60,11 @@ instance FromJSON APIError where
                                     <*> v .:? "kind"
                                     <*> v .:? "info"
 -- }}}
+
+-- Misskey
+type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
+runMisskey = runReaderT
+
 
 -- Poll {{{
 

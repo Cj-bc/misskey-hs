@@ -50,7 +50,7 @@ usersShow req = let obj = case req of
 
 
 -- | Basement of usersShow
-usersShowBase :: Value -> ReaderT MisskeyEnv IO (Either APIError [User])
+usersShowBase :: Value -> Misskey [User]
 usersShowBase obj = do
     env <- ask
     initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
