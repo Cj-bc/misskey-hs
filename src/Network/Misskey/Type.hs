@@ -218,6 +218,8 @@ instance FromJSON PageContent where
             littleParser "if"            = PageContentIf            <$> v .: "id"       <*> v .:? "var"
                                                                     <*> v .: "children"
             littleParser "post"          = PageContentPost          <$> v .: "id"       <*> v .: "text"
+            littleParser x               = prependFailure ("parsing PageContent's type failed, " ++ x ++ " is not valid")
+                                            (typeMismatch "Object" (Object v))
     -- We do not expect a non-Object value here.
     -- We could use empty to fail, but typeMismatch
     -- gives a much more informative error message.
