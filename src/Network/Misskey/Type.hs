@@ -196,7 +196,7 @@ instance FromJSON PageContent where
         littleParser ctype
         where
             littleParser "text"          = PageContentText          <$> v .: "id"       <*> v .: "text"
-            littleParser "section"       = PageContentSection       <$> v .: "id"       <*> v .: "text"
+            littleParser "section"       = PageContentSection       <$> v .: "id"       <*> v .: "title"
                                                                     <*> v .: "children"
             littleParser "image"         = PageContentImage         <$> v .: "id"       <*> v .: "fileId"
             littleParser "textarea"      = PageContentTextArea      <$> v .: "id"       <*> v .: "text"
@@ -288,7 +288,7 @@ instance FromJSON Page where
                                 <*> v .:  "variables"
                                 <*> v .:  "userId"
                                 <*> v .:  "user"
-                                <*> v .:  "hideTitleWhenPinne"
+                                <*> v .:  "hideTitleWhenPinned"
                                 <*> v .:  "alignCenter"
                                 <*> v .:  "font"
                                 <*> v .:? "eyeCatchingImageId"
