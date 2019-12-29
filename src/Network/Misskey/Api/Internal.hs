@@ -2,7 +2,7 @@
 module Network.Misskey.Api.Internal where
 
 import Control.Monad.Trans.Reader (ask)
-import Data.Aeson (Value, encode, decode', FromJSON)
+import Data.Aeson (Value, encode, FromJSON, eitherDecode')
 import Lens.Simple ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
@@ -24,11 +24,19 @@ postRequest apiPath body =  do
 
     let responseBody = getResponseBody response
     case getResponseStatusCode response of
-        200 -> case (decode' responseBody) of
-                Just a ->  return $ Right a
-                Nothing -> error $ unlines [apiPath ++ ": error while decoding Result"
-                                           , show responseBody]
-        _   -> case (decode' responseBody :: Maybe APIError) of
-                Just a -> return $ Left a
-                Nothing -> error $ unlines [apiPath ++ ": error while decoding APIError"
-                                           , show responseBody]
+        200 -> case (eitherDecode' responseBody) of
+                Right a ->  return $ Right a
+                Left e -> error $ unlines [apiPath ++ ": error while decoding Result"
+                                          , "========== raw ByteString =========="
+                                          , show responseBody
+                                          , "========== Error message =========="
+                                          , show e
+                                          ]
+        _   -> case (eitherDecode' responseBody :: Either String APIError) of
+                Right a -> return $ Left a
+                Left e  -> error $ unlines [apiPath ++ ": error while decoding APIError"
+                                           , "========== raw ByteString =========="
+                                           , show responseBody
+                                           , "========== Error message =========="
+                                           , show e
+                                           ]
