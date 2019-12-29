@@ -24,11 +24,12 @@ import Data.Either (Either(..))
 import Data.Maybe (fromJust, maybe)
 import Data.ByteString.Lazy (ByteString)
 import Lens.Simple ((^.), makeLenses)
-import Network.Misskey.Type
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
 
+import Network.Misskey.Type
+import Network.Misskey.Api.Internal
 
 data APIRequest = UserId   String
                 | UserIds  [String]
@@ -40,36 +41,17 @@ data APIRequest = UserId   String
 -- This supports to post *only one of userId/userIds/username/host property*
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
-usersShow :: APIRequest -> ReaderT MisskeyEnv IO (Either APIError [User])
-usersShow req = let obj = case req of
-                            UserId i   -> object ["userId"   .= i ]
-                            UserIds is -> object ["userIds"  .= is]
-                            UserName n -> object ["username" .= n ]
-                            Host h     -> object ["host"     .= h ]
-                in usersShowBase obj
-
-
--- | Basement of usersShow
-usersShowBase :: Value -> Misskey [User]
-usersShowBase obj = do
+usersShow :: APIRequest -> Misskey [User]
+usersShow (UserIds is) = postRequest "/api/users/show" $ object ["userIds"  .= is]
+usersShow req          = do
     env <- ask
-    initReq <- parseRequest $ (env^.url) ++ "/api/users/show"
-    let request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode obj
-                                , requestHeaders =
-                                      [("Content-Type", "application/json; charset=utf-8")]
-                                }
+    result <- liftIO $ runMisskey (postRequest "/api/users/show" obj :: Misskey User) env
+    case result of
+        Right u -> return $ Right [u]
+        Left  e -> return $ Left e
 
-    response <- httpLbs request
-
-    let responseBody = getResponseBody response
-    case getResponseStatusCode response of
-        200 -> case (decode' responseBody :: Maybe User) of
-                Just a ->  return $ Right [a]
-                Nothing -> error $ unlines ["userShowUsername: error while decoding User"
-                                           , show responseBody]
-        _   -> case (decode' responseBody :: Maybe APIError) of
-                Just a -> return $ Left a
-                Nothing -> error $ unlines ["userShowUsername: error while decoding APIError"
-                                           , show responseBody]
-
+    where
+        obj = case req of
+               UserId i   -> object ["userId"   .= i ]
+               UserName n -> object ["username" .= n ]
+               Host h     -> object ["host"     .= h ]
