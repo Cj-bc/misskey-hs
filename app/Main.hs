@@ -16,4 +16,4 @@ main = do
     response <- runReaderT (usersShow request) env
     case response of
         Left er -> putStrLn $ "Error occured: " ++ show er
-        Right u -> putStrLn $ show u
+        Right u -> print u

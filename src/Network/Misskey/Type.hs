@@ -1,10 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-|
+Module      : Network.Misskey.Type
+Description : Type definitions for misskey-hs
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Maintainer  : cj.bc-sd@outlook.jp
+Stability   : experimental
 
+Common Data types for misske-hs
+-}
 module Network.Misskey.Type where
 
 import Lens.Simple
-import Data.ByteString (ByteString)
 import Data.Aeson
 import Data.Aeson.TH (deriveJSON)
 import Data.Time (UTCTime)
@@ -28,6 +35,7 @@ data MisskeyEnv = MisskeyEnv { _token :: String
 makeLenses ''MisskeyEnv
 
 
+-- APIError {{{
 data APIErrorInfo = APIErrorInfo { param :: String
                                  , reason :: String
                                  } deriving (Show)
@@ -50,17 +58,9 @@ instance FromJSON APIError where
                                     <*> v .:  "id"
                                     <*> v .:? "kind"
                                     <*> v .:? "info"
+-- }}}
 
-
--- | I can't find any documents. Also, Geo wasn't on any response
---
--- I'll fix this later, just leave this as placeholder
-data Geo = Geo deriving (Show)
-
-instance FromJSON Geo where
-    parseJSON (Object _) = return Geo
-    parseJSON _          = mempty
-
+-- Poll {{{
 
 -- | A choice for Poll
 --
@@ -77,16 +77,20 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
-                 , _poll_expiresAt  :: Maybe UTCTime
+                 -- , _poll_expiresAt  :: Maybe UTCTime
+                 , _poll_expiresAt  :: String -- This is temporary set to String
                  , _choices         :: [PollChoice]
                  } deriving (Show)
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                <*> v `parseData` "expiresAt"
+                                -- <*> v `parseData` "expiresAt"
+                                <*> v .: "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
+-- }}}
 
+-- File {{{
 
 -- | A File
 --
@@ -104,7 +108,7 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
 
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
-                                <*> (fromJust <$> parseISO8601 <$> v .: "createdAt")
+                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
                                 <*> v .:  "name"
                                 <*> v .:  "type"
                                 <*> v .:  "md5"
@@ -113,6 +117,9 @@ instance FromJSON File where
                                 <*> v .:? "folderId"
                                 <*> v .:  "isSensitive"
     parseJSON _          = mempty
+-- }}}
+
+-- Page {{{
 
 
 -- TODO: Implement this
@@ -127,12 +134,16 @@ data PageContent = PageContent { pageContent_id         :: Id
                                , pageContent_content    :: Maybe String -- TODO: what type is this?
                                , pageContent_message    :: Maybe String -- TODO: what type is this?
                                , pageContent_primary    :: Bool
-                               }
+                               } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 12 } ''PageContent)
 
 data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_type  :: String
                                        , pageVArg_value :: String
-                                       }
+                                       } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
 
 -- TODO: Implement this
 --
@@ -146,7 +157,9 @@ data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_name :: String
                                  , pageV_type :: PageVariableType
                                  , pageV_value :: Maybe String -- TODO: what type is this?
-                                 }
+                                 } deriving (Show)
+
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
 
 -- | Page
 --
@@ -164,7 +177,7 @@ data Page = Page { page_id  :: Id
                  , page_content      :: [PageContent]
                  , page_variables    :: [PageVariable]
                  , page_userId       :: Id
-                 , page_user         :: User
+                 , page_user         :: BaseUser
                  -- Those fields below are undocumented
                  , page_hideTitleWhenPinned :: Bool
                  , page_alignCenter         :: Bool
@@ -173,7 +186,57 @@ data Page = Page { page_id  :: Id
                  , page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
                  , page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
                  , page_likedCount          :: Int
-                 }
+                 } deriving (Show)
+
+
+instance FromJSON Page where
+    parseJSON (Object v) = Page <$> v .:  "id"
+                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
+                                <*> (fromJust . parseISO8601 <$> (v .: "updatedAt"))
+                                <*> v .:  "title"
+                                <*> v .:  "name"
+                                <*> v .:? "summary"
+                                <*> v .:  "content"
+                                <*> v .:  "variables"
+                                <*> v .:  "userId"
+                                <*> v .:  "user"
+                                <*> v .:  "hideTitleWhenPinne"
+                                <*> v .:  "alignCenter"
+                                <*> v .:  "font"
+                                <*> v .:? "eyeCatchingImageId"
+                                <*> v .:? "eyeCatchingImage"
+                                <*> v .:  "attachedFiles"
+                                <*> v .:  "likedCount"
+--- }}}
+
+-- Note {{{
+
+-- | I can't find any documents. Also, Geo wasn't on any response
+--
+-- I'll fix this later, just leave this as placeholder
+data Geo = Geo deriving (Show)
+
+instance FromJSON Geo where
+    parseJSON (Object _) = return Geo
+    parseJSON _          = mempty
+
+
+-- | Subset of 'User' that isn't depend on 'Note'/'Page'/Poll' etc
+--
+-- This is used instead of 'User' in 'Note'/'Page'/Poll'
+--
+-- *Caution* This definition is made from API result so might contain some mistakes
+data BaseUser = BaseUser { _baseUser_id          :: String
+                         , _baseUser_name        :: String
+                         , _baseUser_username    :: String
+                         , _baseUser_host        :: Maybe String
+                         , _baseUser_avatarUrl   :: String
+                         , _baseUser_avatarColor :: String
+                         , _baseUser_isCat       :: Bool
+                         , _baseUser_emojis      :: [String]
+                         } deriving (Show)
+
+$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
 
 -- | A Note object
 --
@@ -183,7 +246,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_text               :: Maybe String
                  , _note_cw                 :: Maybe String
                  , _note_userId             :: UserId
-                 , _note_user               :: User
+                 , _note_user               :: BaseUser
                  , _note_replyId            :: Maybe Id
                  , _note_renoteId           :: Maybe Id
                  , _note_reply              :: Maybe Note
@@ -202,7 +265,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
-                                <*> (fromJust <$> parseISO8601 <$> v.: "createdAt")
+                                <*> (fromJust . parseISO8601 <$> (v.: "createdAt"))
                                 <*> v .:? "text"
                                 <*> v .:? "cw"
                                 <*> v .:  "userId"
@@ -223,6 +286,9 @@ instance FromJSON Note where
                                 <*> v .:? "geo"
     parseJSON _          = mempty
 
+--- }}}
+
+-- User {{{
 
 data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
                                        , userTwitterInfo_screenName :: String}
@@ -263,14 +329,14 @@ data User = User { _user_id                      :: UserId
                  , _user_isAdmin                 :: Maybe Bool
                  , _user_isModerator             :: Maybe Bool
                  , _user_isLocked                :: Maybe Bool
-                 , _user_hasUnreadSpecifiedNotes :: Maybe Bool
-                 , _user_hasUnreadMentions       :: Maybe Bool
+                 , _user_hasUnreadSpecifiedNotes :: Maybe Bool -- This doesn't exist
+                 , _user_hasUnreadMentions       :: Maybe Bool -- This doesn't exist
                  -- Those fields below are undocumented
                  -- I don't know exact type(especially if it's 'Maybe' or not)
-                 , _user_github                  :: Maybe a
+                 , _user_github                  :: Maybe String   -- This is temporary set to String
                  , _user_twitter                 :: Maybe UserTwitterInfo
-                 , _user_discord                 :: Maybe a
-                 , _user_fields                  :: Maybe [a] -- I don't know what values are
+                 , _user_discord                 :: Maybe String   -- This is temporary set to String
+                 , _user_fields                  :: Maybe [String] -- This is temporary set to String
                  , _user_twoFactorEnabled        :: Maybe Bool
                  , _user_usePasswordLessLogin    :: Maybe Bool
                  , _user_securityKeys            :: Maybe Bool
@@ -321,6 +387,7 @@ instance FromJSON User where
                                 <*> v .:? "pinnedPageId"
     parseJSON _          = mempty
 
+--- }}}
 
 parseData v s = do
     b <- v .:? s
