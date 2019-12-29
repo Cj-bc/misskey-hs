@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-|
 Module      : Network.Misskey.Type
 Description : Type definitions for misskey-hs
@@ -14,6 +15,7 @@ module Network.Misskey.Type where
 import Lens.Simple
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
 import Data.Aeson
+import Data.Aeson.Types
 import Data.Aeson.TH (deriveJSON)
 import Data.Time (UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
@@ -131,18 +133,98 @@ instance FromJSON File where
 -- TODO: Implement this
 type PageContentType = String
 
-data PageContent = PageContent { pageContent_id         :: Id
-                               , pageContent_var        :: Maybe String -- TODO: what type is this?
-                               , pageContent_text       :: String
-                               , pageContent_type       :: PageContentType
-                               , pageContent_event      :: Maybe String -- TODO: what type is this?
-                               , pageContent_action     :: String
-                               , pageContent_content    :: Maybe String -- TODO: what type is this?
-                               , pageContent_message    :: Maybe String -- TODO: what type is this?
-                               , pageContent_primary    :: Bool
-                               } deriving (Show)
+data PageContent = PageContentText { pageContent_id   :: Id
+                                   , pageContent_text :: String
+                                   }
+                 | PageContentSection { pageContent_id       :: Id
+                                      , pageContent_title    :: String
+                                      , pageContent_children :: [PageContent]
+                                      }
+                 | PageContentImage { pageContent_id     :: Id
+                                    , pageContent_fileId :: Id
+                                    }
+                 | PageContentTextArea { pageContent_id   :: Id
+                                       , pageContent_text :: String
+                                       }
+                 | PageContentButton { pageContent_id      :: Id
+                                     , pageContent_var     :: Maybe String
+                                     , pageContent_text    :: String
+                                     , pageContent_event   :: Maybe String  -- TODO: Check those type
+                                     , pageContent_action  :: Maybe String  -- TODO: Check those type
+                                     , pageContent_content :: Maybe String  -- TODO: Check those type
+                                     , pageContent_message :: Maybe String  -- TODO: Check those type
+                                     , pageContent_primary :: Bool
+                                     }
+                 | PageContentRadioButton { pageContent_id       :: Id
+                                          , pageContent_name     :: String
+                                          , pageContent_title    :: String
+                                          , pageContent_values   :: String
+                                          , pageContent_defuault :: Maybe String
+                                          }
+                 | PageContentTextInput { pageContent_id       :: Id
+                                        , pageContent_name     :: String
+                                        , pageContent_text     :: String
+                                        , pageContent_defuault :: Maybe String
+                                        }
+                 | PageContentTextAreaInput { pageContent_id       :: Id
+                                            , pageContent_name     :: String
+                                            , pageContent_text     :: String
+                                            , pageContent_defuault :: Maybe String
+                                            }
+                 | PageContentSwitch { pageContent_id      :: Id
+                                     , pageContent_name    :: String
+                                     , pageContent_text    :: String
+                                     , pageContent_default :: Maybe String
+                                     }
+                 | PageContentCounter { pageContent_id   :: Id
+                                      , pageContent_name :: String
+                                      , pageContent_text :: String
+                                      , pageContent_inc  :: Maybe String
+                                      }
+                 | PageContentIf { pageContent_id       :: Id
+                                 , pageContent_var      :: Maybe String
+                                 , pageContent_children :: [PageContent]
+                                 }
+                 | PageContentPost { pageContent_id   :: Id
+                                   , pageContent_text :: String
+                                   }
+                    deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 12 } ''PageContent)
+instance FromJSON PageContent where
+    parseJSON (Object v) = do
+        (ctype :: String) <- v .: "type"
+        littleParser ctype
+        where
+            littleParser "text"          = PageContentText          <$> v .: "id"       <*> v .: "text"
+            littleParser "section"       = PageContentSection       <$> v .: "id"       <*> v .: "text"
+                                                                    <*> v .: "children"
+            littleParser "image"         = PageContentImage         <$> v .: "id"       <*> v .: "fileId"
+            littleParser "textarea"      = PageContentTextArea      <$> v .: "id"       <*> v .: "text"
+            littleParser "button"        = PageContentButton        <$> v .: "id"       <*> v .:? "var"
+                                                                    <*> v .: "text"     <*> v .:? "event"
+                                                                    <*> v .:? "action"  <*> v .:? "content"
+                                                                    <*> v .:? "message" <*> v .: "primary"
+            littleParser "radioButton"   = PageContentRadioButton   <$> v .: "id"       <*> v .: "name"
+                                                                    <*> v .: "title"    <*> v .: "values"
+                                                                    <*> v .:? "default"
+            littleParser "textInput"     = PageContentTextInput     <$> v .: "id"       <*> v .: "name"
+                                                                    <*> v .: "text"     <*> v .:? "default"
+            littleParser "textareaInput" = PageContentTextAreaInput <$> v .: "id"       <*> v .: "name"
+                                                                    <*> v .: "text"     <*> v .:? "default"
+            littleParser "switch"        = PageContentSwitch        <$> v .: "id"       <*> v .: "name"
+                                                                    <*> v .: "text"     <*> v .:? "default"
+            littleParser "counter"       = PageContentCounter       <$> v .: "id"       <*> v .: "name"
+                                                                    <*> v .: "text"     <*> v .:? "inc"
+            littleParser "if"            = PageContentIf            <$> v .: "id"       <*> v .:? "var"
+                                                                    <*> v .: "children"
+            littleParser "post"          = PageContentPost          <$> v .: "id"       <*> v .: "text"
+    -- We do not expect a non-Object value here.
+    -- We could use empty to fail, but typeMismatch
+    -- gives a much more informative error message.
+    parseJSON invalid    =
+        prependFailure "parsing PageContent failed, "
+            (typeMismatch "Object" invalid)
+
 
 data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_type  :: String
