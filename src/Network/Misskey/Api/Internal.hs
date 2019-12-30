@@ -24,7 +24,7 @@ postRequest apiPath body =  do
 
     let responseBody = getResponseBody response
     case getResponseStatusCode response of
-        200 -> case (eitherDecode' responseBody) of
+        200 -> case eitherDecode' responseBody of
                 Right a ->  return $ Right a
                 Left e -> error $ unlines [apiPath ++ ": error while decoding Result"
                                           , "========== raw ByteString =========="

@@ -22,8 +22,9 @@ data APIRequest = APIRequest { query     :: String
 usersSearch :: APIRequest -> Misskey [User]
 usersSearch (APIRequest q o l local d) = postRequest "/api/users/search" obj
     where
-        offsetObj     = if isNothing o     then [] else ["offset" .= o]
-        limitObj      = if isNothing l     then [] else ["limit" .= l]
-        localOnlyObj  = if isNothing local then [] else ["localOnly" .= local]
-        detailObj     = if isNothing d     then [] else ["detail" .= d]
+        createObj t   = maybe [] (\x -> [t .= x])
+        offsetObj     = createObj "offset"    o
+        limitObj      = createObj "limit"     l
+        localOnlyObj  = createObj "localOnly" local
+        detailObj     = createObj "detail"    d
         obj = object $ ["query" .= q] ++ offsetObj ++ limitObj ++ localOnlyObj ++ detailObj
