@@ -33,8 +33,7 @@ import Network.Misskey.Api.Internal
 
 data APIRequest = UserId   String
                 | UserIds  [String]
-                | UserName String
-                | Host     String
+                | UserName String (Maybe String)
 
 -- | Call API `users/show` and return result
 --
@@ -52,6 +51,5 @@ usersShow req          = do
 
     where
         obj = case req of
-               UserId i   -> object ["userId"   .= i ]
-               UserName n -> object ["username" .= n ]
-               Host h     -> object ["host"     .= h ]
+               UserId i     -> object ["userId"   .= i]
+               UserName n h -> object ["username" .= n , "host" .= h]
