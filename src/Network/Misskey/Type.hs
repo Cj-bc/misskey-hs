@@ -322,7 +322,7 @@ data BaseUser = BaseUser { _baseUser_id          :: String
                          , _baseUser_host        :: Maybe String
                          , _baseUser_avatarUrl   :: String
                          , _baseUser_avatarColor :: String
-                         , _baseUser_isCat       :: Bool
+                         , _baseUser_isCat       :: Maybe Bool
                          , _baseUser_emojis      :: [String]
                          } deriving (Show)
 
