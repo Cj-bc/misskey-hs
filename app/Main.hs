@@ -17,10 +17,10 @@ wrapWithJustReader :: ReadM (Maybe String)
 wrapWithJustReader = readerAsk >>= (\x -> return $ Just x)
 
 usersShowParser :: Parser USh.APIRequest
-usersShowParser = USh.UserId <$> strOption (long "id" <> metavar "USER ID" <> help "Specify target with user id")
-                  <|> USh.UserIds <$> many (strOption (long "ids" <> metavar "USER IDs" <> help "Specify list of target user ids"))
-                  <|> USh.UserName <$> strOption (long "username" <> metavar "USER NAME" <> help "Specify target with user name")
-                                   <*> option wrapWithJustReader
+usersShowParser = USh.UserId    <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
+              <|> USh.UserIds   <$> many (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
+              <|> USh.UserName  <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
+                                    <*> option wrapWithJustReader
                                               (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on")
 
 
