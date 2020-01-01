@@ -24,12 +24,16 @@ usersShowParser = USh.UserId    <$> strOption       (long "id"       <> metavar 
                                               (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on")
 
 
+usersShowInfo :: ParserInfo USh.APIRequest
+usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
+
+
 main :: IO ()
 main = do
-    (domain:name:_) <- getArgs
-    let env = MisskeyEnv "" $ "https://" ++ domain
+    apiRequest <- execParser usersShowInfo
+    let env = MisskeyEnv "" $ "https://virtual-kaf.fun"
     print "========== users/show =========="
-    response <- runMisskey (USh.usersShow (USh.UserName name Nothing)) env
+    response <- runMisskey (USh.usersShow apiRequest) env
     case response of
         Left er   -> print $ "Error occured while users/show: " ++ ushow er
         Right usr -> do
