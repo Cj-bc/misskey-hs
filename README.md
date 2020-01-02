@@ -1,13 +1,37 @@
+[日本語](JA-README.md)
+---
+
 # misskey-hs
 
 A Haskell library for [syuilo/Misskey](https://github.com/syuilo/misskey)'s API
 
 # Usage
 
-## As API caller
+## As CLI tool
 
-I'm implementing a simple command-line program to execute each API.
+`stack run -- --help` for detailed help
 
+### Usage sample
+
+```sh
+$ stack run -- users/show --username cj_bc_sd
+[User {_user_id = ...}]
+```
+
+```
+$ stack run -- --help
+Usage: misskey-hs-exe COMMAND
+  call Misskey API
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  users/show               call users/show API
+  users/notes              call users/notes API
+  users/search             call users/search API
+  users                    call users API
+```
 
 ## As Library
 
@@ -19,6 +43,7 @@ This package adds modules below:
 | `Network.Misskey.Api.Users.Show`   | Command and APIRequest for `users/show`  |
 | `Network.Misskey.Api.Users.Search` | Command and APIRequest for `users/search`|
 | `Network.Misskey.Api.Users.Notes`  | Command and APIRequest for `users/Notes` |
+| `Network.Misskey.Api.Users.Users`  | Command and APIRequest for `users`       |
 
 
 ### Basic usage
@@ -28,7 +53,7 @@ You can pick one(e.g. `usersShow`), give it APIRequest(defined in each module),
 and do `runMisskey` with `MisskeyEnv` to send API request.  
 
 
-e.g. Sending `usersShow` request to me(`cj_bc_sd@virtual-kaf.fun`),
+e.g. Sending `users/show` API request to me(`cj_bc_sd@virtual-kaf.fun`),
 and print result.
 ```haskell
 import Network.Misskey.Api.Users.Show (usersShow, APIRequest(..))
@@ -48,3 +73,5 @@ main = do
 ```
 
 See haddock and [misskey's api document](https://misskey.io/api-doc)(Currently lacks some data)
+
+
