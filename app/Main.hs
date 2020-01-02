@@ -27,11 +27,11 @@ usersShowInfo :: ParserInfo USh.APIRequest
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
 
 
-parser = subparser (command "users/show" (usersShowInfo))
+commandParser = subparser (command "users/show" (usersShowInfo))
 
 main :: IO ()
 main = do
-    apiRequest <- execParser (Options.Applicative.info (parser <**> helper) (fullDesc <> progDesc "call users/show API"))
+    apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
     let env = MisskeyEnv "" $ "https://" ++ "virtual-kaf.fun"
     print "========== users/show =========="
     response <- runMisskey (USh.usersShow apiRequest) env
