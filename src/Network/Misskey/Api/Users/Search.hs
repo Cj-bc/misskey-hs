@@ -1,4 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Network.Misskey.Api.Users.Search
+Description : Misskey API Endpoint and Request for users/search
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Maintainer  : cj.bc-sd@outlook.jp
+Stability   : experimental
+
+Call `users/search` Misskey API
+API document is: https://misskey.io/api-doc#operation/users/search
+-}
 module Network.Misskey.Api.Users.Search
 ( usersSearch
 , APIRequest(..)

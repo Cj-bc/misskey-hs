@@ -1,5 +1,16 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Network.Misskey.Api.Users.Notes
+Description : Misskey API Endpoint and Request for users/notes
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Maintainer  : cj.bc-sd@outlook.jp
+Stability   : experimental
+
+Call `users/notes` Misskey API
+API document is: https://misskey.io/api-doc#operation/users/notes
+-}
+
 module Network.Misskey.Api.Users.Notes
 ( usersNotes
 , APIRequest(..)
