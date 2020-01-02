@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
+import Data.Time (parseTimeM, defaultTimeLocale, UTCTime)
+import Data.Time.ISO8601 (parseISO8601)
 import Text.Show.Unicode (ushow)
 import System.Environment (getArgs)
 import Network.HTTP.Client
@@ -9,12 +11,16 @@ import qualified Network.Misskey.Api.Users.Notes as UN
 import qualified Network.Misskey.Api.Users.Show as USh
 import Lens.Simple ((^.))
 import Options.Applicative
-import Options.Applicative.Types (readerAsk)
+import Options.Applicative.Types (readerAsk, Parser(NilP))
 
 
 
 wrapWithJustReader :: ReadM (Maybe String)
 wrapWithJustReader = readerAsk >>= (\x -> return $ Just (read x))
+
+maybeUTCTimeReader :: ReadM (Maybe UTCTime)
+maybeUTCTimeReader = readerAsk >>= return . parseISO8601
+
 
 usersShowParser :: Parser USh.APIRequest
 usersShowParser = USh.UserId    <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
@@ -25,7 +31,31 @@ usersShowParser = USh.UserId    <$> strOption       (long "id"       <> metavar 
 
 usersShowInfo :: ParserInfo USh.APIRequest
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
+-- }}}
 
+
+-- usersNotesParser {{{
+usersNotesParser :: Parser UN.APIRequest
+usersNotesParser = UN.APIRequest <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
+                                 <*> switch (long "includeReplies" <> help "whether include replies or not")
+                                 <*> option (readerAsk >>= (\x -> return $ Just $ read x))
+                                                  (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
+                                 <*> option wrapWithJustReader
+                                                         (long "since" <> value Nothing <> metavar "SINCE" <> help "Grab notes since given id")
+                                 <*> option wrapWithJustReader
+                                                  (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given id")
+                                 <*> option maybeUTCTimeReader
+                                                  (long "until" <> value Nothing <> metavar "SINCE-DATE" <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                 <*> option maybeUTCTimeReader
+                                                  (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                 <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
+                                 <*> switch (long "withFiles" <> help "True to grab notes with files")
+                                 <*> (many (option wrapWithJustReader (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")) <**> (NilP $ Just sequence))
+                                 <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)")
+
+usersNotesInfo :: ParserInfo UN.APIRequest
+usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDesc <> progDesc "call users/notes API")
+-- }}}
 
 commandParser = subparser (command "users/show" (usersShowInfo))
 
