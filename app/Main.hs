@@ -16,7 +16,7 @@ import Options.Applicative.Types (readerAsk, Parser(NilP))
 data SubCmds = UsersShow USh.APIRequest | UsersNotes UN.APIRequest | UsersSearch USe.APIRequest
 
 
-wrapWithJustReader :: ReadM (Maybe String)
+wrapWithJustReader :: Read a => ReadM (Maybe a)
 wrapWithJustReader = readerAsk >>= (\x -> return $ Just (read x))
 
 maybeUTCTimeReader :: ReadM (Maybe UTCTime)
