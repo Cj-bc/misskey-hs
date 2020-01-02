@@ -2,13 +2,19 @@
 module Network.Misskey.Api.Internal where
 
 import Control.Monad.Trans.Reader (ask)
-import Data.Aeson (Value, encode, FromJSON, eitherDecode')
+import Data.Aeson (Value, encode, FromJSON, eitherDecode', (.=))
 import Lens.Simple ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
 
 import Network.Misskey.Type
+
+-- | Create 'Data.Aeson.KeyValue' a Object
+createMaybeObj t = maybe [] (\x -> [t .= x])
+
+createObj t x = [t .= x]
+
 
 postRequest :: FromJSON a => String -> Value -> Misskey a
 postRequest apiPath body =  do

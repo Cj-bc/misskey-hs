@@ -23,7 +23,7 @@ import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Foreign.C.Types (CTime(..))
 
 import Network.Misskey.Type
-import Network.Misskey.Api.Internal (postRequest)
+import Network.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
 
 data APIRequest = APIRequest { _userId           :: Id
                              , _includeReplies   :: Bool
@@ -42,8 +42,6 @@ makeLenses ''APIRequest
 usersNotes :: APIRequest -> Misskey [Note]
 usersNotes req = postRequest "/api/users/notes" obj
     where
-        createMaybeObj t    = maybe [] (\x -> [t .= x])
-        createObj t x       = [t .= x]
         userIdObj           = createObj      "userId"           (req^.userId)
         includeRepObj       = createObj      "includeReplies"   (req^.includeReplies)
         limitObj            = createMaybeObj "limit"            (req^.limit)
