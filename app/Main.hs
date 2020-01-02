@@ -37,10 +37,5 @@ main = do
     response <- runMisskey (USh.usersShow apiRequest) env
     case response of
         Left er   -> print $ "Error occured while users/show: " ++ ushow er
-        Right usr -> do
-            let request = UN.APIRequest (head usr ^.user_id) Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
-            notes <- runMisskey (UN.usersNotes request) env
-            case notes of
-                Left er -> print $ "Error occured while users/notes: " ++ ushow er
-                Right notes -> (putStrLn . ushow) notes
+        Right usr -> (putStrLn . ushow) usr
 
