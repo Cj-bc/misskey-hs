@@ -14,7 +14,7 @@ import Options.Applicative.Types (readerAsk)
 
 
 wrapWithJustReader :: ReadM (Maybe String)
-wrapWithJustReader = readerAsk >>= (\x -> return $ Just x)
+wrapWithJustReader = readerAsk >>= (\x -> return $ Just (read x))
 
 usersShowParser :: Parser USh.APIRequest
 usersShowParser = USh.UserId    <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
