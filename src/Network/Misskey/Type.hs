@@ -436,6 +436,8 @@ data User = User { _user_id                      :: UserId
                  , _user_pinnedPageId            :: Maybe String
                  } deriving (Show)
 
+makeLenses ''User
+
 instance FromJSON User where
     parseJSON (Object v) = User <$> v .:  "id"
                                 <*> v .:  "username"
