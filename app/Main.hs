@@ -9,8 +9,8 @@ import Network.HTTP.Simple
 import Network.Misskey.Type
 import Network.Misskey.Api.Users.Search (usersSearch)
 import qualified Network.Misskey.Api.Users.Search as USe
-import qualified Network.Misskey.Api.Users.Notes as UN
-import qualified Network.Misskey.Api.Users.Show as USh
+import qualified Network.Misskey.Api.Users.Notes  as UN
+import qualified Network.Misskey.Api.Users.Show   as USh
 import qualified Network.Misskey.Api.Users.Users  as US
 import Lens.Simple ((^.))
 import Options.Applicative
@@ -42,7 +42,7 @@ usersShowInfo :: ParserInfo SubCmds
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
 -- }}}
 
---- usersSearchParser {{{
+-- usersSearchParser {{{
 usersSearchParser :: Parser SubCmds
 usersSearchParser = UsersSearch <$> (USe.APIRequest <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
                                                     <*> option wrapWithJustReader (long "offset" <> value Nothing <> help "Offset")
