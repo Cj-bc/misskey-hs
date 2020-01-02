@@ -67,7 +67,8 @@ usersNotesParser = UsersNotes <$> (UN.APIRequest <$> strOption (long "id" <> met
                                                  <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
                                                  <*> switch (long "withFiles" <> help "True to grab notes with files")
                                                  <*> (many (option wrapWithJustReader (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")) <**> (NilP $ Just sequence))
-                                                 <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)"))
+                                                 <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)")
+                                  )
 
 usersNotesInfo :: ParserInfo SubCmds
 usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDesc <> progDesc "call users/notes API")
@@ -84,8 +85,8 @@ main = do
     let env = MisskeyEnv "" $ "https://" ++ "virtual-kaf.fun"
 
     case apiRequest of
-        UsersShow req  -> runMisskey (USh.usersShow req) env >>= evalResult
-        UsersNotes req -> runMisskey (UN.usersNotes req) env >>= evalResult
+        UsersShow req   -> runMisskey (USh.usersShow req) env >>= evalResult
+        UsersNotes req  -> runMisskey (UN.usersNotes req) env >>= evalResult
         UsersSearch req -> runMisskey (USe.usersSearch req) env >>= evalResult
     where
         evalResult resp = case resp of
