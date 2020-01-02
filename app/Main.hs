@@ -66,9 +66,12 @@ main :: IO ()
 main = do
     apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
     let env = MisskeyEnv "" $ "https://" ++ "virtual-kaf.fun"
-    print "========== users/show =========="
-    response <- runMisskey (USh.usersShow apiRequest) env
-    case response of
-        Left er   -> print $ "Error occured while users/show: " ++ ushow er
-        Right usr -> (putStrLn . ushow) usr
+
+    case apiRequest of
+        UsersShow req  -> runMisskey (USh.usersShow req) env >>= evalResult
+        UsersNotes req -> runMisskey (UN.usersNotes req) env >>= evalResult
+    where
+        evalResult resp = case resp of
+                            Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                            Right usr -> (putStrLn . ushow) usr
 
