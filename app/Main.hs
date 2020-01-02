@@ -7,6 +7,8 @@ import System.Environment (getArgs)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Network.Misskey.Type
+import Network.Misskey.Api.Users.Search (usersSearch)
+import qualified Network.Misskey.Api.Users.Search as USe
 import qualified Network.Misskey.Api.Users.Notes as UN
 import qualified Network.Misskey.Api.Users.Show as USh
 import Lens.Simple ((^.))
@@ -35,6 +37,18 @@ usersShowInfo :: ParserInfo SubCmds
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
 -- }}}
 
+--- usersSearchParser {{{
+usersSearchParser :: Parser SubCmds
+usersSearchParser = UsersSearch <$> (USe.APIRequest <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
+                                                    <*> option wrapWithJustReader (long "offset" <> value Nothing <> help "Offset")
+                                                    <*> option wrapWithJustReader (long "limit"  <> value (Just 10) <> help "Number to grab")
+                                                    <*> option wrapWithJustReader (long "localOnly" <> value Nothing <> help "True to search for only local users")
+                                                    <*> option wrapWithJustReader (long "detail" <> value Nothing <> help "True to contains detailed user info")
+                                    )
+
+usersSearchInfo :: ParserInfo SubCmds
+usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (fullDesc <> progDesc "call users/search API")
+--}}}
 
 -- usersNotesParser {{{
 usersNotesParser :: Parser SubCmds
@@ -60,7 +74,9 @@ usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDe
 -- }}}
 
 
-commandParser = subparser (command "users/show" (usersShowInfo) <> command "users/notes" (usersNotesInfo))
+commandParser = subparser $ command    "users/show"     usersShowInfo
+                            <> command "users/notes"    usersNotesInfo
+                            <> command "users/search"   usersSearchInfo
 
 main :: IO ()
 main = do
@@ -70,6 +86,7 @@ main = do
     case apiRequest of
         UsersShow req  -> runMisskey (USh.usersShow req) env >>= evalResult
         UsersNotes req -> runMisskey (UN.usersNotes req) env >>= evalResult
+        UsersSearch req -> runMisskey (USe.usersSearch req) env >>= evalResult
     where
         evalResult resp = case resp of
                             Left er   -> print $ "Error occured while users/show: " ++ ushow er
