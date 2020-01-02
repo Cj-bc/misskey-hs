@@ -18,14 +18,17 @@ import Options.Applicative.Types (readerAsk, Parser(NilP))
 data SubCmds = UsersShow USh.APIRequest | UsersNotes UN.APIRequest | UsersSearch USe.APIRequest
 
 
+-- Custom readers for optparse {{{
 wrapWithJustReader :: Read a => ReadM (Maybe a)
-wrapWithJustReader = readerAsk >>= (\x -> return $ Just (read x))
+wrapWithJustReader = Just . read <$> readerAsk
 
 maybeUTCTimeReader :: ReadM (Maybe UTCTime)
-maybeUTCTimeReader = readerAsk >>= return . parseISO8601
+maybeUTCTimeReader = parseISO8601 <$> readerAsk
+-- }}}
 
 
 -- usersShowParser {{{
+
 usersShowParser :: Parser SubCmds
 usersShowParser = UsersShow <$> (USh.UserId        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
                                  <|> USh.UserIds   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
@@ -54,7 +57,7 @@ usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (full
 usersNotesParser :: Parser SubCmds
 usersNotesParser = UsersNotes <$> (UN.APIRequest <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
                                                  <*> switch (long "includeReplies" <> help "whether include replies or not")
-                                                 <*> option (readerAsk >>= (\x -> return $ Just $ read x))
+                                                 <*> option (Just . read <$> readerAsk)
                                                                   (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
                                                  <*> option wrapWithJustReader
                                                                          (long "since" <> value Nothing <> metavar "SINCE" <> help "Grab notes since given id")
