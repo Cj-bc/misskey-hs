@@ -66,7 +66,7 @@ usersNotesParser = UsersNotes <$> (UN.APIRequest <$> strOption (long "id" <> met
                                                                   (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
                                                  <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
                                                  <*> switch (long "withFiles" <> help "True to grab notes with files")
-                                                 <*> (many (option wrapWithJustReader (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")) <**> (NilP $ Just sequence))
+                                                 <*> fmap sequence (many (option wrapWithJustReader (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")))
                                                  <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)")
                                   )
 
