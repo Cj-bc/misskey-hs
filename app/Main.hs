@@ -11,11 +11,13 @@ import Network.Misskey.Api.Users.Search (usersSearch)
 import qualified Network.Misskey.Api.Users.Search as USe
 import qualified Network.Misskey.Api.Users.Notes as UN
 import qualified Network.Misskey.Api.Users.Show as USh
+import qualified Network.Misskey.Api.Users.Users  as US
 import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
 data SubCmds = UsersShow USh.APIRequest | UsersNotes UN.APIRequest | UsersSearch USe.APIRequest
+             | Users US.APIRequest
 
 
 -- Custom readers for optparse {{{
@@ -77,10 +79,23 @@ usersNotesInfo :: ParserInfo SubCmds
 usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDesc <> progDesc "call users/notes API")
 -- }}}
 
+-- usersParser {{{
+usersParser :: Parser SubCmds
+usersParser = Users <$> (US.APIRequest <$> option wrapWithJustReader (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
+                                       <*> option wrapWithJustReader (long "offset" <> value Nothing <> metavar "OFFSET" <> help "Offset")
+                                       <*> option wrapWithJustReader (long "sort"   <> value Nothing <> metavar "SORT"   <> help "Specify sorting. [+follow|-follow|+createdAt|-createdAt|+updatedAt|-updatedAt]")
+                                       <*> option wrapWithJustReader (long "state"  <> value Nothing <> metavar "STATE"  <> help "Filter for role. [all|admin|moderator|adminOrModerator|alive]")
+                                       <*> option wrapWithJustReader (long "origin" <> value Nothing <> metavar "origin" <> help "Filter for origin. [combined|local|remote]")
+                        )
+
+usersInfo :: ParserInfo SubCmds
+usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> progDesc "call users API")
+-- }}}
 
 commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/notes"    usersNotesInfo
                             <> command "users/search"   usersSearchInfo
+                            <> command "users"          usersInfo
 
 main :: IO ()
 main = do
@@ -91,6 +106,7 @@ main = do
         UsersShow req   -> runMisskey (USh.usersShow req) env >>= evalResult
         UsersNotes req  -> runMisskey (UN.usersNotes req) env >>= evalResult
         UsersSearch req -> runMisskey (USe.usersSearch req) env >>= evalResult
+        Users req       -> runMisskey (US.users req) env      >>= evalResult
     where
         evalResult resp = case resp of
                             Left er   -> print $ "Error occured while users/show: " ++ ushow er
