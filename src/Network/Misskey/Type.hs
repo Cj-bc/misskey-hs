@@ -52,6 +52,7 @@ parseData v s = do
 
 -- | Environment to execute misskey API
 --
+-- TODO: Should I validate if URL is valid?
 data MisskeyEnv = MisskeyEnv { _token :: String
                              , _url   :: Url
                              }
@@ -65,6 +66,8 @@ data APIErrorInfo = APIErrorInfo { param :: String
 $(deriveJSON defaultOptions ''APIErrorInfo)
 
 -- | Error response of all API
+-- 
+-- This value will be returned from each API caller if API returns error
 data APIError = APIError { code     :: String
                          , message  :: String
                          , id       :: String
@@ -146,10 +149,16 @@ instance FromJSON File where
 
 -- Page {{{
 
-
--- TODO: Implement this
 type PageContentType = String
 
+-- | A Enum of page content
+--
+-- This is mainly used in 'Page' to represent page content
+--
+-- Those values are manually picked up from the Page making webpage
+-- (https://<your-domain>/i/pages/new) by me.
+--
+-- So It might have some mistakes.
 data PageContent = PageContentText { pageContent_id   :: Id
                                    , pageContent_text :: String
                                    }

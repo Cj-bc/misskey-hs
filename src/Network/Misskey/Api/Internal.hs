@@ -13,9 +13,17 @@ import Network.Misskey.Type
 -- | Create 'Data.Aeson.KeyValue' a Object
 createMaybeObj t = maybe [] (\x -> [t .= x])
 
+-- | Create 'Data.Aeson.KeyValue' a Object
 createObj t x = [t .= x]
 
 
+-- | Post API request and returns API result
+--
+-- Currently I don't return HTTP status code
+--
+-- __This function will throw error__ if parsing response failed.
+-- As /Parsing error/ is fatal and should be fixed by Library author,
+-- not by user, this error should be reported as issue
 postRequest :: FromJSON a => String -> Value -> Misskey a
 postRequest apiPath body =  do
     (MisskeyEnv token url) <- ask
