@@ -28,15 +28,19 @@ type UserId  = String
 type NoteId = String
 type Id = String
 
+parseData v s = do
+    b <- v .:? s
+    if isNothing b
+    then return Nothing
+    else return $ parseISO8601 $ fromJust b
+
 
 -- | Environment to execute misskey API
 --
---TODO: Should I validate if URL is valid?
 data MisskeyEnv = MisskeyEnv { _token :: String
                              , _url   :: Url
                              }
 makeLenses ''MisskeyEnv
-
 
 -- APIError {{{
 data APIErrorInfo = APIErrorInfo { param :: String
@@ -85,15 +89,13 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
-                 -- , _poll_expiresAt  :: Maybe UTCTime
-                 , _poll_expiresAt  :: String -- This is temporary set to String
+                 , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  } deriving (Show)
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                -- <*> v `parseData` "expiresAt"
-                                <*> v .: "expiresAt"
+                                <*> v `parseData` "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
 -- }}}
@@ -485,8 +487,3 @@ instance FromJSON User where
 
 --- }}}
 
-parseData v s = do
-    b <- v .:? s
-    if isNothing b
-    then return Nothing
-    else return $ parseISO8601 $ fromJust b
