@@ -142,10 +142,10 @@ main = do
     let env = MisskeyEnv "" $ "https://" ++ "virtual-kaf.fun"
 
     case apiRequest of
-        UsersShow req   -> runMisskey (USh.usersShow req) env >>= evalResult
-        UsersNotes req  -> runMisskey (UN.usersNotes req) env >>= evalResult
-        UsersSearch req -> runMisskey (USe.usersSearch req) env >>= evalResult
-        Users req       -> runMisskey (US.users req) env      >>= evalResult
+        UsersShow req      -> runMisskey (USh.usersShow req) env >>= evalResult
+        UsersNotes req     -> runMisskey (UN.usersNotes req) env >>= evalResult
+        UsersSearch req    -> runMisskey (USe.usersSearch req) env >>= evalResult
+        Users req          -> runMisskey (US.users req) env      >>= evalResult
         UsersFollowers req -> runMisskey (UFr.usersFollowers req) env >>= evalResult
         UsersFollowing req -> runMisskey (UFi.usersFollowing req) env >>= evalResult
     where
