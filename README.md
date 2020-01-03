@@ -40,13 +40,15 @@ Available commands:
 
 This package adds modules below:
 
-| module                             | description                              |
+| module                                | description                                 |
 |:-:|:-:|
-| `Network.Misskey.Type`             | Provide types for general usage          |
-| `Network.Misskey.Api.Users.Show`   | Command and APIRequest for `users/show`  |
-| `Network.Misskey.Api.Users.Search` | Command and APIRequest for `users/search`|
-| `Network.Misskey.Api.Users.Notes`  | Command and APIRequest for `users/Notes` |
-| `Network.Misskey.Api.Users.Users`  | Command and APIRequest for `users`       |
+| `Network.Misskey.Type`                | Provide types for general usage             |
+| `Network.Misskey.Api.Users.Show`      | Command and APIRequest for `users/show`     |
+| `Network.Misskey.Api.Users.Search`    | Command and APIRequest for `users/search`   |
+| `Network.Misskey.Api.Users.Notes`     | Command and APIRequest for `users/Notes`    |
+| `Network.Misskey.Api.Users.Users`     | Command and APIRequest for `users`          |
+| `Network.Misskey.Api.Users.Following` | Command and APIRequest for `users/following |
+| `Network.Misskey.Api.Users.Followers` | Command and APIRequest for `users/followers |
 
 
 ### Basic usage
