@@ -18,8 +18,8 @@ createObj t x = [t .= x]
 
 postRequest :: FromJSON a => String -> Value -> Misskey a
 postRequest apiPath body =  do
-    env <- ask
-    initReq <- parseRequest $ (env^.url) ++ apiPath
+    (MisskeyEnv token url) <- ask
+    initReq <- parseRequest $ url ++ apiPath
     let request       = initReq { method = "POST"
                                 , requestBody = RequestBodyLBS $ encode body
                                 , requestHeaders =

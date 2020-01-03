@@ -40,7 +40,7 @@ parseData v s = do
 data MisskeyEnv = MisskeyEnv { _token :: String
                              , _url   :: Url
                              }
-makeLenses ''MisskeyEnv
+
 
 -- APIError {{{
 data APIErrorInfo = APIErrorInfo { param :: String
