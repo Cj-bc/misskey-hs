@@ -10,7 +10,22 @@ Stability   : experimental
 
 Common Data types for misske-hs
 -}
-module Network.Misskey.Type where
+module Network.Misskey.Type (
+  -- * Common type synonym
+  Id
+, Url
+  -- * Library basic types
+, MisskeyEnv(..)
+, Misskey
+, runMisskey
+, APIError
+  -- * Types corresponds to each Misskey data
+, Poll(..)
+, File(..)
+, Page(..)
+, Note(..)
+, User(..)
+) where
 
 import Lens.Simple
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
@@ -28,14 +43,19 @@ type UserId  = String
 type NoteId = String
 type Id = String
 
+parseData v s = do
+    b <- v .:? s
+    if isNothing b
+    then return Nothing
+    else return $ parseISO8601 $ fromJust b
+
 
 -- | Environment to execute misskey API
 --
---TODO: Should I validate if URL is valid?
+-- TODO: Should I validate if URL is valid?
 data MisskeyEnv = MisskeyEnv { _token :: String
                              , _url   :: Url
                              }
-makeLenses ''MisskeyEnv
 
 
 -- APIError {{{
@@ -46,6 +66,8 @@ data APIErrorInfo = APIErrorInfo { param :: String
 $(deriveJSON defaultOptions ''APIErrorInfo)
 
 -- | Error response of all API
+-- 
+-- This value will be returned from each API caller if API returns error
 data APIError = APIError { code     :: String
                          , message  :: String
                          , id       :: String
@@ -70,9 +92,9 @@ runMisskey = runReaderT
 
 -- Poll {{{
 
--- | A choice for Poll
+-- | A choice for 'Poll'
 --
--- This is used inside Poll datatype
+-- This is used inside 'Poll' datatype
 data PollChoice = PollChoice { pollChoice_text     :: String
                              , pollChoice_votes    :: Int
                              , pollChoice_isVoted  :: Bool
@@ -81,19 +103,17 @@ data PollChoice = PollChoice { pollChoice_text     :: String
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 
 
--- | A poll along with Note
+-- | A poll along with 'Note'
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
-                 -- , _poll_expiresAt  :: Maybe UTCTime
-                 , _poll_expiresAt  :: String -- This is temporary set to String
+                 , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  } deriving (Show)
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                -- <*> v `parseData` "expiresAt"
-                                <*> v .: "expiresAt"
+                                <*> v `parseData` "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
 -- }}}
@@ -129,10 +149,14 @@ instance FromJSON File where
 
 -- Page {{{
 
-
--- TODO: Implement this
-type PageContentType = String
-
+-- | A Enum of page content
+--
+-- This is mainly used in 'Page' to represent page content
+--
+-- Those values are manually picked up from the Page making webpage
+-- (https://<your-domain>/i/pages/new) by me.
+--
+-- So It might have some mistakes.
 data PageContent = PageContentText { pageContent_id   :: Id
                                    , pageContent_text :: String
                                    }
@@ -190,6 +214,8 @@ data PageContent = PageContentText { pageContent_id   :: Id
                                    }
                     deriving (Show)
 
+
+-- instance FromJSON PageContent where {{{
 instance FromJSON PageContent where
     parseJSON (Object v) = do
         (ctype :: String) <- v .: "type"
@@ -226,7 +252,7 @@ instance FromJSON PageContent where
     parseJSON invalid    =
         prependFailure "parsing PageContent failed, "
             (typeMismatch "Object" invalid)
-
+-- }}}
 
 data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_type  :: String
@@ -246,7 +272,7 @@ data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_args :: [PageVariableArg]
                                  , pageV_name :: String
                                  , pageV_type :: PageVariableType
-                                 , pageV_value :: Maybe String -- TODO: what type is this?
+                                 , pageV_value :: Maybe String -- ^ TODO: what type is this?
                                  } deriving (Show)
 
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
@@ -279,6 +305,7 @@ data Page = Page { page_id  :: Id
                  } deriving (Show)
 
 
+-- instance FromJSON Page where {{{
 instance FromJSON Page where
     parseJSON (Object v) = Page <$> v .:  "id"
                                 <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
@@ -297,11 +324,12 @@ instance FromJSON Page where
                                 <*> v .:? "eyeCatchingImage"
                                 <*> v .:  "attachedFiles"
                                 <*> v .:  "likedCount"
---- }}}
+-- }}}
+-- }}}
 
 -- Note {{{
 
--- | I can't find any documents. Also, Geo wasn't on any response
+-- | I can't find any documents. Also, 'Geo' wasn't on any response
 --
 -- I'll fix this later, just leave this as placeholder
 data Geo = Geo deriving (Show)
@@ -311,11 +339,11 @@ instance FromJSON Geo where
     parseJSON _          = mempty
 
 
--- | Subset of 'User' that isn't depend on 'Note'/'Page'/Poll' etc
+-- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
 --
--- This is used instead of 'User' in 'Note'/'Page'/Poll'
+-- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
 --
--- *Caution* This definition is made from API result so might contain some mistakes
+-- __Caution__: This definition is made from API result so might contain some mistakes
 data BaseUser = BaseUser { _baseUser_id          :: String
                          , _baseUser_name        :: String
                          , _baseUser_username    :: String
@@ -481,8 +509,3 @@ instance FromJSON User where
 
 --- }}}
 
-parseData v s = do
-    b <- v .:? s
-    if isNothing b
-    then return Nothing
-    else return $ parseISO8601 $ fromJust b
