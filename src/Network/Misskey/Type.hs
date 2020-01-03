@@ -10,7 +10,22 @@ Stability   : experimental
 
 Common Data types for misske-hs
 -}
-module Network.Misskey.Type where
+module Network.Misskey.Type (
+  -- * Common type synonym
+  Id
+, Url
+  -- * Library basic types
+, MisskeyEnv(..)
+, Misskey
+, runMisskey
+, APIError
+  -- * Types corresponds to each Misskey data
+, Poll(..)
+, File(..)
+, Page(..)
+, Note(..)
+, User(..)
+) where
 
 import Lens.Simple
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
