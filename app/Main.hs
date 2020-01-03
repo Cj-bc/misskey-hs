@@ -16,7 +16,9 @@ import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
-data SubCmds = UsersShow USh.APIRequest | UsersNotes UN.APIRequest | UsersSearch USe.APIRequest
+data SubCmds = UsersShow USh.APIRequest
+             | UsersNotes UN.APIRequest
+             | UsersSearch USe.APIRequest
              | Users US.APIRequest
 
 
