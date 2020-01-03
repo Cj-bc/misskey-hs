@@ -6,6 +6,18 @@ And this project adheres to [Haskell Package Versioning Policy](https://pvp.hask
 
 ## Unreleased changes
 
+## [0.1.2.0] - 2020-01-03
+### Added
+- New modules:
+  - Network.Misskey.Api.Users.Following
+  - Network.Misskey.Api.Users.Followers
+- app/Main supports added modules
+
+### Fixed
+- app/Main will parse argument properly
+
+### Changed
+- Update README's module list
 
 ## [0.1.1.0] - 2020-01-03
 ### Added
