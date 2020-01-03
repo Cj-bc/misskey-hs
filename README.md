@@ -9,7 +9,10 @@ A Haskell library for [syuilo/Misskey](https://github.com/syuilo/misskey)'s API
 
 ## As CLI tool
 
-`stack run -- --help` for detailed help
+`stack run --` to call each API.  
+Specify API by subcommand, and pass args by options.  
+`stack run -- --help` to more help.
+
 
 ### Usage sample
 

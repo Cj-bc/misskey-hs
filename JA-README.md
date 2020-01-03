@@ -10,9 +10,32 @@
 
 ## CLIツールとして
 
-`stack run --`で、各種APIを呼び出すコマンドを使うことができます。
-`optparse-applicative`を使っているので、`stack run -- --help`でヘルプが出ます。
+`stack run --`で、各種APIを呼び出すコマンドを使うことができます。  
+`optparse-applicative`を使っているので、`stack run -- --help`でヘルプが出ます。  
+サブコマンドで使いたいAPIを指定、各APIのRequestとして渡す値はオプションで指定します。
 
+
+### Usage sample
+
+```sh
+$ stack run -- users/show --username cj_bc_sd
+[User {_user_id = ...}]
+```
+
+```
+$ stack run -- --help
+Usage: misskey-hs-exe COMMAND
+  call Misskey API
+
+Available options:
+  -h,--help                Show this help text
+
+Available commands:
+  users/show               call users/show API
+  users/notes              call users/notes API
+  users/search             call users/search API
+  users                    call users API
+```
 
 ## ライブラリとして
 
