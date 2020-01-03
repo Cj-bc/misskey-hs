@@ -149,8 +149,6 @@ instance FromJSON File where
 
 -- Page {{{
 
-type PageContentType = String
-
 -- | A Enum of page content
 --
 -- This is mainly used in 'Page' to represent page content
