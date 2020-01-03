@@ -70,9 +70,9 @@ runMisskey = runReaderT
 
 -- Poll {{{
 
--- | A choice for Poll
+-- | A choice for 'Poll'
 --
--- This is used inside Poll datatype
+-- This is used inside 'Poll' datatype
 data PollChoice = PollChoice { pollChoice_text     :: String
                              , pollChoice_votes    :: Int
                              , pollChoice_isVoted  :: Bool
@@ -81,7 +81,7 @@ data PollChoice = PollChoice { pollChoice_text     :: String
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
 
 
--- | A poll along with Note
+-- | A poll along with 'Note'
 --
 -- This is generated from raw API output so that might contain some mistakes
 data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voting is allowed
@@ -248,7 +248,7 @@ data PageVariable = PageVariable { pageV_id   :: Id
                                  , pageV_args :: [PageVariableArg]
                                  , pageV_name :: String
                                  , pageV_type :: PageVariableType
-                                 , pageV_value :: Maybe String -- TODO: what type is this?
+                                 , pageV_value :: Maybe String -- ^ TODO: what type is this?
                                  } deriving (Show)
 
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
@@ -305,7 +305,7 @@ instance FromJSON Page where
 
 -- Note {{{
 
--- | I can't find any documents. Also, Geo wasn't on any response
+-- | I can't find any documents. Also, 'Geo' wasn't on any response
 --
 -- I'll fix this later, just leave this as placeholder
 data Geo = Geo deriving (Show)
@@ -315,11 +315,11 @@ instance FromJSON Geo where
     parseJSON _          = mempty
 
 
--- | Subset of 'User' that isn't depend on 'Note'/'Page'/Poll' etc
+-- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
 --
--- This is used instead of 'User' in 'Note'/'Page'/Poll'
+-- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
 --
--- *Caution* This definition is made from API result so might contain some mistakes
+-- __Caution__: This definition is made from API result so might contain some mistakes
 data BaseUser = BaseUser { _baseUser_id          :: String
                          , _baseUser_name        :: String
                          , _baseUser_username    :: String
