@@ -33,6 +33,7 @@ postRequest apiPath body =  do
         200 -> case eitherDecode' responseBody of
                 Right a ->  return $ Right a
                 Left e -> error $ unlines [apiPath ++ ": error while decoding Result"
+                                          , "FATAL: Please file those outputs to author(or PR is welcome)."
                                           , "========== raw ByteString =========="
                                           , show responseBody
                                           , "========== Error message =========="
@@ -41,6 +42,7 @@ postRequest apiPath body =  do
         _   -> case (eitherDecode' responseBody :: Either String APIError) of
                 Right a -> return $ Left a
                 Left e  -> error $ unlines [apiPath ++ ": error while decoding APIError"
+                                           , "FATAL: Please file those outputs to author(or PR is welcome)."
                                            , "========== raw ByteString =========="
                                            , show responseBody
                                            , "========== Error message =========="
