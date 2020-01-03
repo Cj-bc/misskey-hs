@@ -12,6 +12,7 @@ import qualified Network.Misskey.Api.Users.Search as USe
 import qualified Network.Misskey.Api.Users.Notes  as UN
 import qualified Network.Misskey.Api.Users.Show   as USh
 import qualified Network.Misskey.Api.Users.Users  as US
+import qualified Network.Misskey.Api.Users.Followers as UFr
 import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
@@ -20,6 +21,7 @@ data SubCmds = UsersShow USh.APIRequest
              | UsersNotes UN.APIRequest
              | UsersSearch USe.APIRequest
              | Users US.APIRequest
+             | UsersFollowers UFr.APIRequest
 
 
 -- Custom readers for optparse {{{
@@ -28,6 +30,7 @@ maybeStr = Just <$> str
 
 maybeAuto :: Read a => ReadM (Maybe a)
 maybeAuto = Just <$> auto
+
 maybeUTCTimeReader :: ReadM (Maybe UTCTime)
 maybeUTCTimeReader = parseISO8601 <$> readerAsk
 -- }}}
@@ -96,10 +99,24 @@ usersInfo :: ParserInfo SubCmds
 usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> progDesc "call users API")
 -- }}}
 
+-- usersFollowersParser {{{
+usersFollowersParser :: Parser SubCmds
+usersFollowersParser = UsersFollowers <$> (UFr.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+                                                          <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
+                                                          <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
+                                                          <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
+                                                          <*> option maybeStr (long "untilId"  <> value Nothing <> metavar "UNTIL-ID")
+                                                          <*> option maybeAuto (long "limit"    <> value Nothing <> metavar "LIMIT"    <> help "Limit amount of users to fetch(default: 10)")
+                                          )
+
+usersFollowersInfo :: ParserInfo SubCmds
+usersFollowersInfo = Options.Applicative.info (usersFollowersParser <**> helper) (fullDesc <> progDesc "call users/followers API")
+-- }}}
 commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/notes"    usersNotesInfo
                             <> command "users/search"   usersSearchInfo
                             <> command "users"          usersInfo
+                            <> command "users/followers" usersFollowersInfo
 
 main :: IO ()
 main = do
@@ -111,6 +128,7 @@ main = do
         UsersNotes req  -> runMisskey (UN.usersNotes req) env >>= evalResult
         UsersSearch req -> runMisskey (USe.usersSearch req) env >>= evalResult
         Users req       -> runMisskey (US.users req) env      >>= evalResult
+        UsersFollowers req -> runMisskey (UFr.usersFollowers req) env >>= evalResult
     where
         evalResult resp = case resp of
                             Left er   -> print $ "Error occured while users/show: " ++ ushow er
