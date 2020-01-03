@@ -190,6 +190,8 @@ data PageContent = PageContentText { pageContent_id   :: Id
                                    }
                     deriving (Show)
 
+
+-- instance FromJSON PageContent where {{{
 instance FromJSON PageContent where
     parseJSON (Object v) = do
         (ctype :: String) <- v .: "type"
@@ -226,7 +228,7 @@ instance FromJSON PageContent where
     parseJSON invalid    =
         prependFailure "parsing PageContent failed, "
             (typeMismatch "Object" invalid)
-
+-- }}}
 
 data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_type  :: String
@@ -279,6 +281,7 @@ data Page = Page { page_id  :: Id
                  } deriving (Show)
 
 
+-- instance FromJSON Page where {{{
 instance FromJSON Page where
     parseJSON (Object v) = Page <$> v .:  "id"
                                 <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
@@ -297,7 +300,8 @@ instance FromJSON Page where
                                 <*> v .:? "eyeCatchingImage"
                                 <*> v .:  "attachedFiles"
                                 <*> v .:  "likedCount"
---- }}}
+-- }}}
+-- }}}
 
 -- Note {{{
 
