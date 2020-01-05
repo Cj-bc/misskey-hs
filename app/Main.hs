@@ -1,9 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Main where
+import Control.Monad (when)
 import Data.Time (parseTimeM, defaultTimeLocale, UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
+import Data.Aeson (defaultOptions)
+import Data.Aeson.TH (deriveJSON)
+import Data.Either (isLeft)
+import Data.Yaml (decodeFileEither, ParseException)
 import Text.Show.Unicode (ushow)
 import System.Environment (getArgs)
+import System.Exit (die)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Network.Misskey.Type
@@ -136,10 +143,27 @@ commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/followers" usersFollowersInfo
                             <> command "users/following" usersFollowingInfo
 
+-- Config File related {{{
+data ConfigFile = ConfigFile {token         :: String
+                             , instance_url :: String
+                             } deriving (Show)
+$(deriveJSON defaultOptions ''ConfigFile)
+
+
+-- }}}
+
 main :: IO ()
 main = do
+    -- Prepare env
     apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
-    let env = MisskeyEnv "" $ "https://" ++ "virtual-kaf.fun"
+
+    cfgEither <- decodeFileEither ".cfg" :: IO (Either ParseException ConfigFile)
+
+    when (isLeft cfgEither) $ die $ show cfgEither
+
+    let (Right cfg) = cfgEither
+        env         = MisskeyEnv (token cfg) $ "https://" ++ (instance_url cfg)
+
 
     case apiRequest of
         UsersShow req      -> runMisskey (USh.usersShow req) env >>= evalResult
