@@ -40,7 +40,7 @@ data APIRequest = APIRequest { _userId           :: Id
 makeLenses ''APIRequest
 
 usersNotes :: APIRequest -> Misskey [Note]
-usersNotes req = postRequest "/api/users/notes" obj
+usersNotes req = postRequest "/api/users/notes" body
     where
         userIdObj           = createObj      "userId"           (req^.userId)
         includeRepObj       = createObj      "includeReplies"   (req^.includeReplies)
@@ -53,9 +53,9 @@ usersNotes req = postRequest "/api/users/notes" obj
         withFilesObj        = createObj      "withFiles"        (req^.withFiles)
         fileTypeObj         = createMaybeObj "fileType"         (req^.fileType)
         excludeNsfwObj      = createObj      "excludeNsfw"      (req^.excludeNsfw)
-        obj                 = object $ mconcat [userIdObj, includeRepObj, limitObj, sinceIdObj
-                                               , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
-                                               , withFilesObj, fileTypeObj, excludeNsfwObj]
+        body                = mconcat [userIdObj, includeRepObj, limitObj, sinceIdObj
+                                      , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
+                                      , withFilesObj, fileTypeObj, excludeNsfwObj]
 
 
 -- | Convert UTCTime to UNIX time
