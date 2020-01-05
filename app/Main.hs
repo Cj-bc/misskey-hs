@@ -9,7 +9,7 @@ import Data.Aeson.TH (deriveJSON)
 import Data.Either (isLeft)
 import Data.Yaml (decodeFileEither, ParseException)
 import Text.Show.Unicode (ushow)
-import System.Environment (getArgs)
+import System.Environment (getArgs, getEnv)
 import System.Exit (die)
 import Network.HTTP.Client
 import Network.HTTP.Simple
@@ -157,7 +157,8 @@ main = do
     -- Prepare env
     apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
 
-    cfgEither <- decodeFileEither ".cfg" :: IO (Either ParseException ConfigFile)
+    home <- getEnv "HOME"
+    cfgEither <- decodeFileEither $ home ++ "/.config/misskey-hs/config.yaml" :: IO (Either ParseException ConfigFile)
 
     when (isLeft cfgEither) $ die $ show cfgEither
 
