@@ -1,10 +1,21 @@
 {-# Language OverloadedStrings #-}
-module Network.Misskey.Api.Internal where
+module Network.Misskey.Api.Internal
+( -- * Creating objects
+  createMaybeObj
+, createObj
+, createUTCTimeObj
+-- * IO related
+, postRequest
+) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Trans.Reader (ask, ReaderT)
 import Data.Aeson.Types (Pair)
 import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
+import Data.Time (UTCTime)
+import System.Posix.Types (EpochTime)
+import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
+import Foreign.C.Types (CTime(..))
 import Lens.Simple ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
@@ -17,6 +28,15 @@ createMaybeObj t = maybe [] (\x -> [t .= x])
 
 -- | Create 'Data.Aeson.KeyValue' a Object
 createObj t x = [t .= x]
+
+-- | Create 'Data.Aeson.KeyValue' a Object
+createUTCTimeObj t = maybe [] (\x -> [t .= uToE x])
+
+-- | Convert UTCTime to UNIX time
+-- 
+-- This code is from: https://kazu-yamamoto.hatenablog.jp/entry/20130329/1364525770
+uToE :: UTCTime -> EpochTime
+uToE = CTime . truncate . utcTimeToPOSIXSeconds
 
 
 -- | Post API request and returns API result

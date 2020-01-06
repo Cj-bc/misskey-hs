@@ -6,6 +6,20 @@ And this project adheres to [Haskell Package Versioning Policy](https://pvp.hask
 
 ## Unreleased changes
 
+## [0.1.4.0] - 2020-01-06
+### Added
+- New modules:
+  - Network.Misskey.Api.Notes.Timeline
+- 'createUTCTimeObj' to 'Network.Misskey.Api.Internal'
+
+### Changed
+- app/Main support added modules
+- executable for app/Main is now renamed to 'misskey-cli'
+
+### Fixed
+- Fixed option names for 'usersNotes' command
+
+
 ## [0.1.3.0] - 2020-01-06
 ### Added
 - New modules:
