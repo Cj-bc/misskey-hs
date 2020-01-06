@@ -9,6 +9,24 @@ A Haskell library for [syuilo/Misskey](https://github.com/syuilo/misskey)'s API
 
 ## As CLI tool
 
+### Prepare Config
+
+Firstly, Please make config file at `$HOME/.config/misskey-hs/config.yaml` with format:
+
+```yaml
+token: <your_token>
+instance_url: <your_instance_url>
+```
+
+i.e. if you have token "MYTOKENHERE" and you're living in "misskey.io"
+
+```yaml
+token: MYTOKENHERE
+instance_url: misskey.io
+```
+
+### Command usage
+
 `stack run --` to call each API.  
 Specify API by subcommand, and pass args by options.  
 `stack run -- --help` to more help.
@@ -49,6 +67,7 @@ This package adds modules below:
 | `Network.Misskey.Api.Users.Users`     | Command and APIRequest for `users`          |
 | `Network.Misskey.Api.Users.Following` | Command and APIRequest for `users/following |
 | `Network.Misskey.Api.Users.Followers` | Command and APIRequest for `users/followers |
+| `Network.Misskey.Api.Notes.Create`    | Command and APIRequest for `notes/create`   |
 
 
 ### Basic usage

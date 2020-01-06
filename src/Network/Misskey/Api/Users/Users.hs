@@ -68,11 +68,11 @@ data APIRequest = APIRequest { _limit  :: Maybe Int -- [1..100]
 makeLenses ''APIRequest
 
 users :: APIRequest -> Misskey [User]
-users req = postRequest "/api/users" obj
+users req = postRequest "/api/users" body
     where
         limitObj  = createMaybeObj "limit"  (req^.limit)
         offsetObj = createMaybeObj "offset" (req^.offset)
         sortObj   = createMaybeObj "sort"   (fmap show (req^.sort))
         stateObj  = createMaybeObj "state"  (fmap show (req^.state))
         originObj = createMaybeObj "origin" (fmap show (req^.origin))
-        obj       = object $ mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]
+        body      = mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]

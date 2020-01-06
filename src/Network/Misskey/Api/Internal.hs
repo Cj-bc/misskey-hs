@@ -1,12 +1,14 @@
 {-# Language OverloadedStrings #-}
 module Network.Misskey.Api.Internal where
 
-import Control.Monad.Trans.Reader (ask)
-import Data.Aeson (Value, encode, FromJSON, eitherDecode', (.=))
+import Control.Monad.IO.Class (liftIO, MonadIO)
+import Control.Monad.Trans.Reader (ask, ReaderT)
+import Data.Aeson.Types (Pair)
+import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
 import Lens.Simple ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
-import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
+import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 
 import Network.Misskey.Type
 
@@ -24,35 +26,37 @@ createObj t x = [t .= x]
 -- __This function will throw error__ if parsing response failed.
 -- As /Parsing error/ is fatal and should be fixed by Library author,
 -- not by user, this error should be reported as issue
-postRequest :: FromJSON a => String -> Value -> Misskey a
+postRequest :: FromJSON a => String -> [Pair] -> Misskey a
 postRequest apiPath body =  do
     (MisskeyEnv token url) <- ask
     initReq <- parseRequest $ url ++ apiPath
-    let request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode body
+    let bodyWithToken = object $ ("i" .= token) : body
+        request       = initReq { method = "POST"
+                                , requestBody = RequestBodyLBS $ encode bodyWithToken
                                 , requestHeaders =
                                       [("Content-Type", "application/json; charset=utf-8")]
                                 }
 
-    response <- httpLbs request
+    response <- httpJSON request :: MonadIO m => m (Response Value)
 
     let responseBody = getResponseBody response
     case getResponseStatusCode response of
-        200 -> case eitherDecode' responseBody of
-                Right a ->  return $ Right a
-                Left e -> error $ unlines [apiPath ++ ": error while decoding Result"
-                                          , "FATAL: Please file those outputs to author(or PR is welcome)."
-                                          , "========== raw ByteString =========="
-                                          , show responseBody
-                                          , "========== Error message =========="
-                                          , show e
-                                          ]
-        _   -> case (eitherDecode' responseBody :: Either String APIError) of
-                Right a -> return $ Left a
-                Left e  -> error $ unlines [apiPath ++ ": error while decoding APIError"
-                                           , "FATAL: Please file those outputs to author(or PR is welcome)."
-                                           , "========== raw ByteString =========="
-                                           , show responseBody
-                                           , "========== Error message =========="
-                                           , show e
-                                           ]
+        200 -> case fromJSON responseBody of
+                    Success a' -> return $ Right a'
+                    Error   e  -> error  $ unlines [apiPath ++ ": error while decoding Result"
+                                                   , "FATAL: Please file those outputs to author(or PR is welcome)."
+                                                   , "========== raw ByteString =========="
+                                                   , show responseBody
+                                                   , "========== Error message =========="
+                                                   , show e
+                                                   ]
+        _   -> case fromJSON responseBody of
+                    Success a' -> return $ Left a'
+                    Error   e  -> error  $ unlines [apiPath ++ ": error while decoding APIError"
+                                                   , "FATAL: Please file those outputs to author(or PR is welcome)."
+                                                   , "========== raw ByteString =========="
+                                                   , show responseBody
+                                                   , "========== Error message =========="
+                                                   , show e
+                                                   ]
+

@@ -10,6 +10,26 @@
 
 ## CLIツールとして
 
+### Configを準備する
+
+Configファイルを以下の形式で作成し、`~/.config/misskey-hs/config.yaml`に配置してください。
+
+```yaml
+token: <your_token>
+instance_url: <your_instance_url>
+```
+
+例) Tokenが`MYTOKENHERE`で、所属しているインスタンスが`misskey.io`の場合
+
+```yaml
+token: MYTOKENHERE
+instance_url: misskey.io
+```
+
+
+
+### ツールの使い方
+
 `stack run --`で、各種APIを呼び出すコマンドを使うことができます。  
 `optparse-applicative`を使っているので、`stack run -- --help`でヘルプが出ます。  
 サブコマンドで使いたいAPIを指定、各APIのRequestとして渡す値はオプションで指定します。
@@ -50,6 +70,7 @@ Available commands:
 | `Network.Misskey.Api.Users.Users`     | `users`用のAPIRequestと関数                  |
 | `Network.Misskey.Api.Users.Following` | `users/following`用のAPIRequestと関数        |
 | `Network.Misskey.Api.Users.Followers` | `users/followers`用のAPIRequestと関数        |
+| `Network.Misskey.Api.Notes.Create`    | `notes/create`用のAPIRequestと関数           |
 
 ### Basic usage
 
