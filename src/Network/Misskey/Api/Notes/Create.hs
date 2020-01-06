@@ -60,6 +60,7 @@ notesCreate req = postRequest "/api/notes/create" body
         noExtractHashtagsBody = createObj      "noExtractHashtags" (req^.noExtractHashtags)
         noExtractEmojisBody   = createObj      "noExtractEmojis"   (req^.noExtractEmojis)
         geoBody               = createMaybeObj "geo"               (req^.geo)
+        -- Those 3 fields should not be '[]' in JSON schema. Otherwise error response will be returned
         fileIdsBody           = createMaybeObj "fileIds"           $ nothingIfEmpty (req^.fileIds)
         replyIdBody           = createMaybeObj "replyId"           $ nothingIfEmpty (req^.replyId)
         renoteIdBody          = createMaybeObj "renoteId"          $ nothingIfEmpty (req^.renoteId)
