@@ -17,7 +17,9 @@ module Network.Misskey.Api.Notes.Create
 , Visibility(..)
 ) where
 
+import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
+import Data.Aeson (FromJSON(..), Value(..), (.:))
 import Data.Char (toLower)
 import Lens.Simple ((^.), makeLenses)
 import Network.Misskey.Type
@@ -44,10 +46,19 @@ data APIRequest = APIRequest { _visibility        :: Visibility
                              }
 makeLenses ''APIRequest
 
+-- | Object that wraps newly created 'Note' in response
+data CreatedNote = CreatedNote {createdNote :: Note}
+
+instance FromJSON CreatedNote where
+    parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
 
 -- | Call 'notes/create' API and return result
 notesCreate :: APIRequest -> Misskey Note
-notesCreate req = postRequest "/api/notes/create" body
+notesCreate req = do
+    responce <- postRequest "/api/notes/create" body :: Misskey CreatedNote
+    case responce of
+        Left  e               -> return $ Left e
+        Right (CreatedNote n) -> return $ Right n
     where
         nothingIfEmpty x      = if x == [] then Nothing else (Just x)
         visibilityBody        = createObj      "visibility"        (req^.visibility)
