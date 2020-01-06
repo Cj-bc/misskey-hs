@@ -26,13 +26,25 @@ import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
-data SubCmds = UsersShow USh.APIRequest
-             | UsersNotes UN.APIRequest
-             | UsersSearch USe.APIRequest
-             | Users US.APIRequest
-             | UsersFollowers UFr.APIRequest
-             | UsersFollowing UFi.APIRequest
-             | NotesCreate NC.APIRequest
+data SubCmds = UsersShow      GeneralOption USh.APIRequest
+             | UsersNotes     GeneralOption UN.APIRequest
+             | UsersSearch    GeneralOption USe.APIRequest
+             | Users          GeneralOption US.APIRequest
+             | UsersFollowers GeneralOption UFr.APIRequest
+             | UsersFollowing GeneralOption UFi.APIRequest
+             | NotesCreate    GeneralOption NC.APIRequest
+
+
+-- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
+applyGeneralOption :: SubCmds -> GeneralOption -> SubCmds
+applyGeneralOption (UsersShow      NoOption req) opt = UsersShow      opt req
+applyGeneralOption (UsersNotes     NoOption req) opt = UsersNotes     opt req
+applyGeneralOption (UsersSearch    NoOption req) opt = UsersSearch    opt req
+applyGeneralOption (Users          NoOption req) opt = Users          opt req
+applyGeneralOption (UsersFollowers NoOption req) opt = UsersFollowers opt req
+applyGeneralOption (UsersFollowing NoOption req) opt = UsersFollowing opt req
+applyGeneralOption (NotesCreate    NoOption req) opt = NotesCreate    opt req
+applyGeneralOption other _ = other
 
 
 -- Custom readers for optparse {{{
@@ -50,11 +62,11 @@ maybeUTCTimeReader = parseISO8601 <$> readerAsk
 -- usersShowParser {{{
 
 usersShowParser :: Parser SubCmds
-usersShowParser = UsersShow <$> (USh.UserId        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
-                                 <|> USh.UserIds   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
-                                 <|> USh.UserName  <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
-                                                   <*> option maybeStr
-                                                             (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on"))
+usersShowParser = UsersShow NoOption <$> (USh.UserId        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
+                                          <|> USh.UserIds   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
+                                          <|> USh.UserName  <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
+                                                            <*> option maybeStr
+                                                                      (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on"))
 
 usersShowInfo :: ParserInfo SubCmds
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
@@ -62,12 +74,12 @@ usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc
 
 -- usersSearchParser {{{
 usersSearchParser :: Parser SubCmds
-usersSearchParser = UsersSearch <$> (USe.APIRequest <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
-                                                    <*> option maybeAuto  (long "offset" <> value Nothing <> help "Offset")
-                                                    <*> option maybeAuto (long "limit"  <> value (Just 10) <> help "Number to grab")
-                                                    <*> option maybeAuto (long "localOnly" <> value Nothing <> help "True to search for only local users")
-                                                    <*> option maybeAuto (long "detail" <> value Nothing <> help "True to contains detailed user info")
-                                    )
+usersSearchParser = UsersSearch NoOption <$> (USe.APIRequest <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
+                                                             <*> option maybeAuto  (long "offset" <> value Nothing <> help "Offset")
+                                                             <*> option maybeAuto (long "limit"  <> value (Just 10) <> help "Number to grab")
+                                                             <*> option maybeAuto (long "localOnly" <> value Nothing <> help "True to search for only local users")
+                                                             <*> option maybeAuto (long "detail" <> value Nothing <> help "True to contains detailed user info")
+                                             )
 
 usersSearchInfo :: ParserInfo SubCmds
 usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (fullDesc <> progDesc "call users/search API")
@@ -75,23 +87,23 @@ usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (full
 
 -- usersNotesParser {{{
 usersNotesParser :: Parser SubCmds
-usersNotesParser = UsersNotes <$> (UN.APIRequest <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
-                                                 <*> switch (long "includeReplies" <> help "whether include replies or not")
-                                                 <*> option maybeAuto
-                                                                  (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
-                                                 <*> option maybeStr
+usersNotesParser = UsersNotes NoOption <$> (UN.APIRequest <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
+                                                          <*> switch (long "includeReplies" <> help "whether include replies or not")
+                                                          <*> option maybeAuto
+                                                                           (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
+                                                          <*> option maybeStr
                                                                          (long "since" <> value Nothing <> metavar "SINCE" <> help "Grab notes since given id")
-                                                 <*> option maybeStr
-                                                                  (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given id")
-                                                 <*> option maybeUTCTimeReader
-                                                                  (long "until" <> value Nothing <> metavar "SINCE-DATE" <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
-                                                 <*> option maybeUTCTimeReader
-                                                                  (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
-                                                 <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
-                                                 <*> switch (long "withFiles" <> help "True to grab notes with files")
-                                                 <*> fmap sequence (many (option maybeStr (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")))
-                                                 <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)")
-                                  )
+                                                          <*> option maybeStr
+                                                                           (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given id")
+                                                          <*> option maybeUTCTimeReader
+                                                                           (long "until" <> value Nothing <> metavar "SINCE-DATE" <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                                          <*> option maybeUTCTimeReader
+                                                                           (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                                          <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
+                                                          <*> switch (long "withFiles" <> help "True to grab notes with files")
+                                                          <*> fmap sequence (many (option maybeStr (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")))
+                                                          <*> switch (long "excludeNsfw" <> help "True to exclude NSFW contents (use with 'fileType' opt to perform this)")
+                                           )
 
 usersNotesInfo :: ParserInfo SubCmds
 usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDesc <> progDesc "call users/notes API")
@@ -99,12 +111,12 @@ usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDe
 
 -- usersParser {{{
 usersParser :: Parser SubCmds
-usersParser = Users <$> (US.APIRequest <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
-                                       <*> option maybeAuto (long "offset" <> value Nothing <> metavar "OFFSET" <> help "Offset")
-                                       <*> option maybeAuto (long "sort"   <> value Nothing <> metavar "SORT"   <> help "Specify sorting. [+follow|-follow|+createdAt|-createdAt|+updatedAt|-updatedAt]")
-                                       <*> option maybeAuto (long "state"  <> value Nothing <> metavar "STATE"  <> help "Filter for role. [all|admin|moderator|adminOrModerator|alive]")
-                                       <*> option maybeAuto (long "origin" <> value Nothing <> metavar "origin" <> help "Filter for origin. [combined|local|remote]")
-                        )
+usersParser = Users NoOption <$> (US.APIRequest <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
+                                                <*> option maybeAuto (long "offset" <> value Nothing <> metavar "OFFSET" <> help "Offset")
+                                                <*> option maybeAuto (long "sort"   <> value Nothing <> metavar "SORT"   <> help "Specify sorting. [+follow|-follow|+createdAt|-createdAt|+updatedAt|-updatedAt]")
+                                                <*> option maybeAuto (long "state"  <> value Nothing <> metavar "STATE"  <> help "Filter for role. [all|admin|moderator|adminOrModerator|alive]")
+                                                <*> option maybeAuto (long "origin" <> value Nothing <> metavar "origin" <> help "Filter for origin. [combined|local|remote]")
+                                 )
 
 usersInfo :: ParserInfo SubCmds
 usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> progDesc "call users API")
@@ -112,13 +124,13 @@ usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> prog
 
 -- usersFollowersParser {{{
 usersFollowersParser :: Parser SubCmds
-usersFollowersParser = UsersFollowers <$> (UFr.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
-                                                          <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
-                                                          <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
-                                                          <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
-                                                          <*> option maybeStr (long "untilId"  <> value Nothing <> metavar "UNTIL-ID")
-                                                          <*> option maybeAuto (long "limit"    <> value Nothing <> metavar "LIMIT"    <> help "Limit amount of users to fetch(default: 10)")
-                                          )
+usersFollowersParser = UsersFollowers NoOption <$> (UFr.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+                                                                   <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
+                                                                   <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
+                                                                   <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
+                                                                   <*> option maybeStr (long "untilId"  <> value Nothing <> metavar "UNTIL-ID")
+                                                                   <*> option maybeAuto (long "limit"    <> value Nothing <> metavar "LIMIT"    <> help "Limit amount of users to fetch(default: 10)")
+                                                                   )
 
 usersFollowersInfo :: ParserInfo SubCmds
 usersFollowersInfo = Options.Applicative.info (usersFollowersParser <**> helper) (fullDesc <> progDesc "call users/followers API")
@@ -126,13 +138,13 @@ usersFollowersInfo = Options.Applicative.info (usersFollowersParser <**> helper)
 
 -- usersFollowingParser {{{
 usersFollowingParser :: Parser SubCmds
-usersFollowingParser = UsersFollowing <$> (UFi.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
-                                                          <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
-                                                          <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
-                                                          <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
-                                                          <*> option maybeStr (long "untilId"  <> value Nothing <> metavar "UNTIL-ID")
-                                                          <*> option maybeAuto (long "limit"   <> value Nothing <> metavar "LIMIT"    <> help "Limit amount of users to fetch(default: 10)")
-                                          )
+usersFollowingParser = UsersFollowing NoOption <$> (UFi.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+                                                                   <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
+                                                                   <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
+                                                                   <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
+                                                                   <*> option maybeStr (long "untilId"  <> value Nothing <> metavar "UNTIL-ID")
+                                                                   <*> option maybeAuto (long "limit"   <> value Nothing <> metavar "LIMIT"    <> help "Limit amount of users to fetch(default: 10)")
+                                                   )
 
 usersFollowingInfo :: ParserInfo SubCmds
 usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper) (fullDesc <> progDesc "call users/following API")
@@ -143,21 +155,21 @@ usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper)
 --
 -- __'Geo' and 'Poll' is currently disabled__
 notesCreateParser :: Parser SubCmds
-notesCreateParser = NotesCreate <$> (NC.APIRequest <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
-                                                   <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
-                                                   <*> option maybeStr (long "text" <> value Nothing <> metavar "TEXT" <> help "Text to post")
-                                                   <*> option maybeStr (long "cw"   <> value Nothing <> metavar "CW"   <> help "warning of content. This will hide note content")
-                                                   <*> switch (long "viaMobile" <> help "via mobile or not")
-                                                   <*> switch (long "localOnly" <> help "True to only post to local")
-                                                   <*> switch (long "noExtractMentions" <> help "True to suspend extracting mentions from text")
-                                                   <*> switch (long "noExtractHashtags" <> help "True to suspend extracting hashtags from text")
-                                                   <*> switch (long "noExtractEmojis" <> help "True to suspend extracting emojis from text")
-                                                   <*> pure Nothing
-                                                   <*> many (strOption (long "fileId" <> metavar "FILEID" <> help "file IDs to add"))
-                                                   <*> strOption (long "replyId" <> value "" <> help "target to reply")
-                                                   <*> strOption (long "renoteId" <> value "" <> help "target to renote")
-                                                   <*> pure Nothing
-                                    )
+notesCreateParser = NotesCreate NoOption <$> (NC.APIRequest <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
+                                                            <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
+                                                            <*> option maybeStr (long "text" <> value Nothing <> metavar "TEXT" <> help "Text to post")
+                                                            <*> option maybeStr (long "cw"   <> value Nothing <> metavar "CW"   <> help "warning of content. This will hide note content")
+                                                            <*> switch (long "viaMobile" <> help "via mobile or not")
+                                                            <*> switch (long "localOnly" <> help "True to only post to local")
+                                                            <*> switch (long "noExtractMentions" <> help "True to suspend extracting mentions from text")
+                                                            <*> switch (long "noExtractHashtags" <> help "True to suspend extracting hashtags from text")
+                                                            <*> switch (long "noExtractEmojis" <> help "True to suspend extracting emojis from text")
+                                                            <*> pure Nothing
+                                                            <*> many (strOption (long "fileId" <> metavar "FILEID" <> help "file IDs to add"))
+                                                            <*> strOption (long "replyId" <> value "" <> help "target to reply")
+                                                            <*> strOption (long "renoteId" <> value "" <> help "target to renote")
+                                                            <*> pure Nothing
+                                             )
 
 notesCreateParserInfo :: ParserInfo SubCmds
 notesCreateParserInfo = Options.Applicative.info (notesCreateParser <**> helper) (fullDesc <> progDesc "call notes/create API")
@@ -171,6 +183,14 @@ commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/following" usersFollowingInfo
                             <> command "notes/create"   notesCreateParserInfo
 
+-- GeneralOption {{{
+data GeneralOption = NoOption
+                   | GeneralOption { quiet :: Bool
+                                   }
+generalOptionParser = GeneralOption <$> switch (long "quiet" <> short 'q' <> help "Quiet output")
+
+-- }}}
+
 -- Config File related {{{
 data ConfigFile = ConfigFile {token         :: String
                              , instance_url :: String
@@ -183,7 +203,7 @@ $(deriveJSON defaultOptions ''ConfigFile)
 main :: IO ()
 main = do
     -- Prepare env
-    apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
+    apiRequest <- execParser (Options.Applicative.info ((applyGeneralOption <$> commandParser <*> generalOptionParser) <**> helper) (fullDesc <> progDesc "call Misskey API"))
 
     home <- getEnv "HOME"
     cfgEither <- decodeFileEither $ home ++ "/.config/misskey-hs/config.yaml" :: IO (Either ParseException ConfigFile)
@@ -195,15 +215,18 @@ main = do
 
 
     case apiRequest of
-        UsersShow req      -> runMisskey (USh.usersShow req) env >>= evalResult
-        UsersNotes req     -> runMisskey (UN.usersNotes req) env >>= evalResult
-        UsersSearch req    -> runMisskey (USe.usersSearch req) env >>= evalResult
-        Users req          -> runMisskey (US.users req) env      >>= evalResult
-        UsersFollowers req -> runMisskey (UFr.usersFollowers req) env >>= evalResult
-        UsersFollowing req -> runMisskey (UFi.usersFollowing req) env >>= evalResult
-        NotesCreate req    -> runMisskey (NC.notesCreate req) env >>= evalResult
+        UsersShow opt req      -> runMisskey (USh.usersShow req) env      >>= evalResult opt
+        UsersNotes opt req     -> runMisskey (UN.usersNotes req) env      >>= evalResult opt
+        UsersSearch opt req    -> runMisskey (USe.usersSearch req) env    >>= evalResult opt
+        Users opt req          -> runMisskey (US.users req) env           >>= evalResult opt
+        UsersFollowers opt req -> runMisskey (UFr.usersFollowers req) env >>= evalResult opt
+        UsersFollowing opt req -> runMisskey (UFi.usersFollowing req) env >>= evalResult opt
+        NotesCreate opt req    -> runMisskey (NC.notesCreate req) env     >>= evalResult opt
     where
-        evalResult resp = case resp of
-                            Left er   -> print $ "Error occured while users/show: " ++ ushow er
-                            Right usr -> (putStrLn . ushow) usr
+        evalResult NoOption resp = case resp of
+                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Right usr -> (putStrLn . ushow) usr
+        evalResult opt resp = case resp of
+                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Right usr -> when (not $ quiet opt) $ (putStrLn . ushow) usr
 
