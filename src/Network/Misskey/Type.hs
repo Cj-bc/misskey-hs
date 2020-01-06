@@ -25,6 +25,7 @@ module Network.Misskey.Type (
 , Page(..)
 , Note(..)
 , User(..)
+, Geo(..)
 ) where
 
 import Lens.Simple
