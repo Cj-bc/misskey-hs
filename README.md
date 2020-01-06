@@ -67,6 +67,7 @@ This package adds modules below:
 | `Network.Misskey.Api.Users.Users`     | Command and APIRequest for `users`          |
 | `Network.Misskey.Api.Users.Following` | Command and APIRequest for `users/following |
 | `Network.Misskey.Api.Users.Followers` | Command and APIRequest for `users/followers |
+| `Network.Misskey.Api.Notes.Create`    | Command and APIRequest for `notes/create`   |
 
 
 ### Basic usage
