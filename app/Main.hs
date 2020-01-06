@@ -98,13 +98,13 @@ usersNotesParser = UsersNotes NoOption <$> (UN.APIRequest <$> strOption (long "i
                                                           <*> option maybeAuto
                                                                            (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
                                                           <*> option maybeStr
-                                                                         (long "since" <> value Nothing <> metavar "SINCE" <> help "Grab notes since given id")
+                                                                         (long "sinceId" <> value Nothing <> metavar "SINCE" <> help "Grab notes since given id")
                                                           <*> option maybeStr
-                                                                           (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given id")
+                                                                           (long "untilId" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given id")
                                                           <*> option maybeUTCTimeReader
-                                                                           (long "until" <> value Nothing <> metavar "SINCE-DATE" <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                                                           (long "sinceDate" <> value Nothing <> metavar "SINCE-DATE" <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
                                                           <*> option maybeUTCTimeReader
-                                                                           (long "until" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
+                                                                           (long "untilDate" <> value Nothing <> metavar "UNTIL" <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)")
                                                           <*> flag False True (long "no-includeMyRenotes" <> help "whether include own renotes or not")
                                                           <*> switch (long "withFiles" <> help "True to grab notes with files")
                                                           <*> fmap sequence (many (option maybeStr (long "fileType" <> metavar "FILETYPE" <> help "Grab notes with file which is specified filetype")))
