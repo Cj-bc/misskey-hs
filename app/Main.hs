@@ -203,7 +203,7 @@ $(deriveJSON defaultOptions ''ConfigFile)
 main :: IO ()
 main = do
     -- Prepare env
-    apiRequest <- execParser (Options.Applicative.info (commandParser <**> helper) (fullDesc <> progDesc "call Misskey API"))
+    apiRequest <- execParser (Options.Applicative.info ((applyGeneralOption <$> commandParser <*> generalOptionParser) <**> helper) (fullDesc <> progDesc "call Misskey API"))
 
     home <- getEnv "HOME"
     cfgEither <- decodeFileEither $ home ++ "/.config/misskey-hs/config.yaml" :: IO (Either ParseException ConfigFile)
@@ -215,15 +215,18 @@ main = do
 
 
     case apiRequest of
-        UsersShow req      -> runMisskey (USh.usersShow req) env >>= evalResult
-        UsersNotes req     -> runMisskey (UN.usersNotes req) env >>= evalResult
-        UsersSearch req    -> runMisskey (USe.usersSearch req) env >>= evalResult
-        Users req          -> runMisskey (US.users req) env      >>= evalResult
-        UsersFollowers req -> runMisskey (UFr.usersFollowers req) env >>= evalResult
-        UsersFollowing req -> runMisskey (UFi.usersFollowing req) env >>= evalResult
-        NotesCreate req    -> runMisskey (NC.notesCreate req) env >>= evalResult
+        UsersShow opt req      -> runMisskey (USh.usersShow req) env      >>= evalResult opt
+        UsersNotes opt req     -> runMisskey (UN.usersNotes req) env      >>= evalResult opt
+        UsersSearch opt req    -> runMisskey (USe.usersSearch req) env    >>= evalResult opt
+        Users opt req          -> runMisskey (US.users req) env           >>= evalResult opt
+        UsersFollowers opt req -> runMisskey (UFr.usersFollowers req) env >>= evalResult opt
+        UsersFollowing opt req -> runMisskey (UFi.usersFollowing req) env >>= evalResult opt
+        NotesCreate opt req    -> runMisskey (NC.notesCreate req) env     >>= evalResult opt
     where
-        evalResult resp = case resp of
-                            Left er   -> print $ "Error occured while users/show: " ++ ushow er
-                            Right usr -> (putStrLn . ushow) usr
+        evalResult NoOption resp = case resp of
+                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Right usr -> (putStrLn . ushow) usr
+        evalResult opt resp = case resp of
+                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Right usr -> when (not $ quiet opt) $ (putStrLn . ushow) usr
 
