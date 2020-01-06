@@ -22,6 +22,7 @@ import qualified Network.Misskey.Api.Users.Users  as US
 import qualified Network.Misskey.Api.Users.Followers as UFr
 import qualified Network.Misskey.Api.Users.Following as UFi
 import qualified Network.Misskey.Api.Notes.Create as NC
+import qualified Network.Misskey.Api.Notes.Timeline as NT
 import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
@@ -33,6 +34,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersFollowers GeneralOption UFr.APIRequest
              | UsersFollowing GeneralOption UFi.APIRequest
              | NotesCreate    GeneralOption NC.APIRequest
+             | NotesTimeline  GeneralOption NT.APIRequest
 
 
 -- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
@@ -56,6 +58,10 @@ maybeAuto = Just <$> auto
 
 maybeUTCTimeReader :: ReadM (Maybe UTCTime)
 maybeUTCTimeReader = parseISO8601 <$> readerAsk
+-- }}}
+
+-- Custom builder for optparse {{{
+reversedSwitch = flag False True
 -- }}}
 
 
@@ -175,6 +181,25 @@ notesCreateParserInfo :: ParserInfo SubCmds
 notesCreateParserInfo = Options.Applicative.info (notesCreateParser <**> helper) (fullDesc <> progDesc "call notes/create API")
 -- }}}
 
+-- notesTimelineParser {{{
+notesTimelineParser :: Parser SubCmds
+notesTimelineParser = NotesTimeline NoOption <$> (NT.APIRequest
+        <$> option maybeAuto          (long "limit"                    <> help "Limit amount of Notes to fetch(default: 10)"               <> value Nothing <> metavar "LIMIT" )
+        <*> option maybeStr           (long "sinceId"                  <> help "Grab notes since given id"                                 <> value Nothing <> metavar "SINCEID")
+        <*> option maybeStr           (long "untilId"                  <> help "Grab notes until given id"                                 <> value Nothing <> metavar "UNTILID")
+        <*> option maybeUTCTimeReader (long "sinceDate"                <> help "Grab notes since given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)" <> value Nothing <> metavar "SINCEDATE")
+        <*> option maybeUTCTimeReader (long "untilDate"                <> help "Grab notes until given time(YYYY-MM-DDTHH:mm:SS+TIMEZONE)" <> value Nothing <> metavar "UNTILDATE")
+        <*> reversedSwitch            (long "no-includeMyRenotes"      <> help "whether include notes renoted by yourself")
+        <*> reversedSwitch            (long "no-includeRenotedMyNotes" <> help "whether include your renoted notes")
+        <*> reversedSwitch            (long "no-includeLocalRenotes"   <> help "whether include renoted local notes")
+        <*> switch                    (long "withFiles"                <> help "True to only grab notes with files")
+                                                 )
+
+notesTimelineParserInfo :: ParserInfo SubCmds
+notesTimelineParserInfo = Options.Applicative.info (notesTimelineParser <**> helper) (fullDesc <> progDesc "call notes/timeline API")
+-- }}}
+
+
 commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/notes"    usersNotesInfo
                             <> command "users/search"   usersSearchInfo
@@ -182,6 +207,7 @@ commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/followers" usersFollowersInfo
                             <> command "users/following" usersFollowingInfo
                             <> command "notes/create"   notesCreateParserInfo
+                            <> command "notes/timeline" notesTimelineParserInfo
 
 -- GeneralOption {{{
 data GeneralOption = NoOption
@@ -222,6 +248,7 @@ main = do
         UsersFollowers opt req -> runMisskey (UFr.usersFollowers req) env >>= evalResult opt
         UsersFollowing opt req -> runMisskey (UFi.usersFollowing req) env >>= evalResult opt
         NotesCreate opt req    -> runMisskey (NC.notesCreate req) env     >>= evalResult opt
+        NotesTimeline opt req  -> runMisskey (NT.notesTimeline req) env   >>= evalResult opt
     where
         evalResult NoOption resp = case resp of
                                 Left er   -> print $ "Error occured while users/show: " ++ ushow er
