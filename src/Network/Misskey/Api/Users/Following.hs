@@ -32,7 +32,7 @@ makeLenses ''APIRequest
 
 -- | Call 'users/following' API and return result
 usersFollowing :: APIRequest -> Misskey [User]
-usersFollowing req = postRequest "/api/users/Following" obj
+usersFollowing req = postRequest "/api/users/Following" body
         where
             userIdObj   = createMaybeObj "userId"   (req^.userId)
             usernameObj = createMaybeObj "username" (req^.username)
@@ -40,4 +40,4 @@ usersFollowing req = postRequest "/api/users/Following" obj
             sinceIdObj  = createMaybeObj "sinceId"  (req^.sinceId)
             untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
             limitObj    = createMaybeObj "limit"    (req^.limit)
-            obj = object $ mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
+            body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]

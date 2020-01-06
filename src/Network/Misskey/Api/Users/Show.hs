@@ -41,15 +41,15 @@ data APIRequest = UserId   String
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: APIRequest -> Misskey [User]
-usersShow (UserIds is) = postRequest "/api/users/show" $ object ["userIds"  .= is]
+usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
 usersShow req          = do
     env <- ask
-    result <- liftIO $ runMisskey (postRequest "/api/users/show" obj :: Misskey User) env
+    result <- liftIO $ runMisskey (postRequest "/api/users/show" body :: Misskey User) env
     case result of
         Right u -> return $ Right [u]
         Left  e -> return $ Left e
 
     where
-        obj = case req of
-               UserId i     -> object ["userId"   .= i]
-               UserName n h -> object ["username" .= n , "host" .= h]
+        body = case req of
+                UserId i     -> ["userId"   .= i]
+                UserName n h -> ["username" .= n , "host" .= h]

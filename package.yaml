@@ -46,6 +46,7 @@ executables:
     dependencies:
     - misskey-hs
     - optparse-applicative
+    - yaml
 
 tests:
   misskey-hs-test:

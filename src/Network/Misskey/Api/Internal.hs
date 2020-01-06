@@ -3,7 +3,8 @@ module Network.Misskey.Api.Internal where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Trans.Reader (ask, ReaderT)
-import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..))
+import Data.Aeson.Types (Pair)
+import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
 import Lens.Simple ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
@@ -25,12 +26,13 @@ createObj t x = [t .= x]
 -- __This function will throw error__ if parsing response failed.
 -- As /Parsing error/ is fatal and should be fixed by Library author,
 -- not by user, this error should be reported as issue
-postRequest :: FromJSON a => String -> Value -> Misskey a
+postRequest :: FromJSON a => String -> [Pair] -> Misskey a
 postRequest apiPath body =  do
     (MisskeyEnv token url) <- ask
     initReq <- parseRequest $ url ++ apiPath
-    let request       = initReq { method = "POST"
-                                , requestBody = RequestBodyLBS $ encode body
+    let bodyWithToken = object $ ("i" .= token) : body
+        request       = initReq { method = "POST"
+                                , requestBody = RequestBodyLBS $ encode bodyWithToken
                                 , requestHeaders =
                                       [("Content-Type", "application/json; charset=utf-8")]
                                 }
