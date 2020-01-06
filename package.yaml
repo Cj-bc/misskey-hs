@@ -28,7 +28,6 @@ dependencies:
 - time
 - transformers
 - iso8601-time
-- unicode-show
 - lens-simple
 
 
@@ -47,6 +46,7 @@ executables:
     - misskey-hs
     - optparse-applicative
     - yaml
+    - unicode-show
 
 tests:
   misskey-hs-test:
