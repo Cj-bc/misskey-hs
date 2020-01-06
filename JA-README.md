@@ -71,6 +71,7 @@ Available commands:
 | `Network.Misskey.Api.Users.Following` | `users/following`用のAPIRequestと関数        |
 | `Network.Misskey.Api.Users.Followers` | `users/followers`用のAPIRequestと関数        |
 | `Network.Misskey.Api.Notes.Create`    | `notes/create`用のAPIRequestと関数           |
+| `Network.Misskey.Api.Notes.Timeline`  | `notes/timeline`用のAPIRequestと関数         |
 
 ### Basic usage
 
