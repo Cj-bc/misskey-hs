@@ -25,6 +25,7 @@ module Network.Misskey.Type (
 , Page(..)
 , Note(..)
 , User(..)
+, Geo(..)
 ) where
 
 import Lens.Simple
@@ -116,6 +117,9 @@ instance FromJSON Poll where
                                 <*> v `parseData` "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = mempty
+
+instance ToJSON Poll where
+    toJSON _ = String "poll"
 -- }}}
 
 -- File {{{
@@ -337,6 +341,9 @@ data Geo = Geo deriving (Show)
 instance FromJSON Geo where
     parseJSON (Object _) = return Geo
     parseJSON _          = mempty
+
+instance ToJSON Geo where
+    toJSON _ = String "geo"
 
 
 -- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
