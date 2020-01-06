@@ -21,6 +21,7 @@ import qualified Network.Misskey.Api.Users.Show   as USh
 import qualified Network.Misskey.Api.Users.Users  as US
 import qualified Network.Misskey.Api.Users.Followers as UFr
 import qualified Network.Misskey.Api.Users.Following as UFi
+import qualified Network.Misskey.Api.Notes.Create as NC
 import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
@@ -31,6 +32,7 @@ data SubCmds = UsersShow USh.APIRequest
              | Users US.APIRequest
              | UsersFollowers UFr.APIRequest
              | UsersFollowing UFi.APIRequest
+             | NotesCreate NC.APIRequest
 
 
 -- Custom readers for optparse {{{
@@ -136,12 +138,38 @@ usersFollowingInfo :: ParserInfo SubCmds
 usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper) (fullDesc <> progDesc "call users/following API")
 -- }}}
 
+-- notesCreateParser {{{
+-- | Parse args for notes/create API
+--
+-- __'Geo' and 'Poll' is currently disabled__
+notesCreateParser :: Parser SubCmds
+notesCreateParser = NotesCreate <$> (NC.APIRequest <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
+                                                   <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
+                                                   <*> option maybeStr (long "text" <> value Nothing <> metavar "TEXT" <> help "Text to post")
+                                                   <*> option maybeStr (long "cw"   <> value Nothing <> metavar "CW"   <> help "warning of content. This will hide note content")
+                                                   <*> switch (long "viaMobile" <> help "via mobile or not")
+                                                   <*> switch (long "localOnly" <> help "True to only post to local")
+                                                   <*> switch (long "noExtractMentions" <> help "True to suspend extracting mentions from text")
+                                                   <*> switch (long "noExtractHashtags" <> help "True to suspend extracting hashtags from text")
+                                                   <*> switch (long "noExtractEmojis" <> help "True to suspend extracting emojis from text")
+                                                   <*> pure Nothing
+                                                   <*> many (strOption (long "fileId" <> metavar "FILEID" <> help "file IDs to add"))
+                                                   <*> strOption (long "replyId" <> value "" <> help "target to reply")
+                                                   <*> strOption (long "renoteId" <> value "" <> help "target to renote")
+                                                   <*> pure Nothing
+                                    )
+
+notesCreateParserInfo :: ParserInfo SubCmds
+notesCreateParserInfo = Options.Applicative.info (notesCreateParser <**> helper) (fullDesc <> progDesc "call notes/create API")
+-- }}}
+
 commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/notes"    usersNotesInfo
                             <> command "users/search"   usersSearchInfo
                             <> command "users"          usersInfo
                             <> command "users/followers" usersFollowersInfo
                             <> command "users/following" usersFollowingInfo
+                            <> command "notes/create"   notesCreateParserInfo
 
 -- Config File related {{{
 data ConfigFile = ConfigFile {token         :: String
@@ -173,6 +201,7 @@ main = do
         Users req          -> runMisskey (US.users req) env      >>= evalResult
         UsersFollowers req -> runMisskey (UFr.usersFollowers req) env >>= evalResult
         UsersFollowing req -> runMisskey (UFi.usersFollowing req) env >>= evalResult
+        NotesCreate req    -> runMisskey (NC.notesCreate req) env >>= evalResult
     where
         evalResult resp = case resp of
                             Left er   -> print $ "Error occured while users/show: " ++ ushow er
