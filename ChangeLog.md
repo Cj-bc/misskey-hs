@@ -6,6 +6,22 @@ And this project adheres to [Haskell Package Versioning Policy](https://pvp.hask
 
 ## Unreleased changes
 
+## [0.1.3.0] - 2020-01-06
+### Added
+- New modules:
+  - Network.Misskey.Api.Notes.Create
+- `config.yaml` file should be at `~/.config/misskey-hs/config.yaml`
+- `config.yaml` contains 'token' and 'instance_url' (more info in README)
+- ToJSON instances for Poll/Geo
+
+### Changed
+- app/Main supports added modules
+- app/Main has 'GeneralOption' to treat 'generally used option'
+- postRequest adds token to request body automatically
+- Export 'Network.Misskey.Type.Geo'
+- Only `app/Main.hs` depends on `unicode-show`
+
+
 ## [0.1.2.0] - 2020-01-03
 ### Added
 - New modules:
