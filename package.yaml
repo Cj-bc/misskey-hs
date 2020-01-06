@@ -35,7 +35,7 @@ library:
   source-dirs: src
 
 executables:
-  misskey-hs-exe:
+  misskey-cli:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
