@@ -13,16 +13,16 @@ import System.Environment (getArgs, getEnv)
 import System.Exit (die)
 import Network.HTTP.Client
 import Network.HTTP.Simple
-import Network.Misskey.Type
-import Network.Misskey.Api.Users.Search (usersSearch)
-import qualified Network.Misskey.Api.Users.Search as USe
-import qualified Network.Misskey.Api.Users.Notes  as UN
-import qualified Network.Misskey.Api.Users.Show   as USh
-import qualified Network.Misskey.Api.Users.Users  as US
-import qualified Network.Misskey.Api.Users.Followers as UFr
-import qualified Network.Misskey.Api.Users.Following as UFi
-import qualified Network.Misskey.Api.Notes.Create as NC
-import qualified Network.Misskey.Api.Notes.Timeline as NT
+import Web.Misskey.Type
+import Web.Misskey.Api.Users.Search (usersSearch)
+import qualified Web.Misskey.Api.Users.Search as USe
+import qualified Web.Misskey.Api.Users.Notes  as UN
+import qualified Web.Misskey.Api.Users.Show   as USh
+import qualified Web.Misskey.Api.Users.Users  as US
+import qualified Web.Misskey.Api.Users.Followers as UFr
+import qualified Web.Misskey.Api.Users.Following as UFi
+import qualified Web.Misskey.Api.Notes.Create as NC
+import qualified Web.Misskey.Api.Notes.Timeline as NT
 import Lens.Simple ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))

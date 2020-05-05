@@ -1,5 +1,5 @@
 {-# Language OverloadedStrings #-}
-module Network.Misskey.Api.Internal
+module Web.Misskey.Api.Internal
 ( -- * Creating objects
   createMaybeObj
 , createObj
@@ -21,7 +21,7 @@ import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), re
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 
-import Network.Misskey.Type
+import Web.Misskey.Type
 
 -- | Create 'Data.Aeson.KeyValue' a Object
 createMaybeObj t = maybe [] (\x -> [t .= x])

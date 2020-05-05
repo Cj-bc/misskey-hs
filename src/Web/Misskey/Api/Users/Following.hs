@@ -1,24 +1,24 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Users.Followers
-Description : Misskey API Endpoint and Request for users/followers
+Module      : Web.Misskey.Api.Users.Following
+Description : Misskey API Endpoint and Request for users/following
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
 Maintainer  : cj.bc-sd@outlook.jp
 Stability   : experimental
 
-Call `users/followers` Misskey API
-API document is: https://misskey.io/api-doc#operation/users/followers
+Call `users/following` Misskey API
+API document is: https://misskey.io/api-doc#operation/users/following
 -}
-module Network.Misskey.Api.Users.Followers (
+module Web.Misskey.Api.Users.Following (
   APIRequest(APIRequest)
-, usersFollowers
+, usersFollowing
 ) where
 
 import Data.Aeson (object)
 import Lens.Simple ((^.), makeLenses)
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal
 
 
 data APIRequest = APIRequest { _userId   :: Maybe String
@@ -30,9 +30,9 @@ data APIRequest = APIRequest { _userId   :: Maybe String
                              }
 makeLenses ''APIRequest
 
--- | Call 'users/followers' API and return result
-usersFollowers :: APIRequest -> Misskey [User]
-usersFollowers req = postRequest "/api/users/Followers" body
+-- | Call 'users/following' API and return result
+usersFollowing :: APIRequest -> Misskey [User]
+usersFollowing req = postRequest "/api/users/Following" body
         where
             userIdObj   = createMaybeObj "userId"   (req^.userId)
             usernameObj = createMaybeObj "username" (req^.username)

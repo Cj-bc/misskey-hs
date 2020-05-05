@@ -60,20 +60,20 @@ This package adds modules below:
 
 | module                                | description                                 |
 |:-:|:-:|
-| `Network.Misskey.Type`                | Provide types for general usage             |
-| `Network.Misskey.Api.Users.Show`      | Command and APIRequest for `users/show`     |
-| `Network.Misskey.Api.Users.Search`    | Command and APIRequest for `users/search`   |
-| `Network.Misskey.Api.Users.Notes`     | Command and APIRequest for `users/Notes`    |
-| `Network.Misskey.Api.Users.Users`     | Command and APIRequest for `users`          |
-| `Network.Misskey.Api.Users.Following` | Command and APIRequest for `users/following |
-| `Network.Misskey.Api.Users.Followers` | Command and APIRequest for `users/followers |
-| `Network.Misskey.Api.Notes.Create`    | Command and APIRequest for `notes/create`   |
-| `Network.Misskey.Api.Notes.Timeline`  | Command and APIRequest for `notes/timeline` |
+| `Web.Misskey.Type`                | Provide types for general usage             |
+| `Web.Misskey.Api.Users.Show`      | Command and APIRequest for `users/show`     |
+| `Web.Misskey.Api.Users.Search`    | Command and APIRequest for `users/search`   |
+| `Web.Misskey.Api.Users.Notes`     | Command and APIRequest for `users/Notes`    |
+| `Web.Misskey.Api.Users.Users`     | Command and APIRequest for `users`          |
+| `Web.Misskey.Api.Users.Following` | Command and APIRequest for `users/following |
+| `Web.Misskey.Api.Users.Followers` | Command and APIRequest for `users/followers |
+| `Web.Misskey.Api.Notes.Create`    | Command and APIRequest for `notes/create`   |
+| `Web.Misskey.Api.Notes.Timeline`  | Command and APIRequest for `notes/timeline` |
 
 
 ### Basic usage
 
-All API-calling functions are placed in `Network.Misskey.Api.*`  
+All API-calling functions are placed in `Web.Misskey.Api.*`  
 You can pick one(e.g. `usersShow`), give it APIRequest(defined in each module),
 and do `runMisskey` with `MisskeyEnv` to send API request.  
 
@@ -81,8 +81,8 @@ and do `runMisskey` with `MisskeyEnv` to send API request.
 e.g. Sending `users/show` API request to me(`cj_bc_sd@virtual-kaf.fun`),
 and print result.
 ```haskell
-import Network.Misskey.Api.Users.Show (usersShow, APIRequest(..))
-import Network.Misskey.Type (User(..), MisskeyEnv(..))
+import Web.Misskey.Api.Users.Show (usersShow, APIRequest(..))
+import Web.Misskey.Type (User(..), MisskeyEnv(..))
 
 
 main :: IO ()
