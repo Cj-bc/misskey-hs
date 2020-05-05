@@ -6,6 +6,11 @@ And this project adheres to [Haskell Package Versioning Policy](https://pvp.hask
 
 ## Unreleased changes
 
+## [0.2.0.0] - 2020-05-05
+### Changed
+- Base module is now belong to 'Web', instead of 'Network'
+
+
 ## [0.1.4.0] - 2020-01-06
 ### Added
 - New modules:
