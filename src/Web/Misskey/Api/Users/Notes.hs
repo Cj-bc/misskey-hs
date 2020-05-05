@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Users.Notes
+Module      : Web.Misskey.Api.Users.Notes
 Description : Misskey API Endpoint and Request for users/notes
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
 Maintainer  : cj.bc-sd@outlook.jp
@@ -11,7 +11,7 @@ Call `users/notes` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/notes
 -}
 
-module Network.Misskey.Api.Users.Notes
+module Web.Misskey.Api.Users.Notes
 ( usersNotes
 , APIRequest(..)
 ) where
@@ -20,8 +20,8 @@ import Data.Time (UTCTime)
 import Data.Aeson ((.=), object)
 
 
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, createUTCTimeObj)
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, createUTCTimeObj)
 
 data APIRequest = APIRequest { _userId           :: Id
                              , _includeReplies   :: Bool

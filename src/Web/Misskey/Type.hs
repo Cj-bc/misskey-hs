@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-|
-Module      : Network.Misskey.Type
+Module      : Web.Misskey.Type
 Description : Type definitions for misskey-hs
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
 Maintainer  : cj.bc-sd@outlook.jp
@@ -10,7 +10,7 @@ Stability   : experimental
 
 Common Data types for misske-hs
 -}
-module Network.Misskey.Type (
+module Web.Misskey.Type (
   -- * Common type synonym
   Id
 , Url

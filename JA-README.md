@@ -63,19 +63,19 @@ Available commands:
 
 | module                                | 説明                                         |
 |:-:|:-:|
-| `Network.Misskey.Type`                | ライブラリで共通して使う方が定義されています |
-| `Network.Misskey.Api.Users.Show`      | `users/show`用のAPIRequestと関数             |
-| `Network.Misskey.Api.Users.Search`    | `users/search`用のAPIRequestと関数           |
-| `Network.Misskey.Api.Users.Notes`     | `users/Notes`用のAPIRequestと関数            |
-| `Network.Misskey.Api.Users.Users`     | `users`用のAPIRequestと関数                  |
-| `Network.Misskey.Api.Users.Following` | `users/following`用のAPIRequestと関数        |
-| `Network.Misskey.Api.Users.Followers` | `users/followers`用のAPIRequestと関数        |
-| `Network.Misskey.Api.Notes.Create`    | `notes/create`用のAPIRequestと関数           |
-| `Network.Misskey.Api.Notes.Timeline`  | `notes/timeline`用のAPIRequestと関数         |
+| `Web.Misskey.Type`                | ライブラリで共通して使う方が定義されています |
+| `Web.Misskey.Api.Users.Show`      | `users/show`用のAPIRequestと関数             |
+| `Web.Misskey.Api.Users.Search`    | `users/search`用のAPIRequestと関数           |
+| `Web.Misskey.Api.Users.Notes`     | `users/Notes`用のAPIRequestと関数            |
+| `Web.Misskey.Api.Users.Users`     | `users`用のAPIRequestと関数                  |
+| `Web.Misskey.Api.Users.Following` | `users/following`用のAPIRequestと関数        |
+| `Web.Misskey.Api.Users.Followers` | `users/followers`用のAPIRequestと関数        |
+| `Web.Misskey.Api.Notes.Create`    | `notes/create`用のAPIRequestと関数           |
+| `Web.Misskey.Api.Notes.Timeline`  | `notes/timeline`用のAPIRequestと関数         |
 
 ### Basic usage
 
-APIを呼び出す関数は`Network.Misskey.Api.*`にあります。  
+APIを呼び出す関数は`Web.Misskey.Api.*`にあります。  
 呼びたいAPIに対応する関数(例えば`users/show`なら`usersShow`)に、
 各モジュールで定義されている`APIRequest`型の値を与え、
 `MisskeyEnv`とともに`runMisskey`を呼び出してください。
@@ -83,8 +83,8 @@ APIを呼び出す関数は`Network.Misskey.Api.*`にあります。
 
 例. `users/show` APIリクエストを筆者(`cj_bc_sd@virtual-kaf.fun`)について飛ばして結果を出力する
 ```haskell
-import Network.Misskey.Api.Users.Show (usersShow, APIRequest(..))
-import Network.Misskey.Type (User(..), MisskeyEnv(..))
+import Web.Misskey.Api.Users.Show (usersShow, APIRequest(..))
+import Web.Misskey.Type (User(..), MisskeyEnv(..))
 
 
 main :: IO ()

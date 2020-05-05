@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-|
-Module      : Network.Misskey.Api.Users.Users
+Module      : Web.Misskey.Api.Users.Users
 Description : Misskey API Endpoint and Request for users
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
 Maintainer  : cj.bc-sd@outlook.jp
@@ -10,7 +10,7 @@ Stability   : experimental
 Call `users` Misskey API
 API document is: https://misskey.io/api-doc#operation/users
 -}
-module Network.Misskey.Api.Users.Users
+module Web.Misskey.Api.Users.Users
 ( APIRequest(..)
 , users
 , UsersSortParam(..)
@@ -20,8 +20,8 @@ module Network.Misskey.Api.Users.Users
 
 import Data.Aeson (object)
 import Lens.Simple (makeLenses, (^.))
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
 
 data UsersSortParam = FollowerInc   | FollowerDec
                     | CreatedAtInc  | CreatedAtDec

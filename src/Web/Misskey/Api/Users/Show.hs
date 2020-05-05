@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
-Module      : Network.Misskey.Api.Users.Show
+Module      : Web.Misskey.Api.Users.Show
 Description : Misskey API Endpoint and Request for users/show
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
 Maintainer  : cj.bc-sd@outlook.jp
@@ -10,7 +10,7 @@ Stability   : experimental
 Call `users/show` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/show
 -}
-module Network.Misskey.Api.Users.Show (
+module Web.Misskey.Api.Users.Show (
 usersShow
 , APIRequest(..)
 )
@@ -28,8 +28,8 @@ import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), re
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
 
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal
 
 data APIRequest = UserId   String
                 | UserIds  [String]

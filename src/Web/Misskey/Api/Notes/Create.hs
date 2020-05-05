@@ -1,7 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Notes.Create
+Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
 Maintainer  : cj.bc-sd@outlook.jp
@@ -11,7 +11,7 @@ Call `notes/create` Misskey API
 
 API document is: https://virtual-kaf.fun/api-doc#operation/notes/create
 -}
-module Network.Misskey.Api.Notes.Create
+module Web.Misskey.Api.Notes.Create
 ( notesCreate
 , APIRequest(..)
 , Visibility(..)
@@ -22,8 +22,8 @@ import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
 import Data.Aeson (FromJSON(..), Value(..), (.:))
 import Data.Char (toLower)
 import Lens.Simple ((^.), makeLenses)
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal
 
 data Visibility = Public | Home | Followers | Specified deriving (Read)
 $(deriveJSON defaultOptions {constructorTagModifier = map toLower} ''Visibility)
