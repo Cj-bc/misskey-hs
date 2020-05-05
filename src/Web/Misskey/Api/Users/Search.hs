@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Users.Search
+Module      : Web.Misskey.Api.Users.Search
 Description : Misskey API Endpoint and Request for users/search
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
 Maintainer  : cj.bc-sd@outlook.jp
@@ -9,7 +9,7 @@ Stability   : experimental
 Call `users/search` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/search
 -}
-module Network.Misskey.Api.Users.Search
+module Web.Misskey.Api.Users.Search
 ( usersSearch
 , APIRequest(..)
 ) where
@@ -17,8 +17,8 @@ module Network.Misskey.Api.Users.Search
 import Control.Monad.Trans.Reader (ask)
 import Data.Aeson ((.=), object)
 import Data.Maybe (isNothing)
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal (postRequest, createMaybeObj)
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal (postRequest, createMaybeObj)
 
 data APIRequest = APIRequest { query     :: String
                              , offset    :: Maybe Int

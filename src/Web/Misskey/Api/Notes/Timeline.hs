@@ -1,7 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Notes.Timeline
+Module      : Web.Misskey.Api.Notes.Timeline
 Description : Misskey API Endpoint and Request for notes/timeline
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
 Maintainer  : cj.bc-sd@outlook.jp
@@ -9,15 +9,15 @@ Stability   : experimental
 
 Call `notes/timeline` Misskey API
 -}
-module Network.Misskey.Api.Notes.Timeline
+module Web.Misskey.Api.Notes.Timeline
 ( APIRequest(APIRequest)
 , notesTimeline
 ) where
 
 import Data.Time (UTCTime)
 import Lens.Simple (makeLenses, (^.))
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal
 
 data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
                              , _sinceId               :: Maybe String

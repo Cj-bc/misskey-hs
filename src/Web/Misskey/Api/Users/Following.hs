@@ -1,7 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-|
-Module      : Network.Misskey.Api.Users.Following
+Module      : Web.Misskey.Api.Users.Following
 Description : Misskey API Endpoint and Request for users/following
 Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
 Maintainer  : cj.bc-sd@outlook.jp
@@ -10,15 +10,15 @@ Stability   : experimental
 Call `users/following` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/following
 -}
-module Network.Misskey.Api.Users.Following (
+module Web.Misskey.Api.Users.Following (
   APIRequest(APIRequest)
 , usersFollowing
 ) where
 
 import Data.Aeson (object)
 import Lens.Simple ((^.), makeLenses)
-import Network.Misskey.Type
-import Network.Misskey.Api.Internal
+import Web.Misskey.Type
+import Web.Misskey.Api.Internal
 
 
 data APIRequest = APIRequest { _userId   :: Maybe String
