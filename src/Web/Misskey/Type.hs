@@ -263,7 +263,8 @@ data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
                                        , pageVArg_value :: String
                                        } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
+makeLenses ''PageVariableArg
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 10 } ''PageVariableArg)
 
 -- TODO: Implement this
 --
@@ -272,14 +273,15 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
 type PageVariableType = String
 
 -- | Page variable that can be declared for each page
-data PageVariable = PageVariable { pageV_id   :: Id
-                                 , pageV_args :: [PageVariableArg]
-                                 , pageV_name :: String
-                                 , pageV_type :: PageVariableType
-                                 , pageV_value :: Maybe String -- ^ TODO: what type is this?
+data PageVariable = PageVariable { _pageV_id   :: Id
+                                 , _pageV_args :: [PageVariableArg]
+                                 , _pageV_name :: String
+                                 , _pageV_type :: PageVariableType
+                                 , _pageV_value :: Maybe String -- ^ TODO: what type is this?
                                  } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
+makeLenses ''PageVariable
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 7 } ''PageVariable)
 
 -- | Page
 --
@@ -288,26 +290,27 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
 --   * https://misskey.io/api-doc#operation/pages/show
 --
 --   * https://join.misskey.page/ja/wiki/usage/pages
-data Page = Page { page_id  :: Id
-                 , page_createdAt :: UTCTime
-                 , page_updatedAt :: UTCTime
-                 , page_title        :: String
-                 , page_name         :: String
-                 , page_summary      :: Maybe String
-                 , page_content      :: [PageContent]
-                 , page_variables    :: [PageVariable]
-                 , page_userId       :: Id
-                 , page_user         :: BaseUser
+data Page = Page { _page_id  :: Id
+                 , _page_createdAt :: UTCTime
+                 , _page_updatedAt :: UTCTime
+                 , _page_title        :: String
+                 , _page_name         :: String
+                 , _page_summary      :: Maybe String
+                 , _page_content      :: [PageContent]
+                 , _page_variables    :: [PageVariable]
+                 , _page_userId       :: Id
+                 , _page_user         :: BaseUser
                  -- Those fields below are undocumented
-                 , page_hideTitleWhenPinned :: Bool
-                 , page_alignCenter         :: Bool
-                 , page_font                :: String
-                 , page_eyeCatchingImageId  :: Maybe String -- ^ TODO: Check whether this type correct
-                 , page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
-                 , page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
-                 , page_likedCount          :: Int
+                 , _page_hideTitleWhenPinned :: Bool
+                 , _page_alignCenter         :: Bool
+                 , _page_font                :: String
+                 , _page_eyeCatchingImageId  :: Maybe String -- ^ TODO: Check whether this type correct
+                 , _page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
+                 , _page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
+                 , _page_likedCount          :: Int
                  } deriving (Show)
 
+makeLenses ''Page
 
 -- instance FromJSON Page where {{{
 instance FromJSON Page where
