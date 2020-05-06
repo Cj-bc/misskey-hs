@@ -362,6 +362,8 @@ data BaseUser = BaseUser { _baseUser_id          :: String
                          } deriving (Show)
 
 $(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
+makeLenses ''BaseUser
+
 
 -- | A Note object
 --
@@ -387,6 +389,8 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_poll               :: Maybe Poll
                  , _note_geo                :: Maybe Geo
                  } deriving (Show)
+
+makeLenses ''Note
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
