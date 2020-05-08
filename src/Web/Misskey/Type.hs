@@ -20,11 +20,11 @@ module Web.Misskey.Type (
 , runMisskey
 , APIError
   -- * Types corresponds to each Misskey data
-, Poll(..)
-, File(..)
-, Page(..)
-, Note(..)
-, User(..)
+, Poll
+, File
+, Page
+, Note
+, User
 , Geo(..)
 
   -- * Lenses
