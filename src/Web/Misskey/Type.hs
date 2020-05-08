@@ -93,6 +93,26 @@ type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
 runMisskey = runReaderT
 
 
+-- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
+--
+-- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
+--
+-- __Caution__: This definition is made from API result so might contain some mistakes
+data BaseUser = BaseUser { _baseUser_id          :: String
+                         , _baseUser_name        :: String
+                         , _baseUser_username    :: String
+                         , _baseUser_host        :: Maybe String
+                         , _baseUser_avatarUrl   :: String
+                         , _baseUser_avatarColor :: String
+                         , _baseUser_isCat       :: Maybe Bool
+                         , _baseUser_emojis      :: [String]
+                         } deriving (Show)
+
+
+$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
+makeLenses ''BaseUser
+
+
 -- Poll {{{
 
 -- | A choice for 'Poll'
@@ -356,26 +376,6 @@ instance FromJSON Geo where
 
 instance ToJSON Geo where
     toJSON _ = String "geo"
-
-
--- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
---
--- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
---
--- __Caution__: This definition is made from API result so might contain some mistakes
-data BaseUser = BaseUser { _baseUser_id          :: String
-                         , _baseUser_name        :: String
-                         , _baseUser_username    :: String
-                         , _baseUser_host        :: Maybe String
-                         , _baseUser_avatarUrl   :: String
-                         , _baseUser_avatarColor :: String
-                         , _baseUser_isCat       :: Maybe Bool
-                         , _baseUser_emojis      :: [String]
-                         } deriving (Show)
-
-$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
-makeLenses ''BaseUser
-
 
 -- | A Note object
 --
