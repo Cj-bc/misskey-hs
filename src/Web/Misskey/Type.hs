@@ -26,6 +26,44 @@ module Web.Misskey.Type (
 , Note(..)
 , User(..)
 , Geo(..)
+
+  -- * Lenses
+  -- ** Lenses for BaseUser
+, baseUser_id, baseUser_name, baseUser_username, baseUser_host
+, baseUser_avatarUrl, baseUser_avatarColor, baseUser_isCat
+, baseUser_emojis
+
+  -- ** Lenses for Note
+, note_id, note_createdAt, note_text, note_cw, note_userId
+, note_user, note_replyId, note_renoteId, note_reply, note_renote
+, note_viaMobile, note_isHidden, note_visibility, note_mentions
+, note_visibleUserIds, note_fileIds, note_files, note_tags
+, note_poll, note_geo
+
+  -- ** Lenses for Page
+, page_id, page_createdAt, page_updatedAt, page_title, page_name
+, page_summary, page_content, page_variables, page_userId, page_user
+, page_hideTitleWhenPinned, page_alignCenter, page_font
+, page_eyeCatchingImageId, page_eyeCatchingImage, page_attachedFiles
+, page_likedCount
+
+  -- ** Lenses for PageVArg
+, pageVArg_id, pageVArg_type, pageVArg_value
+
+  -- ** Lenses for PageV
+, pageV_id, pageV_args, pageV_name, pageV_type, pageV_value
+
+  -- ** Lenses for User
+, user_id, user_username, user_name, user_url, user_avatarUrl
+, user_avatarColor, user_bannerUrl, user_bannerColor, user_emojis
+, user_host, user_description, user_birthday, user_createdAt
+, user_updatedAt, user_location, user_followersCount, user_followingCount
+, user_notesCount, user_isBot, user_pinnedNoteIds, user_pinnedNotes
+, user_isCat, user_isAdmin, user_isModerator, user_isLocked
+, user_hasUnreadSpecifiedNotes, user_hasUnreadMentions, user_github
+, user_twitter, user_discord, user_fields, user_twoFactorEnabled
+, user_usePasswordLessLogin, user_securityKeys, user_isSilenced
+, user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
 
 import Lens.Simple
