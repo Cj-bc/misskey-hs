@@ -96,12 +96,13 @@ runMisskey = runReaderT
 -- | A choice for 'Poll'
 --
 -- This is used inside 'Poll' datatype
-data PollChoice = PollChoice { pollChoice_text     :: String
-                             , pollChoice_votes    :: Int
-                             , pollChoice_isVoted  :: Bool
+data PollChoice = PollChoice { _pollChoice_text     :: String
+                             , _pollChoice_votes    :: Int
+                             , _pollChoice_isVoted  :: Bool
                              } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 12 } ''PollChoice)
+makeLenses ''PollChoice
 
 
 -- | A poll along with 'Note'
@@ -111,6 +112,8 @@ data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voti
                  , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  } deriving (Show)
+
+makeLenses ''Poll
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
@@ -137,6 +140,8 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
                  , _file_folderId   :: Maybe Id     -- ^ The parent folder ID of this Drive file
                  , _isSensitive     :: Bool         -- ^ Whether this Drive file is sensitive.
                  } deriving (Show)
+
+makeLenses ''File
 
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
