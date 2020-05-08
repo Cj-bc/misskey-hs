@@ -86,7 +86,9 @@ instance FromJSON APIError where
                                     <*> v .:? "info"
 -- }}}
 
--- Misskey
+-- | Misskey monad
+--
+-- It's just Reader monad with MisskeyEnv
 type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
 runMisskey = runReaderT
 
@@ -166,6 +168,8 @@ instance FromJSON File where
 -- (https://<your-domain>/i/pages/new) by me.
 --
 -- So It might have some mistakes.
+--
+-- TODO: Generate Prism for this data type
 data PageContent = PageContentText { pageContent_id   :: Id
                                    , pageContent_text :: String
                                    }
