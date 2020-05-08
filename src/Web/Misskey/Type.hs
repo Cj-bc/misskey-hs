@@ -263,9 +263,9 @@ instance FromJSON PageContent where
             (typeMismatch "Object" invalid)
 -- }}}
 
-data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
-                                       , pageVArg_type  :: String
-                                       , pageVArg_value :: String
+data PageVariableArg = PageVariableArg { _pageVArg_id    :: Id
+                                       , _pageVArg_type  :: String
+                                       , _pageVArg_value :: String
                                        } deriving (Show)
 
 makeLenses ''PageVariableArg
