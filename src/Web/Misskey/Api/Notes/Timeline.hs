@@ -12,6 +12,11 @@ Call `notes/timeline` Misskey API
 module Web.Misskey.Api.Notes.Timeline
 ( APIRequest(APIRequest)
 , notesTimeline
+
+-- ** Lenses for APIRequest
+, limit, sinceId, untilId, sinceDate, untilDate
+, includeMyRenotes, includeRenotedMyNotes
+, includeLocalRenotes, withFiles
 ) where
 
 import Data.Time (UTCTime)

@@ -12,7 +12,8 @@ API document is: https://misskey.io/api-doc#operation/users/show
 -}
 module Web.Misskey.Api.Users.Show (
 usersShow
-, APIRequest(..)
+, APIRequest
+, userId, userIds, userName
 )
 
 where
@@ -31,9 +32,10 @@ import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatu
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
-data APIRequest = UserId   String
-                | UserIds  [String]
-                | UserName String (Maybe String)
+data APIRequest = _UserId   String
+                | _UserIds  [String]
+                | _UserName String (Maybe String)
+makeLenses ''APIRequest
 
 -- | Call API `users/show` and return result
 --

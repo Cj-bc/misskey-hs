@@ -11,7 +11,10 @@ API document is: https://misskey.io/api-doc#operation/users/search
 -}
 module Web.Misskey.Api.Users.Search
 ( usersSearch
-, APIRequest(..)
+, APIRequest
+
+-- ** Lenses for APIRequest
+, query, offset, limit, localOnly, detail
 ) where
 
 import Control.Monad.Trans.Reader (ask)
@@ -20,12 +23,13 @@ import Data.Maybe (isNothing)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createMaybeObj)
 
-data APIRequest = APIRequest { query     :: String
-                             , offset    :: Maybe Int
-                             , limit     :: Maybe Int
-                             , localOnly :: Maybe Bool
-                             , detail    :: Maybe Bool
+data APIRequest = APIRequest { _query     :: String
+                             , _offset    :: Maybe Int
+                             , _limit     :: Maybe Int
+                             , _localOnly :: Maybe Bool
+                             , _detail    :: Maybe Bool
                              }
+makeLenses ''APIRequest
 
 
 
