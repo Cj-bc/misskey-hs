@@ -20,7 +20,7 @@ module Web.Misskey.Api.Notes.Timeline
 ) where
 
 import Data.Time (UTCTime)
-import Lens.Simple (makeLenses, (^.))
+import Control.Lens (makeLenses, (^.))
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 

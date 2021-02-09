@@ -15,7 +15,7 @@ module Web.Misskey.Api.Users.Notes
 ( usersNotes
 , APIRequest(..)
 ) where
-import Lens.Simple (makeLenses, (^.))
+import Control.Lens (makeLenses, (^.))
 import Data.Time (UTCTime)
 import Data.Aeson ((.=), object)
 

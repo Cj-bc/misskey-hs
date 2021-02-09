@@ -66,7 +66,7 @@ module Web.Misskey.Type (
 , user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
 
-import Lens.Simple
+import Control.Lens
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
 import Data.Aeson
 import Data.Aeson.Types

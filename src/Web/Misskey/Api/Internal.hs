@@ -16,7 +16,7 @@ import Data.Time (UTCTime)
 import System.Posix.Types (EpochTime)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Foreign.C.Types (CTime(..))
-import Lens.Simple ((^.))
+import Control.Lens ((^.))
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)

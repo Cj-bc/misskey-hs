@@ -24,7 +24,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Either (Either(..))
 import Data.Maybe (fromJust, maybe)
 import Data.ByteString.Lazy (ByteString)
-import Lens.Simple ((^.), makeLenses)
+import Control.Lens ((^.), makeLenses, makePrisms)
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
