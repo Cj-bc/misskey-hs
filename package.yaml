@@ -29,6 +29,7 @@ dependencies:
 - transformers
 - iso8601-time
 - lens
+- text
 
 
 library:

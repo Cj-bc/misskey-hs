@@ -68,6 +68,7 @@ module Web.Misskey.Type (
 
 import Control.Lens
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
+import Control.Monad ((=<<))
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Aeson.TH (deriveJSON)
@@ -75,6 +76,7 @@ import Data.Time (UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
 import Data.Maybe (fromJust, isNothing)
 import GHC.Generics
+import Data.Text (Text)
 
 
 type Url = String
@@ -82,11 +84,10 @@ type UserId  = String
 type NoteId = String
 type Id = String
 
+parseData :: Object -> Text -> Parser (Maybe UTCTime)
 parseData v s = do
-    b <- v .:? s
-    if isNothing b
-    then return Nothing
-    else return $ parseISO8601 $ fromJust b
+    b <- v .:? s :: Parser (Maybe String)
+    return $ parseISO8601 =<< b
 
 
 -- | Environment to execute misskey API
