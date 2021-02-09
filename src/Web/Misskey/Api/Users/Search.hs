@@ -11,7 +11,7 @@ API document is: https://misskey.io/api-doc#operation/users/search
 -}
 module Web.Misskey.Api.Users.Search
 ( usersSearch
-, APIRequest
+, APIRequest(APIRequest)
 
 -- ** Lenses for APIRequest
 , query, offset, limit, localOnly, detail
