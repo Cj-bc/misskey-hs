@@ -32,10 +32,10 @@ import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatu
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
-data APIRequest = _UserId   String
-                | _UserIds  [String]
-                | _UserName String (Maybe String)
-makeLenses ''APIRequest
+data APIRequest = UserId   String
+                | UserIds  [String]
+                | UserName String (Maybe String)
+makePrisms ''APIRequest
 
 -- | Call API `users/show` and return result
 --
