@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
 {-|
 Module      : Web.Misskey.Api.Users.Show
@@ -13,7 +13,7 @@ API document is: https://misskey.io/api-doc#operation/users/show
 module Web.Misskey.Api.Users.Show (
 usersShow
 , APIRequest
-, userId, userIds, userName
+, _UserId, _UserIds, _UserName
 )
 
 where

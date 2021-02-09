@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 {-|
 Module      : Web.Misskey.Api.Users.Search
 Description : Misskey API Endpoint and Request for users/search
@@ -18,6 +18,7 @@ module Web.Misskey.Api.Users.Search
 ) where
 
 import Control.Monad.Trans.Reader (ask)
+import Control.Lens (makeLenses)
 import Data.Aeson ((.=), object)
 import Data.Maybe (isNothing)
 import Web.Misskey.Type
