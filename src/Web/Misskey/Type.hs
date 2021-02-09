@@ -99,21 +99,23 @@ data MisskeyEnv = MisskeyEnv { _misskeyEnvToken :: String
 makeLenses ''MisskeyEnv
 
 -- APIError {{{
-data APIErrorInfo = APIErrorInfo { param :: String
-                                 , reason :: String
+data APIErrorInfo = APIErrorInfo { _APIErrorInfoParam :: String
+                                 , _APIErrorInfoReason :: String
                                  } deriving (Show)
 
 $(deriveJSON defaultOptions ''APIErrorInfo)
+makeLenses ''APIErrorInfo
 
 -- | Error response of all API
 -- 
 -- This value will be returned from each API caller if API returns error
-data APIError = APIError { code     :: String
-                         , message  :: String
-                         , id       :: String
-                         , kind     :: Maybe String -- Undocumented
-                         , info     :: Maybe APIErrorInfo -- Undocumented
+data APIError = APIError { _APIErrorCode     :: String
+                         , _APIErrorMessage  :: String
+                         , _APIErrorId       :: String
+                         , _APIErrorKind     :: Maybe String -- Undocumented
+                         , _APIErrorInfo     :: Maybe APIErrorInfo -- Undocumented
                          } deriving (Show)
+makeLenses ''APIError
 
 instance FromJSON APIError where
     parseJSON (Object v) = v .: "error" >>= parseError
@@ -229,60 +231,60 @@ instance FromJSON File where
 -- So It might have some mistakes.
 --
 -- TODO: Generate Prism for this data type
-data PageContent = PageContentText { pageContent_id   :: Id
-                                   , pageContent_text :: String
+data PageContent = PageContentText { _pageContent_id   :: Id
+                                   , _pageContent_text :: String
                                    }
-                 | PageContentSection { pageContent_id       :: Id
-                                      , pageContent_title    :: String
-                                      , pageContent_children :: [PageContent]
+                 | PageContentSection { _pageContent_id       :: Id
+                                      , _pageContent_title    :: String
+                                      , _pageContent_children :: [PageContent]
                                       }
-                 | PageContentImage { pageContent_id     :: Id
-                                    , pageContent_fileId :: Id
+                 | PageContentImage { _pageContent_id     :: Id
+                                    , _pageContent_fileId :: Id
                                     }
-                 | PageContentTextArea { pageContent_id   :: Id
-                                       , pageContent_text :: String
+                 | PageContentTextArea { _pageContent_id   :: Id
+                                       , _pageContent_text :: String
                                        }
-                 | PageContentButton { pageContent_id      :: Id
-                                     , pageContent_var     :: Maybe String
-                                     , pageContent_text    :: String
-                                     , pageContent_event   :: Maybe String  -- TODO: Check those type
-                                     , pageContent_action  :: Maybe String  -- TODO: Check those type
-                                     , pageContent_content :: Maybe String  -- TODO: Check those type
-                                     , pageContent_message :: Maybe String  -- TODO: Check those type
-                                     , pageContent_primary :: Bool
+                 | PageContentButton { _pageContent_id      :: Id
+                                     , _pageContent_var     :: Maybe String
+                                     , _pageContent_text    :: String
+                                     , _pageContent_event   :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_action  :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_content :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_message :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_primary :: Bool
                                      }
-                 | PageContentRadioButton { pageContent_id       :: Id
-                                          , pageContent_name     :: String
-                                          , pageContent_title    :: String
-                                          , pageContent_values   :: String
-                                          , pageContent_defuault :: Maybe String
+                 | PageContentRadioButton { _pageContent_id       :: Id
+                                          , _pageContent_name     :: String
+                                          , _pageContent_title    :: String
+                                          , _pageContent_values   :: String
+                                          , _pageContent_defuault :: Maybe String
                                           }
-                 | PageContentTextInput { pageContent_id       :: Id
-                                        , pageContent_name     :: String
-                                        , pageContent_text     :: String
-                                        , pageContent_defuault :: Maybe String
+                 | PageContentTextInput { _pageContent_id       :: Id
+                                        , _pageContent_name     :: String
+                                        , _pageContent_text     :: String
+                                        , _pageContent_defuault :: Maybe String
                                         }
-                 | PageContentTextAreaInput { pageContent_id       :: Id
-                                            , pageContent_name     :: String
-                                            , pageContent_text     :: String
-                                            , pageContent_defuault :: Maybe String
+                 | PageContentTextAreaInput { _pageContent_id       :: Id
+                                            , _pageContent_name     :: String
+                                            , _pageContent_text     :: String
+                                            , _pageContent_defuault :: Maybe String
                                             }
-                 | PageContentSwitch { pageContent_id      :: Id
-                                     , pageContent_name    :: String
-                                     , pageContent_text    :: String
-                                     , pageContent_default :: Maybe String
+                 | PageContentSwitch { _pageContent_id      :: Id
+                                     , _pageContent_name    :: String
+                                     , _pageContent_text    :: String
+                                     , _pageContent_default :: Maybe String
                                      }
-                 | PageContentCounter { pageContent_id   :: Id
-                                      , pageContent_name :: String
-                                      , pageContent_text :: String
-                                      , pageContent_inc  :: Maybe String
+                 | PageContentCounter { _pageContent_id   :: Id
+                                      , _pageContent_name :: String
+                                      , _pageContent_text :: String
+                                      , _pageContent_inc  :: Maybe String
                                       }
-                 | PageContentIf { pageContent_id       :: Id
-                                 , pageContent_var      :: Maybe String
-                                 , pageContent_children :: [PageContent]
+                 | PageContentIf { _pageContent_id       :: Id
+                                 , _pageContent_var      :: Maybe String
+                                 , _pageContent_children :: [PageContent]
                                  }
-                 | PageContentPost { pageContent_id   :: Id
-                                   , pageContent_text :: String
+                 | PageContentPost { _pageContent_id   :: Id
+                                   , _pageContent_text :: String
                                    }
                     deriving (Show)
 
@@ -325,6 +327,8 @@ instance FromJSON PageContent where
         prependFailure "parsing PageContent failed, "
             (typeMismatch "Object" invalid)
 -- }}}
+makePrisms ''PageContent
+makeLenses ''PageContent
 
 data PageVariableArg = PageVariableArg { _pageVArg_id    :: Id
                                        , _pageVArg_type  :: String
@@ -470,11 +474,12 @@ instance FromJSON Note where
 
 -- User {{{
 
-data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
-                                       , userTwitterInfo_screenName :: String}
+data UserTwitterInfo = UserTwitterInfo { _userTwitterInfo_id :: String
+                                       , _userTwitterInfo_screenName :: String}
                        deriving (Show)
 
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 16 } ''UserTwitterInfo)
+makeLenses ''UserTwitterInfo
 
 -- TODO: Implement this
 --
