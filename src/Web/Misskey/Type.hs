@@ -92,10 +92,11 @@ parseData v s = do
 -- | Environment to execute misskey API
 --
 -- TODO: Should I validate if URL is valid?
-data MisskeyEnv = MisskeyEnv { _token :: String
-                             , _url   :: Url
+data MisskeyEnv = MisskeyEnv { _misskeyEnvToken :: String
+                             , _misskeyEnvUrl   :: Url
                              }
 
+makeLenses ''MisskeyEnv
 
 -- APIError {{{
 data APIErrorInfo = APIErrorInfo { param :: String
