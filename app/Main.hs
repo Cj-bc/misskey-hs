@@ -23,7 +23,7 @@ import qualified Web.Misskey.Api.Users.Followers as UFr
 import qualified Web.Misskey.Api.Users.Following as UFi
 import qualified Web.Misskey.Api.Notes.Create as NC
 import qualified Web.Misskey.Api.Notes.Timeline as NT
-import Control.Lens ((^.))
+import Control.Lens ((^.), review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
@@ -68,11 +68,11 @@ reversedSwitch = flag False True
 -- usersShowParser {{{
 
 usersShowParser :: Parser SubCmds
-usersShowParser = UsersShow NoOption <$> (USh.UserId        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
-                                          <|> USh.UserIds   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
-                                          <|> USh.UserName  <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
-                                                            <*> option maybeStr
-                                                                      (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on"))
+usersShowParser = UsersShow NoOption <$> ((review USh._UserId)        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
+                                          <|> (review USh._UserIds)   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
+                                          <|> (review USh._UserName)  <$> ((,) <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
+                                                                              <*> option maybeStr
+                                                                                        (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on")))
 
 usersShowInfo :: ParserInfo SubCmds
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
