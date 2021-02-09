@@ -19,7 +19,7 @@ module Web.Misskey.Api.Users.Users
 ) where
 
 import Data.Aeson (object)
-import Lens.Simple (makeLenses, (^.))
+import Control.Lens (makeLenses, (^.))
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
 

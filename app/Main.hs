@@ -23,7 +23,7 @@ import qualified Web.Misskey.Api.Users.Followers as UFr
 import qualified Web.Misskey.Api.Users.Following as UFi
 import qualified Web.Misskey.Api.Notes.Create as NC
 import qualified Web.Misskey.Api.Notes.Timeline as NT
-import Lens.Simple ((^.))
+import Control.Lens ((^.))
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 

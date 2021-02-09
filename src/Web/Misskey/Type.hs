@@ -20,15 +20,53 @@ module Web.Misskey.Type (
 , runMisskey
 , APIError
   -- * Types corresponds to each Misskey data
-, Poll(..)
-, File(..)
-, Page(..)
-, Note(..)
-, User(..)
+, Poll
+, File
+, Page
+, Note
+, User
 , Geo(..)
+
+  -- * Lenses
+  -- ** Lenses for BaseUser
+, baseUser_id, baseUser_name, baseUser_username, baseUser_host
+, baseUser_avatarUrl, baseUser_avatarColor, baseUser_isCat
+, baseUser_emojis
+
+  -- ** Lenses for Note
+, note_id, note_createdAt, note_text, note_cw, note_userId
+, note_user, note_replyId, note_renoteId, note_reply, note_renote
+, note_viaMobile, note_isHidden, note_visibility, note_mentions
+, note_visibleUserIds, note_fileIds, note_files, note_tags
+, note_poll, note_geo
+
+  -- ** Lenses for Page
+, page_id, page_createdAt, page_updatedAt, page_title, page_name
+, page_summary, page_content, page_variables, page_userId, page_user
+, page_hideTitleWhenPinned, page_alignCenter, page_font
+, page_eyeCatchingImageId, page_eyeCatchingImage, page_attachedFiles
+, page_likedCount
+
+  -- ** Lenses for PageVArg
+, pageVArg_id, pageVArg_type, pageVArg_value
+
+  -- ** Lenses for PageV
+, pageV_id, pageV_args, pageV_name, pageV_type, pageV_value
+
+  -- ** Lenses for User
+, user_id, user_username, user_name, user_url, user_avatarUrl
+, user_avatarColor, user_bannerUrl, user_bannerColor, user_emojis
+, user_host, user_description, user_birthday, user_createdAt
+, user_updatedAt, user_location, user_followersCount, user_followingCount
+, user_notesCount, user_isBot, user_pinnedNoteIds, user_pinnedNotes
+, user_isCat, user_isAdmin, user_isModerator, user_isLocked
+, user_hasUnreadSpecifiedNotes, user_hasUnreadMentions, user_github
+, user_twitter, user_discord, user_fields, user_twoFactorEnabled
+, user_usePasswordLessLogin, user_securityKeys, user_isSilenced
+, user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
 
-import Lens.Simple
+import Control.Lens
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
 import Data.Aeson
 import Data.Aeson.Types
@@ -54,27 +92,30 @@ parseData v s = do
 -- | Environment to execute misskey API
 --
 -- TODO: Should I validate if URL is valid?
-data MisskeyEnv = MisskeyEnv { _token :: String
-                             , _url   :: Url
+data MisskeyEnv = MisskeyEnv { _misskeyEnvToken :: String
+                             , _misskeyEnvUrl   :: Url
                              }
 
+makeLenses ''MisskeyEnv
 
 -- APIError {{{
-data APIErrorInfo = APIErrorInfo { param :: String
-                                 , reason :: String
+data APIErrorInfo = APIErrorInfo { _APIErrorInfoParam :: String
+                                 , _APIErrorInfoReason :: String
                                  } deriving (Show)
 
 $(deriveJSON defaultOptions ''APIErrorInfo)
+makeLenses ''APIErrorInfo
 
 -- | Error response of all API
 -- 
 -- This value will be returned from each API caller if API returns error
-data APIError = APIError { code     :: String
-                         , message  :: String
-                         , id       :: String
-                         , kind     :: Maybe String -- Undocumented
-                         , info     :: Maybe APIErrorInfo -- Undocumented
+data APIError = APIError { _APIErrorCode     :: String
+                         , _APIErrorMessage  :: String
+                         , _APIErrorId       :: String
+                         , _APIErrorKind     :: Maybe String -- Undocumented
+                         , _APIErrorInfo     :: Maybe APIErrorInfo -- Undocumented
                          } deriving (Show)
+makeLenses ''APIError
 
 instance FromJSON APIError where
     parseJSON (Object v) = v .: "error" >>= parseError
@@ -86,9 +127,31 @@ instance FromJSON APIError where
                                     <*> v .:? "info"
 -- }}}
 
--- Misskey
+-- | Misskey monad
+--
+-- It's just Reader monad with MisskeyEnv
 type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
 runMisskey = runReaderT
+
+
+-- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
+--
+-- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
+--
+-- __Caution__: This definition is made from API result so might contain some mistakes
+data BaseUser = BaseUser { _baseUser_id          :: String
+                         , _baseUser_name        :: String
+                         , _baseUser_username    :: String
+                         , _baseUser_host        :: Maybe String
+                         , _baseUser_avatarUrl   :: String
+                         , _baseUser_avatarColor :: String
+                         , _baseUser_isCat       :: Maybe Bool
+                         , _baseUser_emojis      :: [String]
+                         } deriving (Show)
+
+
+$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
+makeLenses ''BaseUser
 
 
 -- Poll {{{
@@ -96,12 +159,13 @@ runMisskey = runReaderT
 -- | A choice for 'Poll'
 --
 -- This is used inside 'Poll' datatype
-data PollChoice = PollChoice { pollChoice_text     :: String
-                             , pollChoice_votes    :: Int
-                             , pollChoice_isVoted  :: Bool
+data PollChoice = PollChoice { _pollChoice_text     :: String
+                             , _pollChoice_votes    :: Int
+                             , _pollChoice_isVoted  :: Bool
                              } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 11 } ''PollChoice)
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 12 } ''PollChoice)
+makeLenses ''PollChoice
 
 
 -- | A poll along with 'Note'
@@ -111,6 +175,8 @@ data Poll = Poll { _poll_multiple   :: Bool           -- ^ True if multiple voti
                  , _poll_expiresAt  :: Maybe UTCTime
                  , _choices         :: [PollChoice]
                  } deriving (Show)
+
+makeLenses ''Poll
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
@@ -138,6 +204,8 @@ data File = File { _file_id         :: Id           -- ^ Unique identifier for t
                  , _isSensitive     :: Bool         -- ^ Whether this Drive file is sensitive.
                  } deriving (Show)
 
+makeLenses ''File
+
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
                                 <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
@@ -161,60 +229,62 @@ instance FromJSON File where
 -- (https://<your-domain>/i/pages/new) by me.
 --
 -- So It might have some mistakes.
-data PageContent = PageContentText { pageContent_id   :: Id
-                                   , pageContent_text :: String
+--
+-- TODO: Generate Prism for this data type
+data PageContent = PageContentText { _pageContent_id   :: Id
+                                   , _pageContent_text :: String
                                    }
-                 | PageContentSection { pageContent_id       :: Id
-                                      , pageContent_title    :: String
-                                      , pageContent_children :: [PageContent]
+                 | PageContentSection { _pageContent_id       :: Id
+                                      , _pageContent_title    :: String
+                                      , _pageContent_children :: [PageContent]
                                       }
-                 | PageContentImage { pageContent_id     :: Id
-                                    , pageContent_fileId :: Id
+                 | PageContentImage { _pageContent_id     :: Id
+                                    , _pageContent_fileId :: Id
                                     }
-                 | PageContentTextArea { pageContent_id   :: Id
-                                       , pageContent_text :: String
+                 | PageContentTextArea { _pageContent_id   :: Id
+                                       , _pageContent_text :: String
                                        }
-                 | PageContentButton { pageContent_id      :: Id
-                                     , pageContent_var     :: Maybe String
-                                     , pageContent_text    :: String
-                                     , pageContent_event   :: Maybe String  -- TODO: Check those type
-                                     , pageContent_action  :: Maybe String  -- TODO: Check those type
-                                     , pageContent_content :: Maybe String  -- TODO: Check those type
-                                     , pageContent_message :: Maybe String  -- TODO: Check those type
-                                     , pageContent_primary :: Bool
+                 | PageContentButton { _pageContent_id      :: Id
+                                     , _pageContent_var     :: Maybe String
+                                     , _pageContent_text    :: String
+                                     , _pageContent_event   :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_action  :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_content :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_message :: Maybe String  -- TODO: Check those type
+                                     , _pageContent_primary :: Bool
                                      }
-                 | PageContentRadioButton { pageContent_id       :: Id
-                                          , pageContent_name     :: String
-                                          , pageContent_title    :: String
-                                          , pageContent_values   :: String
-                                          , pageContent_defuault :: Maybe String
+                 | PageContentRadioButton { _pageContent_id       :: Id
+                                          , _pageContent_name     :: String
+                                          , _pageContent_title    :: String
+                                          , _pageContent_values   :: String
+                                          , _pageContent_defuault :: Maybe String
                                           }
-                 | PageContentTextInput { pageContent_id       :: Id
-                                        , pageContent_name     :: String
-                                        , pageContent_text     :: String
-                                        , pageContent_defuault :: Maybe String
+                 | PageContentTextInput { _pageContent_id       :: Id
+                                        , _pageContent_name     :: String
+                                        , _pageContent_text     :: String
+                                        , _pageContent_defuault :: Maybe String
                                         }
-                 | PageContentTextAreaInput { pageContent_id       :: Id
-                                            , pageContent_name     :: String
-                                            , pageContent_text     :: String
-                                            , pageContent_defuault :: Maybe String
+                 | PageContentTextAreaInput { _pageContent_id       :: Id
+                                            , _pageContent_name     :: String
+                                            , _pageContent_text     :: String
+                                            , _pageContent_defuault :: Maybe String
                                             }
-                 | PageContentSwitch { pageContent_id      :: Id
-                                     , pageContent_name    :: String
-                                     , pageContent_text    :: String
-                                     , pageContent_default :: Maybe String
+                 | PageContentSwitch { _pageContent_id      :: Id
+                                     , _pageContent_name    :: String
+                                     , _pageContent_text    :: String
+                                     , _pageContent_default :: Maybe String
                                      }
-                 | PageContentCounter { pageContent_id   :: Id
-                                      , pageContent_name :: String
-                                      , pageContent_text :: String
-                                      , pageContent_inc  :: Maybe String
+                 | PageContentCounter { _pageContent_id   :: Id
+                                      , _pageContent_name :: String
+                                      , _pageContent_text :: String
+                                      , _pageContent_inc  :: Maybe String
                                       }
-                 | PageContentIf { pageContent_id       :: Id
-                                 , pageContent_var      :: Maybe String
-                                 , pageContent_children :: [PageContent]
+                 | PageContentIf { _pageContent_id       :: Id
+                                 , _pageContent_var      :: Maybe String
+                                 , _pageContent_children :: [PageContent]
                                  }
-                 | PageContentPost { pageContent_id   :: Id
-                                   , pageContent_text :: String
+                 | PageContentPost { _pageContent_id   :: Id
+                                   , _pageContent_text :: String
                                    }
                     deriving (Show)
 
@@ -257,13 +327,16 @@ instance FromJSON PageContent where
         prependFailure "parsing PageContent failed, "
             (typeMismatch "Object" invalid)
 -- }}}
+makePrisms ''PageContent
+makeLenses ''PageContent
 
-data PageVariableArg = PageVariableArg { pageVArg_id    :: Id
-                                       , pageVArg_type  :: String
-                                       , pageVArg_value :: String
+data PageVariableArg = PageVariableArg { _pageVArg_id    :: Id
+                                       , _pageVArg_type  :: String
+                                       , _pageVArg_value :: String
                                        } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
+makeLenses ''PageVariableArg
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 10 } ''PageVariableArg)
 
 -- TODO: Implement this
 --
@@ -272,14 +345,15 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 9 } ''PageVariableArg)
 type PageVariableType = String
 
 -- | Page variable that can be declared for each page
-data PageVariable = PageVariable { pageV_id   :: Id
-                                 , pageV_args :: [PageVariableArg]
-                                 , pageV_name :: String
-                                 , pageV_type :: PageVariableType
-                                 , pageV_value :: Maybe String -- ^ TODO: what type is this?
+data PageVariable = PageVariable { _pageV_id   :: Id
+                                 , _pageV_args :: [PageVariableArg]
+                                 , _pageV_name :: String
+                                 , _pageV_type :: PageVariableType
+                                 , _pageV_value :: Maybe String -- ^ TODO: what type is this?
                                  } deriving (Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
+makeLenses ''PageVariable
+$(deriveJSON defaultOptions { fieldLabelModifier = drop 7 } ''PageVariable)
 
 -- | Page
 --
@@ -288,26 +362,27 @@ $(deriveJSON defaultOptions { fieldLabelModifier = drop 6 } ''PageVariable)
 --   * https://misskey.io/api-doc#operation/pages/show
 --
 --   * https://join.misskey.page/ja/wiki/usage/pages
-data Page = Page { page_id  :: Id
-                 , page_createdAt :: UTCTime
-                 , page_updatedAt :: UTCTime
-                 , page_title        :: String
-                 , page_name         :: String
-                 , page_summary      :: Maybe String
-                 , page_content      :: [PageContent]
-                 , page_variables    :: [PageVariable]
-                 , page_userId       :: Id
-                 , page_user         :: BaseUser
+data Page = Page { _page_id  :: Id
+                 , _page_createdAt :: UTCTime
+                 , _page_updatedAt :: UTCTime
+                 , _page_title        :: String
+                 , _page_name         :: String
+                 , _page_summary      :: Maybe String
+                 , _page_content      :: [PageContent]
+                 , _page_variables    :: [PageVariable]
+                 , _page_userId       :: Id
+                 , _page_user         :: BaseUser
                  -- Those fields below are undocumented
-                 , page_hideTitleWhenPinned :: Bool
-                 , page_alignCenter         :: Bool
-                 , page_font                :: String
-                 , page_eyeCatchingImageId  :: Maybe String -- ^ TODO: Check whether this type correct
-                 , page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
-                 , page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
-                 , page_likedCount          :: Int
+                 , _page_hideTitleWhenPinned :: Bool
+                 , _page_alignCenter         :: Bool
+                 , _page_font                :: String
+                 , _page_eyeCatchingImageId  :: Maybe String -- ^ TODO: Check whether this type correct
+                 , _page_eyeCatchingImage    :: Maybe String -- ^ TODO: Check whether this type correct
+                 , _page_attachedFiles       :: [File] -- ^ TODO: Check whether this type correct
+                 , _page_likedCount          :: Int
                  } deriving (Show)
 
+makeLenses ''Page
 
 -- instance FromJSON Page where {{{
 instance FromJSON Page where
@@ -345,24 +420,6 @@ instance FromJSON Geo where
 instance ToJSON Geo where
     toJSON _ = String "geo"
 
-
--- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc
---
--- This is used instead of 'User' in 'Note' \/ 'Page' \/ 'Poll'
---
--- __Caution__: This definition is made from API result so might contain some mistakes
-data BaseUser = BaseUser { _baseUser_id          :: String
-                         , _baseUser_name        :: String
-                         , _baseUser_username    :: String
-                         , _baseUser_host        :: Maybe String
-                         , _baseUser_avatarUrl   :: String
-                         , _baseUser_avatarColor :: String
-                         , _baseUser_isCat       :: Maybe Bool
-                         , _baseUser_emojis      :: [String]
-                         } deriving (Show)
-
-$(deriveJSON defaultOptions {fieldLabelModifier = drop 10} ''BaseUser)
-
 -- | A Note object
 --
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
@@ -387,6 +444,8 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_poll               :: Maybe Poll
                  , _note_geo                :: Maybe Geo
                  } deriving (Show)
+
+makeLenses ''Note
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
@@ -415,11 +474,12 @@ instance FromJSON Note where
 
 -- User {{{
 
-data UserTwitterInfo = UserTwitterInfo { userTwitterInfo_id :: String
-                                       , userTwitterInfo_screenName :: String}
+data UserTwitterInfo = UserTwitterInfo { _userTwitterInfo_id :: String
+                                       , _userTwitterInfo_screenName :: String}
                        deriving (Show)
 
 $(deriveJSON defaultOptions { fieldLabelModifier = drop 16 } ''UserTwitterInfo)
+makeLenses ''UserTwitterInfo
 
 -- TODO: Implement this
 --

@@ -21,7 +21,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
 import Data.Aeson (FromJSON(..), Value(..), (.:))
 import Data.Char (toLower)
-import Lens.Simple ((^.), makeLenses)
+import Control.Lens ((^.), makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
