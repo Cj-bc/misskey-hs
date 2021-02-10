@@ -10,9 +10,10 @@ module Web.Misskey.Api.Internal
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Trans.Reader (ask, ReaderT)
-import Data.Aeson.Types (Pair)
+import Data.Aeson.Types (Pair, KeyValue, ToJSON)
 import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
 import Data.Time (UTCTime)
+import Data.Text (Text)
 import System.Posix.Types (EpochTime)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Foreign.C.Types (CTime(..))
@@ -24,12 +25,15 @@ import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 import Web.Misskey.Type
 
 -- | Create 'Data.Aeson.KeyValue' a Object
+createMaybeObj :: (KeyValue kv, ToJSON v) => Text -> (Maybe v) -> [kv]
 createMaybeObj t = maybe [] (\x -> [t .= x])
 
 -- | Create 'Data.Aeson.KeyValue' a Object
+createObj :: (KeyValue kv, ToJSON v) => Text -> v -> [kv]
 createObj t x = [t .= x]
 
 -- | Create 'Data.Aeson.KeyValue' a Object
+createUTCTimeObj :: KeyValue kv => Text -> (Maybe UTCTime) -> [kv]
 createUTCTimeObj t = maybe [] (\x -> [t .= uToE x])
 
 -- | Convert UTCTime to UNIX time
@@ -61,7 +65,7 @@ postRequest apiPath body =  do
 
     let responseBody = getResponseBody response
     case getResponseStatusCode response of
-        200 -> case fromJSON responseBody of
+        200 -> case (fromJSON responseBody :: FromJSON a => Result a) of
                     Success a' -> return $ Right a'
                     Error   e  -> error  $ unlines [apiPath ++ ": error while decoding Result"
                                                    , "FATAL: Please file those outputs to author(or PR is welcome)."
