@@ -182,7 +182,7 @@ instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
                                 <*> v `parseData` "expiresAt"
                                 <*> v .: "choices"
-    parseJSON _          = mempty
+    parseJSON _          = fail "Failed to parse Poll Object"
 
 instance ToJSON Poll where
     toJSON _ = String "poll"
@@ -216,7 +216,7 @@ instance FromJSON File where
                                 <*> v .:? "url"
                                 <*> v .:? "folderId"
                                 <*> v .:  "isSensitive"
-    parseJSON _          = mempty
+    parseJSON _          = fail "Failed to parse File Object"
 -- }}}
 
 -- Page {{{
@@ -403,6 +403,7 @@ instance FromJSON Page where
                                 <*> v .:? "eyeCatchingImage"
                                 <*> v .:  "attachedFiles"
                                 <*> v .:  "likedCount"
+    parseJSON _          = fail "Failed to parse Page object"
 -- }}}
 -- }}}
 
@@ -468,7 +469,7 @@ instance FromJSON Note where
                                 <*> v .:? "tags"
                                 <*> v .:? "poll"
                                 <*> v .:? "geo"
-    parseJSON _          = mempty
+    parseJSON _          = fail "Failed to parse Note Object"
 
 --- }}}
 
@@ -568,7 +569,6 @@ instance FromJSON User where
                                 <*> v .:? "isSuspended"
                                 <*> v .:? "pinnedPage"
                                 <*> v .:? "pinnedPageId"
-    parseJSON _          = mempty
-
+    parseJSON _          = fail "Failed to parse User Object"
 --- }}}
 
