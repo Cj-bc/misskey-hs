@@ -429,7 +429,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_text               :: Maybe String
                  , _note_cw                 :: Maybe String
                  , _note_userId             :: UserId
-                 , _note_user               :: BaseUser
+                 , _note_user               :: Maybe BaseUser
                  , _note_replyId            :: Maybe Id
                  , _note_renoteId           :: Maybe Id
                  , _note_reply              :: Maybe Note
@@ -454,7 +454,7 @@ instance FromJSON Note where
                                 <*> v .:? "text"
                                 <*> v .:? "cw"
                                 <*> v .:  "userId"
-                                <*> v .:  "user"
+                                <*> v .:? "user"
                                 <*> v .:? "replyId"
                                 <*> v .:? "renoteId"
                                 <*> v .:? "reply"
