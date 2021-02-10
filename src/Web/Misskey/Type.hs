@@ -141,10 +141,10 @@ runMisskey = runReaderT
 --
 -- __Caution__: This definition is made from API result so might contain some mistakes
 data BaseUser = BaseUser { _baseUser_id          :: String
-                         , _baseUser_name        :: String
+                         , _baseUser_name        :: Maybe String
                          , _baseUser_username    :: String
                          , _baseUser_host        :: Maybe String
-                         , _baseUser_avatarUrl   :: String
+                         , _baseUser_avatarUrl   :: Maybe String
                          , _baseUser_isCat       :: Maybe Bool
                          , _baseUser_emojis      :: [String]
                          } deriving (Show)
