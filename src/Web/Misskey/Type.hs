@@ -30,7 +30,7 @@ module Web.Misskey.Type (
   -- * Lenses
   -- ** Lenses for BaseUser
 , baseUser_id, baseUser_name, baseUser_username, baseUser_host
-, baseUser_avatarUrl, baseUser_avatarColor, baseUser_isCat
+, baseUser_avatarUrl, baseUser_isCat
 , baseUser_emojis
 
   -- ** Lenses for Note
@@ -55,7 +55,7 @@ module Web.Misskey.Type (
 
   -- ** Lenses for User
 , user_id, user_username, user_name, user_url, user_avatarUrl
-, user_avatarColor, user_bannerUrl, user_bannerColor, user_emojis
+, user_bannerUrl, user_emojis
 , user_host, user_description, user_birthday, user_createdAt
 , user_updatedAt, user_location, user_followersCount, user_followingCount
 , user_notesCount, user_isBot, user_pinnedNoteIds, user_pinnedNotes
@@ -145,7 +145,6 @@ data BaseUser = BaseUser { _baseUser_id          :: String
                          , _baseUser_username    :: String
                          , _baseUser_host        :: Maybe String
                          , _baseUser_avatarUrl   :: String
-                         , _baseUser_avatarColor :: String
                          , _baseUser_isCat       :: Maybe Bool
                          , _baseUser_emojis      :: [String]
                          } deriving (Show)
@@ -495,9 +494,7 @@ data User = User { _user_id                      :: UserId
                  , _user_name                    :: Maybe String
                  , _user_url                     :: Maybe Url
                  , _user_avatarUrl               :: Maybe Url
-                 , _user_avatarColor             :: Maybe Color -- ^ This is documented as 'any' in doc
                  , _user_bannerUrl               :: Maybe Url
-                 , _user_bannerColor             :: Maybe Color -- ^ This is documented as 'any' in doc
                  , _user_emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
                  , _user_host                    :: Maybe String
                  , _user_description             :: Maybe String
@@ -540,9 +537,7 @@ instance FromJSON User where
                                 <*> v .:? "name"
                                 <*> v .:? "url"
                                 <*> v .:? "avatarUrl"
-                                <*> v .:? "avatarColor"
                                 <*> v .:? "bannerUrl"
-                                <*> v .:? "bannerColor"
                                 <*> v .:? "emojis"
                                 <*> v .:? "host"
                                 <*> v .:? "description"
