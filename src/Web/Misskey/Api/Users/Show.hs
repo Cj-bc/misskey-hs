@@ -24,7 +24,7 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Either (Either(..))
 import Data.Maybe (fromJust, maybe)
 import Data.ByteString.Lazy (ByteString)
-import Control.Lens ((^.), makeLenses, makePrisms)
+import Control.Lens ((^.), makeLenses, makePrisms, over, _Right)
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
@@ -44,13 +44,8 @@ makePrisms ''APIRequest
 -- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: APIRequest -> Misskey [User]
 usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
-usersShow req          = do
-    env <- ask
-    result <- liftIO $ runMisskey (postRequest "/api/users/show" body :: Misskey User) env
-    case result of
-        Right u -> return $ Right [u]
-        Left  e -> return $ Left e
-
+usersShow req          =
+    (postRequest "/api/users/show" body :: Misskey User) >>= return . over _Right (\u -> [u])
     where
         body = case req of
                 UserId i     -> ["userId"   .= i]
