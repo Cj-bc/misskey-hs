@@ -263,9 +263,9 @@ main = do
         NotesShow opt req      -> runMisskey (NS.notesShow req) env       >>= evalResult opt
     where
         evalResult NoOption resp = case resp of
-                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Left er   -> print $ "Error occured while api call: " ++ ushow er
                                 Right usr -> (putStrLn . ushow) usr
         evalResult opt resp = case resp of
-                                Left er   -> print $ "Error occured while users/show: " ++ ushow er
+                                Left er   -> print $ "Error occured while api call: " ++ ushow er
                                 Right usr -> when (not $ quiet opt) $ (putStrLn . ushow) usr
 
