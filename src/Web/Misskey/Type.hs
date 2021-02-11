@@ -77,6 +77,7 @@ import Data.Time.ISO8601 (parseISO8601)
 import Data.Maybe (fromJust, isNothing)
 import GHC.Generics
 import Data.Text (Text)
+import qualified Data.Text as T
 
 
 type Url = String
@@ -429,6 +430,17 @@ instance FromJSON Geo where
 instance ToJSON Geo where
     toJSON _ = String "geo"
 
+data NoteVisibilities = Public | Home | Followers | Specified
+    deriving (Show)
+
+instance FromJSON NoteVisibilities where
+    parseJSON (String s)     = case T.toLower s of
+                                        "public"    -> return Public
+                                        "home"      -> return Home
+                                        "followers" -> return Followers
+                                        "specified" -> return Specified
+    parseJSON _              = fail "Unknown Visibility"
+
 -- | A Note object
 --
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
@@ -444,7 +456,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_renote             :: Maybe Note
                  , _note_viaMobile          :: Maybe Bool
                  , _note_isHidden           :: Maybe Bool
-                 , _note_visibility         :: String
+                 , _note_visibility         :: NoteVisibilities
                  , _note_mentions           :: Maybe [Id]
                  , _note_visibleUserIds     :: Maybe [Id]
                  , _note_fileIds            :: Maybe [Id]
