@@ -46,6 +46,7 @@ applyGeneralOption (Users          NoOption req) opt = Users          opt req
 applyGeneralOption (UsersFollowers NoOption req) opt = UsersFollowers opt req
 applyGeneralOption (UsersFollowing NoOption req) opt = UsersFollowing opt req
 applyGeneralOption (NotesCreate    NoOption req) opt = NotesCreate    opt req
+applyGeneralOption (NotesTimeline  NoOption req) opt = NotesTimeline    opt req
 applyGeneralOption other _ = other
 
 
