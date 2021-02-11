@@ -159,7 +159,7 @@ usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper)
 -- notesCreateParser {{{
 -- | Parse args for notes/create API
 --
--- __'Geo' and 'Poll' is currently disabled__
+-- __'Poll' is currently disabled__
 notesCreateParser :: Parser SubCmds
 notesCreateParser = NotesCreate NoOption <$> (NC.APIRequest <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
                                                             <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
@@ -170,7 +170,6 @@ notesCreateParser = NotesCreate NoOption <$> (NC.APIRequest <$> option auto (lon
                                                             <*> switch (long "noExtractMentions" <> help "True to suspend extracting mentions from text")
                                                             <*> switch (long "noExtractHashtags" <> help "True to suspend extracting hashtags from text")
                                                             <*> switch (long "noExtractEmojis" <> help "True to suspend extracting emojis from text")
-                                                            <*> pure Nothing
                                                             <*> many (strOption (long "fileId" <> metavar "FILEID" <> help "file IDs to add"))
                                                             <*> strOption (long "replyId" <> value "" <> help "target to reply")
                                                             <*> strOption (long "renoteId" <> value "" <> help "target to renote")

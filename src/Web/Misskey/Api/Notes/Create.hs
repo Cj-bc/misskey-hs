@@ -38,7 +38,6 @@ data APIRequest = APIRequest { _visibility        :: Visibility
                              , _noExtractMentions :: Bool
                              , _noExtractHashtags :: Bool
                              , _noExtractEmojis   :: Bool
-                             , _geo               :: Maybe Geo
                              , _fileIds           :: [String]
                              , _replyId           :: Id
                              , _renoteId          :: Id
@@ -70,7 +69,6 @@ notesCreate req = do
         noExtractMentionsBody = createObj      "noExtractMentions" (req^.noExtractMentions)
         noExtractHashtagsBody = createObj      "noExtractHashtags" (req^.noExtractHashtags)
         noExtractEmojisBody   = createObj      "noExtractEmojis"   (req^.noExtractEmojis)
-        geoBody               = createMaybeObj "geo"               (req^.geo)
         -- Those 3 fields should not be '[]' in JSON schema. Otherwise error response will be returned
         fileIdsBody           = createMaybeObj "fileIds"           $ nothingIfEmpty (req^.fileIds)
         replyIdBody           = createMaybeObj "replyId"           $ nothingIfEmpty (req^.replyId)
@@ -79,5 +77,5 @@ notesCreate req = do
         body                  = mconcat [visibilityBody, visibleUserIdsBody, textBody
                                         , cwBody, viaMobileBody, localOnlyBody
                                         , noExtractMentionsBody, noExtractHashtagsBody, noExtractEmojisBody
-                                        , geoBody, fileIdsBody, replyIdBody
+                                        , fileIdsBody, replyIdBody
                                         , renoteIdBody, pollBody]

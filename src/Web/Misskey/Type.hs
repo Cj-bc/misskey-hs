@@ -25,7 +25,6 @@ module Web.Misskey.Type (
 , Page
 , Note
 , User
-, Geo(..)
 
   -- * Lenses
   -- ** Lenses for BaseUser
@@ -38,7 +37,7 @@ module Web.Misskey.Type (
 , note_user, note_replyId, note_renoteId, note_reply, note_renote
 , note_viaMobile, note_isHidden, note_visibility, note_mentions
 , note_visibleUserIds, note_fileIds, note_files, note_tags
-, note_poll, note_geo
+, note_poll
 
   -- ** Lenses for Page
 , page_id, page_createdAt, page_updatedAt, page_title, page_name
@@ -420,18 +419,6 @@ instance FromJSON Page where
 
 -- Note {{{
 
--- | I can't find any documents. Also, 'Geo' wasn't on any response
---
--- I'll fix this later, just leave this as placeholder
-data Geo = Geo deriving (Show)
-
-instance FromJSON Geo where
-    parseJSON (Object _) = return Geo
-    parseJSON _          = mempty
-
-instance ToJSON Geo where
-    toJSON _ = String "geo"
-
 data NoteVisibilities = Public | Home | Followers | Specified
     deriving (Show)
 
@@ -488,7 +475,6 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_files              :: Maybe [File]
                  , _note_tags               :: Maybe [String]
                  , _note_poll               :: Maybe Poll
-                 , _note_geo                :: Maybe Geo
                  , _note_reactions          :: Maybe NoteReactions -- TODO: Implement Reaction
                  } deriving (Show)
 
@@ -514,7 +500,6 @@ instance FromJSON Note where
                                 <*> v .:? "files"
                                 <*> v .:? "tags"
                                 <*> v .:? "poll"
-                                <*> v .:? "geo"
                                 <*> v .:? "reactions"
     parseJSON _          = fail "Failed to parse Note Object"
 
