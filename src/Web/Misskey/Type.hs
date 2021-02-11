@@ -84,8 +84,8 @@ type UserId  = String
 type NoteId = String
 type Id = String
 
-parseData :: Object -> Text -> Parser (Maybe UTCTime)
-parseData v s = do
+parseDate :: Object -> Text -> Parser (Maybe UTCTime)
+parseDate v s = do
     b <- v .:? s :: Parser (Maybe String)
     return $ parseISO8601 =<< b
 
@@ -180,7 +180,7 @@ makeLenses ''Poll
 
 instance FromJSON Poll where
     parseJSON (Object v) = Poll <$> v .: "multiple"
-                                <*> v `parseData` "expiresAt"
+                                <*> v `parseDate` "expiresAt"
                                 <*> v .: "choices"
     parseJSON _          = fail "Failed to parse Poll Object"
 
@@ -542,9 +542,9 @@ instance FromJSON User where
                                 <*> v .:? "emojis"
                                 <*> v .:? "host"
                                 <*> v .:? "description"
-                                <*> v `parseData` "birthday"
-                                <*> v `parseData` "createdAt"
-                                <*> v `parseData` "updatedAt"
+                                <*> v `parseDate` "birthday"
+                                <*> v `parseDate` "createdAt"
+                                <*> v `parseDate` "updatedAt"
                                 <*> v .:? "location"
                                 <*> v .:? "followersCount"
                                 <*> v .:? "followingCount"
