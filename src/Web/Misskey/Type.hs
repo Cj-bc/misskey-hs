@@ -519,6 +519,15 @@ makeLenses ''UserTwitterInfo
 -- This seems to be `rgb(xxx,yyy,zzz)` which can be parsed
 type Color = String
 
+-- | Key-value pair that can be set via: Settings>Profile>Edit additional Information
+data UserField = UserField Text Url
+    deriving (Show)
+
+instance FromJSON UserField where
+    parseJSON (Object v) = UserField <$> v .: "name"
+                                     <*> v .: "value"
+    parseJSON e          = fail $ "when parsing the constructor UserField of type Web.Misskey.Type.UserField expected Object but got " ++ show e
+
 -- | User object
 --
 -- Docs: https://misskey.io/api-doc#operation/users/show
@@ -552,7 +561,7 @@ data User = User { _user_id                      :: UserId
                  , _user_github                  :: Maybe String   -- This is temporary set to String
                  , _user_twitter                 :: Maybe UserTwitterInfo
                  , _user_discord                 :: Maybe String   -- This is temporary set to String
-                 , _user_fields                  :: Maybe [String] -- This is temporary set to String
+                 , _user_fields                  :: Maybe [UserField]
                  , _user_twoFactorEnabled        :: Maybe Bool
                  , _user_usePasswordLessLogin    :: Maybe Bool
                  , _user_securityKeys            :: Maybe Bool
