@@ -89,6 +89,14 @@ parseDate v s = do
     b <- v .:? s :: Parser (Maybe String)
     return $ parseISO8601 =<< b
 
+-- | Parse Data and return raw value of it
+--
+-- This is allowed because it's bug if 'parseISO8601' fails
+parseDateUnsafe :: Object -> Text -> Parser UTCTime
+parseDateUnsafe v s = parseDate v s >>= \a -> case a of
+                          Just t -> return t
+                          Nothing -> error $ "Data of '" ++ show s ++ "' wasn't parsable"
+
 
 -- | Environment to execute misskey API
 --
@@ -208,7 +216,7 @@ makeLenses ''File
 
 instance FromJSON File where
     parseJSON (Object v) = File <$> v .:  "id"
-                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
+                                <*> v `parseDateUnsafe` "createdAt"
                                 <*> v .:  "name"
                                 <*> v .:  "type"
                                 <*> v .:  "md5"
@@ -387,8 +395,8 @@ makeLenses ''Page
 -- instance FromJSON Page where {{{
 instance FromJSON Page where
     parseJSON (Object v) = Page <$> v .:  "id"
-                                <*> (fromJust . parseISO8601 <$> (v .: "createdAt"))
-                                <*> (fromJust . parseISO8601 <$> (v .: "updatedAt"))
+                                <*> v `parseDateUnsafe` "createdAt"
+                                <*> v `parseDateUnsafe` "updatedAt"
                                 <*> v .:  "title"
                                 <*> v .:  "name"
                                 <*> v .:? "summary"
@@ -450,7 +458,7 @@ makeLenses ''Note
 
 instance FromJSON Note where
     parseJSON (Object v) = Note <$> v .: "id"
-                                <*> (fromJust . parseISO8601 <$> (v.: "createdAt"))
+                                <*> v `parseDateUnsafe` "createdAt"
                                 <*> v .:? "text"
                                 <*> v .:? "cw"
                                 <*> v .:  "userId"
