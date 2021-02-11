@@ -78,6 +78,8 @@ import Data.Maybe (fromJust, isNothing)
 import GHC.Generics
 import Data.Text (Text)
 import qualified Data.Text as T
+import Data.HashMap.Strict (HashMap)
+import Data.Scientific (floatingOrInteger)
 
 
 type Url = String
@@ -441,6 +443,29 @@ instance FromJSON NoteVisibilities where
                                         "specified" -> return Specified
     parseJSON _              = fail "Unknown Visibility"
 
+
+
+-- | Represents Reactions for Note
+--
+-- Key specify Emoji, and Value holds how many it has reacted.
+--
+-- I didn't use 'Emoji' as key because
+--
+-- -  It'll require "emojis" field of Note JSON object,
+--    which prevent us from making standalone FromJSON instance for NoteReactions
+--
+-- -  It is inefficient as we have 'Emojis' field in 'Note' type and it'll be duplicated
+data NoteReactions = NoteReactions (HashMap Text Integer)
+    deriving (Show)
+
+instance FromJSON NoteReactions where
+    parseJSON (Object o) = NoteReactions <$> mapM f o
+        where
+            f :: Value -> Parser Integer
+            f (Number i) = either (const $ fail "NoteReactions' number should be Integer, but got float") return $ floatingOrInteger i
+            f e          = fail $ "Expected Number, but encounted " ++ show e
+    parseJSON e = fail $ "Expected Object, but encounted " ++ show e
+
 -- | A Note object
 --
 -- Docs: https://misskey.io/api-doc#operation/drive/files/show
@@ -464,6 +489,7 @@ data Note = Note { _note_id                 :: NoteId      -- ^ Original is 'id'
                  , _note_tags               :: Maybe [String]
                  , _note_poll               :: Maybe Poll
                  , _note_geo                :: Maybe Geo
+                 , _note_reactions          :: Maybe NoteReactions -- TODO: Implement Reaction
                  } deriving (Show)
 
 makeLenses ''Note
@@ -489,6 +515,7 @@ instance FromJSON Note where
                                 <*> v .:? "tags"
                                 <*> v .:? "poll"
                                 <*> v .:? "geo"
+                                <*> v .:? "reactions"
     parseJSON _          = fail "Failed to parse Note Object"
 
 --- }}}
