@@ -23,6 +23,7 @@ import qualified Web.Misskey.Api.Users.Followers as UFr
 import qualified Web.Misskey.Api.Users.Following as UFi
 import qualified Web.Misskey.Api.Notes.Create as NC
 import qualified Web.Misskey.Api.Notes.Timeline as NT
+import qualified Web.Misskey.Api.Notes.Show as NS
 import Control.Lens ((^.), review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
@@ -35,6 +36,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersFollowing GeneralOption UFi.APIRequest
              | NotesCreate    GeneralOption NC.APIRequest
              | NotesTimeline  GeneralOption NT.APIRequest
+             | NotesShow      GeneralOption NS.APIRequest
 
 
 -- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
@@ -47,6 +49,7 @@ applyGeneralOption (UsersFollowers NoOption req) opt = UsersFollowers opt req
 applyGeneralOption (UsersFollowing NoOption req) opt = UsersFollowing opt req
 applyGeneralOption (NotesCreate    NoOption req) opt = NotesCreate    opt req
 applyGeneralOption (NotesTimeline  NoOption req) opt = NotesTimeline    opt req
+applyGeneralOption (NotesShow      NoOption req) opt = NotesShow      opt req
 applyGeneralOption other _ = other
 
 
@@ -199,6 +202,13 @@ notesTimelineParserInfo :: ParserInfo SubCmds
 notesTimelineParserInfo = Options.Applicative.info (notesTimelineParser <**> helper) (fullDesc <> progDesc "call notes/timeline API")
 -- }}}
 
+-- {{{ notesShowParser 
+notesShowParser :: Parser SubCmds
+notesShowParser = NotesShow NoOption <$> (NS.NoteId <$> strArgument (metavar "NOTE_ID"))
+
+notesShowParserInfo :: ParserInfo SubCmds
+notesShowParserInfo = Options.Applicative.info (notesShowParser <**> helper) (fullDesc <> progDesc "call notes/show API")
+-- }}}
 
 commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/notes"    usersNotesInfo
@@ -208,6 +218,7 @@ commandParser = subparser $ command    "users/show"     usersShowInfo
                             <> command "users/following" usersFollowingInfo
                             <> command "notes/create"   notesCreateParserInfo
                             <> command "notes/timeline" notesTimelineParserInfo
+                            <> command "notes/show"     notesShowParserInfo
 
 -- GeneralOption {{{
 data GeneralOption = NoOption
@@ -249,6 +260,7 @@ main = do
         UsersFollowing opt req -> runMisskey (UFi.usersFollowing req) env >>= evalResult opt
         NotesCreate opt req    -> runMisskey (NC.notesCreate req) env     >>= evalResult opt
         NotesTimeline opt req  -> runMisskey (NT.notesTimeline req) env   >>= evalResult opt
+        NotesShow opt req      -> runMisskey (NS.notesShow req) env       >>= evalResult opt
     where
         evalResult NoOption resp = case resp of
                                 Left er   -> print $ "Error occured while users/show: " ++ ushow er
