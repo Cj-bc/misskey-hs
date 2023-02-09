@@ -18,6 +18,7 @@ import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
+import Data.Aeson.Key (fromText)
 
 
 type Url = String
@@ -32,7 +33,7 @@ type Color = String
 
 parseDate :: Object -> Text -> Parser (Maybe UTCTime)
 parseDate v s = do
-    b <- v .:? s :: Parser (Maybe String)
+    b <- v .:? fromText s :: Parser (Maybe String)
     return $ parseISO8601 =<< b
 
 -- | Parse Data and return raw value of it

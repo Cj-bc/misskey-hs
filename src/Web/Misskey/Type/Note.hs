@@ -11,6 +11,7 @@ module Web.Misskey.Type.Note (
 ) where
 import Control.Lens (makeLenses)
 import Data.Aeson (FromJSON(..), Object(..), Value(..), (.:), (.:?), fieldLabelModifier)
+import Data.Aeson.KeyMap (toHashMapText)
 import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import Data.Text as T
@@ -48,7 +49,7 @@ data NoteReactions = NoteReactions (HashMap Text Integer)
     deriving (Show)
 
 instance FromJSON NoteReactions where
-    parseJSON (Object o) = NoteReactions <$> mapM f o
+    parseJSON (Object o) = NoteReactions <$> mapM f (toHashMapText o)
         where
             f :: Value -> Parser Integer
             f (Number i) = either (const $ fail "NoteReactions' number should be Integer, but got float") return $ floatingOrInteger i

@@ -23,18 +23,19 @@ import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), re
 import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 
 import Web.Misskey.Type
+import Data.Aeson.Key (fromText)
 
 -- | Create 'Data.Aeson.KeyValue' a Object
-createMaybeObj :: (KeyValue kv, ToJSON v) => Text -> (Maybe v) -> [kv]
-createMaybeObj t = maybe [] (\x -> [t .= x])
+createMaybeObj :: (KeyValue kv, ToJSON v) => Text -> Maybe v -> [kv]
+createMaybeObj t = maybe [] (\x -> [fromText t .= x])
 
 -- | Create 'Data.Aeson.KeyValue' a Object
 createObj :: (KeyValue kv, ToJSON v) => Text -> v -> [kv]
-createObj t x = [t .= x]
+createObj t x = [fromText t .= x]
 
 -- | Create 'Data.Aeson.KeyValue' a Object
-createUTCTimeObj :: KeyValue kv => Text -> (Maybe UTCTime) -> [kv]
-createUTCTimeObj t = maybe [] (\x -> [t .= uToE x])
+createUTCTimeObj :: KeyValue kv => Text -> Maybe UTCTime -> [kv]
+createUTCTimeObj t = maybe [] (\x -> [fromText t .= uToE x])
 
 -- | Convert UTCTime to UNIX time
 -- 
