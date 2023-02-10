@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings, LambdaCase #-}
 module Web.Misskey.Type.Common (
   -- * Some type synonyms
   Url, UserId, NoteId, Id
@@ -40,9 +40,9 @@ parseDate v s = do
 --
 -- This is allowed because it's bug if 'parseISO8601' fails
 parseDateUnsafe :: Object -> Text -> Parser UTCTime
-parseDateUnsafe v s = parseDate v s >>= \a -> case a of
-                          Just t -> return t
-                          Nothing -> error $ "Data of '" ++ show s ++ "' wasn't parsable"
+parseDateUnsafe v s = parseDate v s >>= \case
+  Just t -> return t
+  Nothing -> error $ "Data of '" ++ show s ++ "' wasn't parsable"
 
 
 -- | Subset of 'User' that isn't depend on 'Note' \/ 'Page' \/ 'Poll' etc

@@ -45,7 +45,7 @@ instance FromJSON NoteVisibilities where
 --    which prevent us from making standalone FromJSON instance for NoteReactions
 --
 -- -  It is inefficient as we have 'Emojis' field in 'Note' type and it'll be duplicated
-data NoteReactions = NoteReactions (HashMap Text Integer)
+newtype NoteReactions = NoteReactions (HashMap Text Integer)
     deriving (Show)
 
 instance FromJSON NoteReactions where
