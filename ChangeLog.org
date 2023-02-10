@@ -5,6 +5,13 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 [[https://pvp.haskell.org/][Haskell Package Versioning Policy]]
 
 ** Unreleased changes
+*** Changed
+- Update haskell LTS from 14.18 to 20.10
+- Use cabal file directly
+- Use org-mode format for documents
+
+*** Removed
+- Hpack file (due to direct usage of cabal file)
 
 ** [0.2.0.0] - 2020-05-05
 *** Changed
