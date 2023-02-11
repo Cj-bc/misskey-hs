@@ -13,5 +13,5 @@ import Web.Misskey.Api.Internal
 data APIRequest = NoteId Id
 
 -- | Call notes/show API
-notesShow :: APIRequest -> Misskey Note
+notesShow :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
 notesShow (NoteId i) = postRequest "/api/notes/show" $ [ "noteId" .= i]

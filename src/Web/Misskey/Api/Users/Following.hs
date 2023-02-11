@@ -33,7 +33,7 @@ data APIRequest = APIRequest { _userId   :: Maybe String
 makeLenses ''APIRequest
 
 -- | Call 'users/following' API and return result
-usersFollowing :: APIRequest -> Misskey [User]
+usersFollowing :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersFollowing req = postRequest "/api/users/Following" body
         where
             userIdObj   = createMaybeObj "userId"   (req^.userId)

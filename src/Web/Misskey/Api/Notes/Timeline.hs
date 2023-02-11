@@ -39,7 +39,7 @@ data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
 makeLenses ''APIRequest
 
 
-notesTimeline :: APIRequest -> Misskey [Note]
+notesTimeline :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
 notesTimeline req = postRequest "/api/notes/timeline" body
     where
         limitBody                 = createMaybeObj   "limit"                 (req^.limit)

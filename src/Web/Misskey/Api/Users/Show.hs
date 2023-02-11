@@ -21,6 +21,7 @@ where
 
 import RIO
 import Data.Aeson (encode, object, (.=), Value, decode', fromJSON, Result(..))
+import Data.List (singleton)
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class (liftIO)
 import Data.Either (Either(..))
@@ -44,10 +45,10 @@ makePrisms ''APIRequest
 -- This supports to post *only one of userId/userIds/username/host property*
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
-usersShow :: APIRequest -> Misskey [User]
+usersShow :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
 usersShow req          =
-    (postRequest "/api/users/show" body :: Misskey User) >>= return . over _Right (\u -> [u])
+    (postRequest "/api/users/show" body :: (HasMisskeyEnv env) => RIO env User) >>= return . singleton
     where
         body = case req of
                 UserId i     -> ["userId"   .= i]

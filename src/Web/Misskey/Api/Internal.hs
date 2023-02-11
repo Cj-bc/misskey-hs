@@ -53,7 +53,7 @@ uToE = CTime . truncate . utcTimeToPOSIXSeconds
 -- __This function will throw error__ if parsing response failed.
 -- As /Parsing error/ is fatal and should be fixed by Library author,
 -- not by user, this error should be reported as issue
-postRequest :: (FromJSON a, HasMisskeyEnv env, HasLogFunc env) => String -> [Pair] -> RIO env a
+postRequest :: (FromJSON a, HasMisskeyEnv env) => String -> [Pair] -> RIO env a
 postRequest apiPath body =  do
     (MisskeyEnv token url) <- view misskeyEnvL
     initReq <- parseRequest $ url ++ apiPath

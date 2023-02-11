@@ -16,7 +16,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - Use org-mode format for documents
 - Replace all base library with 'RIO'
 - =Web.Misskey.Api.Internal.postRequest= type: =Misskey a= to =RIO env a=
-
+- ALl api caller function type: =Misskey a= to =RIO env a=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
 

@@ -39,7 +39,7 @@ data APIRequest = APIRequest { _userId           :: Id
                              }
 makeLenses ''APIRequest
 
-usersNotes :: APIRequest -> Misskey [Note]
+usersNotes :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
 usersNotes req = postRequest "/api/users/notes" body
     where
         userIdObj           = createObj        "userId"           (req^.userId)

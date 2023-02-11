@@ -36,7 +36,7 @@ makeLenses ''APIRequest
 
 
 
-usersSearch :: APIRequest -> Misskey [User]
+usersSearch :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersSearch (APIRequest q o l local d) = postRequest "/api/users/search" body
     where
         offsetObj     = createMaybeObj "offset"    o

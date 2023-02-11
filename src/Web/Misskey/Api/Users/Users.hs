@@ -69,7 +69,7 @@ data APIRequest = APIRequest { _limit  :: Maybe Int -- [1..100]
                              }
 makeLenses ''APIRequest
 
-users :: APIRequest -> Misskey [User]
+users :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 users req = postRequest "/api/users" body
     where
         limitObj  = createMaybeObj "limit"  (req^.limit)
