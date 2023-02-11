@@ -7,6 +7,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 ** Unreleased changes
 *** Added
 - =HasMisskeyEnv= type class & its instance for =MisskeyEnv=
+- =Exception= type class instance for =APIError=
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly

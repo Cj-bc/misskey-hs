@@ -71,6 +71,7 @@ import RIO
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
 import Control.Lens (makeLenses)
 import Control.Monad ((=<<))
+import Control.Exception (Exception)
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Aeson.TH (deriveJSON)
@@ -133,6 +134,8 @@ instance FromJSON APIError where
                                     <*> v .:  "id"
                                     <*> v .:? "kind"
                                     <*> v .:? "info"
+
+instance Exception APIError
 -- }}}
 
 -- | Misskey monad
