@@ -18,8 +18,6 @@ module Web.Misskey.Type (
   -- * Library basic types
 , MisskeyEnv(..)
 , HasMisskeyEnv(..)
-, Misskey
-, runMisskey
 , APIError
 , MisskeyLibraryException(..)
   -- * Types corresponds to each Misskey data
@@ -147,9 +145,3 @@ data MisskeyLibraryException = ResponseParseFailed String
                              deriving (Show)
 
 instance Exception MisskeyLibraryException
-  
--- | Misskey monad
---
--- It's just Reader monad with MisskeyEnv
-type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
-runMisskey = runReaderT

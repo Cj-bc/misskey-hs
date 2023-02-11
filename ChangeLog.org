@@ -19,6 +19,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - ALl api caller function type: =Misskey a= to =RIO env a=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
+- =Misskey= monad & =runMisskey= function
 
 ** [0.2.0.0] - 2020-05-05
 *** Changed
