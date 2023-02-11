@@ -17,6 +17,7 @@ module Web.Misskey.Type (
 , Url
   -- * Library basic types
 , MisskeyEnv(..)
+, HasMisskeyEnv(..)
 , Misskey
 , runMisskey
 , APIError
@@ -95,6 +96,15 @@ data MisskeyEnv = MisskeyEnv { _misskeyEnvToken :: String
                              }
 
 makeLenses ''MisskeyEnv
+
+-- | RIO-style Has* type class
+--
+-- Environment values with MisskeyEnv
+class HasMisskeyEnv env where
+  misskeyEnvL :: Lens' env MisskeyEnv
+
+instance HasMisskeyEnv MisskeyEnv where
+  misskeyEnvL = lens id (const id)
 
 -- APIError {{{
 data APIErrorInfo = APIErrorInfo { _APIErrorInfoParam :: String

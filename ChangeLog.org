@@ -5,6 +5,8 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 [[https://pvp.haskell.org/][Haskell Package Versioning Policy]]
 
 ** Unreleased changes
+*** Added
+- =HasMisskeyEnv= type class & its instance for =MisskeyEnv=
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly
