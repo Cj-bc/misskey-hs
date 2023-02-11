@@ -47,8 +47,7 @@ makePrisms ''APIRequest
 -- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
-usersShow req          =
-    (postRequest "/api/users/show" body :: (HasMisskeyEnv env) => RIO env User) >>= return . singleton
+usersShow req          = singleton <$> postRequest "/api/users/show" body
     where
         body = case req of
                 UserId i     -> ["userId"   .= i]
