@@ -21,6 +21,7 @@ module Web.Misskey.Type (
 , Misskey
 , runMisskey
 , APIError
+, MisskeyLibraryException(..)
   -- * Types corresponds to each Misskey data
 , Poll
 , File
@@ -138,6 +139,15 @@ instance FromJSON APIError where
 instance Exception APIError
 -- }}}
 
+-- | All exceptions thrown by this library.
+-- It is different from 'APIException' in that way those exceptions
+-- are result of client-side code or network, not instance server.
+data MisskeyLibraryException = ResponseParseFailed String
+                             | InvalidStatusCodeReturned Int String
+                             deriving (Show)
+
+instance Exception MisskeyLibraryException
+  
 -- | Misskey monad
 --
 -- It's just Reader monad with MisskeyEnv
