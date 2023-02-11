@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.File (
   File(File)
 
@@ -6,6 +7,7 @@ module Web.Misskey.Type.File (
 , file_type, file_md5, file_size, file_url
 , file_folderId, isSensitive
 ) where
+import RIO
 import Data.Aeson.TH (deriveJSON, fieldLabelModifier, defaultOptions)
 import Control.Lens (makeLenses)
 import Data.Time (UTCTime)

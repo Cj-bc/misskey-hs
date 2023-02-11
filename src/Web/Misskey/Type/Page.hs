@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.Page (
   Page
   -- ** Lenses for Page
@@ -16,6 +17,7 @@ module Web.Misskey.Type.Page (
 
 
 ) where
+import RIO
 import Data.Aeson (FromJSON(..), ToJSON(..), Value(..), (.:), (.:?))
 import Data.Aeson.Types (prependFailure, typeMismatch)
 import Data.Aeson.TH (deriveJSON, fieldLabelModifier, defaultOptions)

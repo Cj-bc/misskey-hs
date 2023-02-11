@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.Note (
   Note
   -- ** Lenses for Note
@@ -9,6 +10,7 @@ module Web.Misskey.Type.Note (
 , note_poll
 
 ) where
+import RIO
 import Control.Lens (makeLenses)
 import Data.Aeson (FromJSON(..), Object(..), Value(..), (.:), (.:?), fieldLabelModifier)
 import Data.Aeson.KeyMap (toHashMapText)

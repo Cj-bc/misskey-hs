@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Users.Users
 Description : Misskey API Endpoint and Request for users
@@ -18,8 +19,9 @@ module Web.Misskey.Api.Users.Users
 , UsersOriginParam(..)
 ) where
 
+import RIO
 import Data.Aeson (object)
-import Control.Lens (makeLenses, (^.))
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
 
@@ -67,7 +69,7 @@ data APIRequest = APIRequest { _limit  :: Maybe Int -- [1..100]
                              }
 makeLenses ''APIRequest
 
-users :: APIRequest -> Misskey [User]
+users :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 users req = postRequest "/api/users" body
     where
         limitObj  = createMaybeObj "limit"  (req^.limit)

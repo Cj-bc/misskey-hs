@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Users.Notes
 Description : Misskey API Endpoint and Request for users/notes
@@ -15,7 +16,8 @@ module Web.Misskey.Api.Users.Notes
 ( usersNotes
 , APIRequest(..)
 ) where
-import Control.Lens (makeLenses, (^.))
+import RIO
+import Control.Lens (makeLenses)
 import Data.Time (UTCTime)
 import Data.Aeson ((.=), object)
 
@@ -37,7 +39,7 @@ data APIRequest = APIRequest { _userId           :: Id
                              }
 makeLenses ''APIRequest
 
-usersNotes :: APIRequest -> Misskey [Note]
+usersNotes :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
 usersNotes req = postRequest "/api/users/notes" body
     where
         userIdObj           = createObj        "userId"           (req^.userId)

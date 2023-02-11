@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Main where
+import RIO
 import Control.Monad (when)
 import Data.Time (parseTimeM, defaultTimeLocale, UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
@@ -11,6 +13,7 @@ import Data.Yaml (decodeFileEither, ParseException)
 import Text.Show.Unicode (ushow)
 import System.Environment (getArgs, getEnv)
 import System.Exit (die)
+import System.IO (print, putStrLn)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Web.Misskey.Type
@@ -24,7 +27,7 @@ import qualified Web.Misskey.Api.Users.Following as UFi
 import qualified Web.Misskey.Api.Notes.Create as NC
 import qualified Web.Misskey.Api.Notes.Timeline as NT
 import qualified Web.Misskey.Api.Notes.Show as NS
-import Control.Lens ((^.), review)
+import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
@@ -250,22 +253,17 @@ main = do
     let (Right cfg) = cfgEither
         env         = MisskeyEnv (token cfg) $ "https://" ++ (instance_url cfg)
 
-
-    case apiRequest of
-        UsersShow opt req      -> runMisskey (USh.usersShow req) env      >>= evalResult opt
-        UsersNotes opt req     -> runMisskey (UN.usersNotes req) env      >>= evalResult opt
-        UsersSearch opt req    -> runMisskey (USe.usersSearch req) env    >>= evalResult opt
-        Users opt req          -> runMisskey (US.users req) env           >>= evalResult opt
-        UsersFollowers opt req -> runMisskey (UFr.usersFollowers req) env >>= evalResult opt
-        UsersFollowing opt req -> runMisskey (UFi.usersFollowing req) env >>= evalResult opt
-        NotesCreate opt req    -> runMisskey (NC.notesCreate req) env     >>= evalResult opt
-        NotesTimeline opt req  -> runMisskey (NT.notesTimeline req) env   >>= evalResult opt
-        NotesShow opt req      -> runMisskey (NS.notesShow req) env       >>= evalResult opt
-    where
-        evalResult NoOption resp = case resp of
-                                Left er   -> print $ "Error occured while api call: " ++ ushow er
-                                Right usr -> (putStrLn . ushow) usr
-        evalResult opt resp = case resp of
-                                Left er   -> print $ "Error occured while api call: " ++ ushow er
-                                Right usr -> when (not $ quiet opt) $ (putStrLn . ushow) usr
-
+    runRIO env $ do 
+      case apiRequest of
+        UsersShow opt req      -> USh.usersShow req      >>= evalResult opt
+        UsersNotes opt req     -> UN.usersNotes req      >>= evalResult opt
+        UsersSearch opt req    -> USe.usersSearch req    >>= evalResult opt
+        Users opt req          -> US.users req           >>= evalResult opt
+        UsersFollowers opt req -> UFr.usersFollowers req >>= evalResult opt
+        UsersFollowing opt req -> UFi.usersFollowing req >>= evalResult opt
+        NotesCreate opt req    -> NC.notesCreate req     >>= evalResult opt
+        NotesTimeline opt req  -> NT.notesTimeline req   >>= evalResult opt
+        NotesShow opt req      -> NS.notesShow req       >>= evalResult opt
+        where
+          evalResult NoOption = liftIO . putStrLn . ushow
+          evalResult opt      = when (not $ quiet opt) . liftIO . putStrLn . ushow

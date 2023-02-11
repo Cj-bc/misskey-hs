@@ -1,5 +1,6 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Users.Following
 Description : Misskey API Endpoint and Request for users/following
@@ -15,8 +16,9 @@ module Web.Misskey.Api.Users.Following (
 , usersFollowing
 ) where
 
+import RIO
 import Data.Aeson (object)
-import Control.Lens ((^.), makeLenses)
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
@@ -31,7 +33,7 @@ data APIRequest = APIRequest { _userId   :: Maybe String
 makeLenses ''APIRequest
 
 -- | Call 'users/following' API and return result
-usersFollowing :: APIRequest -> Misskey [User]
+usersFollowing :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersFollowing req = postRequest "/api/users/Following" body
         where
             userIdObj   = createMaybeObj "userId"   (req^.userId)

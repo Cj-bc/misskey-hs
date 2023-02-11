@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Type
 Description : Type definitions for misskey-hs
@@ -16,9 +17,9 @@ module Web.Misskey.Type (
 , Url
   -- * Library basic types
 , MisskeyEnv(..)
-, Misskey
-, runMisskey
+, HasMisskeyEnv(..)
 , APIError
+, MisskeyLibraryException(..)
   -- * Types corresponds to each Misskey data
 , Poll
 , File
@@ -65,9 +66,11 @@ module Web.Misskey.Type (
 , user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
 
-import Control.Lens
+import RIO
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
+import Control.Lens (makeLenses)
 import Control.Monad ((=<<))
+import Control.Exception (Exception)
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Aeson.TH (deriveJSON)
@@ -93,6 +96,15 @@ data MisskeyEnv = MisskeyEnv { _misskeyEnvToken :: String
                              }
 
 makeLenses ''MisskeyEnv
+
+-- | RIO-style Has* type class
+--
+-- Environment values with MisskeyEnv
+class HasMisskeyEnv env where
+  misskeyEnvL :: Lens' env MisskeyEnv
+
+instance HasMisskeyEnv MisskeyEnv where
+  misskeyEnvL = lens id (const id)
 
 -- APIError {{{
 data APIErrorInfo = APIErrorInfo { _APIErrorInfoParam :: String
@@ -121,10 +133,15 @@ instance FromJSON APIError where
                                     <*> v .:  "id"
                                     <*> v .:? "kind"
                                     <*> v .:? "info"
+
+instance Exception APIError
 -- }}}
 
--- | Misskey monad
---
--- It's just Reader monad with MisskeyEnv
-type Misskey res = ReaderT MisskeyEnv IO (Either APIError res)
-runMisskey = runReaderT
+-- | All exceptions thrown by this library.
+-- It is different from 'APIException' in that way those exceptions
+-- are result of client-side code or network, not instance server.
+data MisskeyLibraryException = ResponseParseFailed String
+                             | InvalidStatusCodeReturned Int String
+                             deriving (Show)
+
+instance Exception MisskeyLibraryException

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Users.Search
 Description : Misskey API Endpoint and Request for users/search
@@ -17,6 +18,7 @@ module Web.Misskey.Api.Users.Search
 , query, offset, limit, localOnly, detail
 ) where
 
+import RIO
 import Control.Monad.Trans.Reader (ask)
 import Control.Lens (makeLenses)
 import Data.Aeson ((.=), object)
@@ -34,7 +36,7 @@ makeLenses ''APIRequest
 
 
 
-usersSearch :: APIRequest -> Misskey [User]
+usersSearch :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersSearch (APIRequest q o l local d) = postRequest "/api/users/search" body
     where
         offsetObj     = createMaybeObj "offset"    o

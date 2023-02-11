@@ -5,13 +5,21 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 [[https://pvp.haskell.org/][Haskell Package Versioning Policy]]
 
 ** Unreleased changes
+*** Added
+- =HasMisskeyEnv= type class & its instance for =MisskeyEnv=
+- =Exception= type class instance for =APIError=
+- =MisskeyLibraryException= data type that contains all exceptions thrown by this library
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly
+- Commit cabal file changes
 - Use org-mode format for documents
-
+- Replace all base library with 'RIO'
+- =Web.Misskey.Api.Internal.postRequest= type: =Misskey a= to =RIO env a=
+- ALl api caller function type: =Misskey a= to =RIO env a=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
+- =Misskey= monad & =runMisskey= function
 
 ** [0.2.0.0] - 2020-05-05
 *** Changed

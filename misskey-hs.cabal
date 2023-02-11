@@ -1,0 +1,115 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           misskey-hs
+version:        0.2.0.0
+description:    Please see the README on GitHub at <https://github.com/Cj-bc/misskey-hs#readme>
+homepage:       https://github.com/Cj-bc/misskey-hs#readme
+bug-reports:    https://github.com/Cj-bc/misskey-hs/issues
+author:         Cj.bc_sd a.k.a Cj-bc
+maintainer:     cj.bc-sd@outlook.jp
+copyright:      MIT
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.org
+    ChangeLog.org
+
+source-repository head
+  type: git
+  location: https://github.com/Cj-bc/misskey-hs
+
+library
+  exposed-modules:
+      Web.Misskey.Api.Internal
+      Web.Misskey.Api.Notes.Create
+      Web.Misskey.Api.Notes.Show
+      Web.Misskey.Api.Notes.Timeline
+      Web.Misskey.Api.Users.Followers
+      Web.Misskey.Api.Users.Following
+      Web.Misskey.Api.Users.Notes
+      Web.Misskey.Api.Users.Search
+      Web.Misskey.Api.Users.Show
+      Web.Misskey.Api.Users.Users
+      Web.Misskey.Type
+      Web.Misskey.Type.Common
+      Web.Misskey.Type.Emoji
+      Web.Misskey.Type.File
+      Web.Misskey.Type.Note
+      Web.Misskey.Type.Page
+      Web.Misskey.Type.Poll
+      Web.Misskey.Type.User
+  other-modules:
+      Paths_misskey_hs
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , iso8601-time
+    , lens
+    , scientific
+    , text
+    , time
+    , transformers
+    , unordered-containers
+    , rio
+  default-language: Haskell2010
+
+executable misskey-cli
+  main-is: Main.hs
+  other-modules:
+      Paths_misskey_hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , iso8601-time
+    , lens
+    , misskey-hs
+    , optparse-applicative
+    , scientific
+    , text
+    , time
+    , transformers
+    , unicode-show
+    , unordered-containers
+    , yaml
+    , rio
+  default-language: Haskell2010
+
+test-suite misskey-hs-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_misskey_hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , http-client
+    , http-conduit
+    , iso8601-time
+    , lens
+    , misskey-hs
+    , scientific
+    , text
+    , time
+    , transformers
+    , unordered-containers
+  default-language: Haskell2010

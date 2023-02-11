@@ -1,5 +1,6 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
@@ -17,11 +18,12 @@ module Web.Misskey.Api.Notes.Create
 , Visibility(..)
 ) where
 
+import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
 import Data.Aeson (FromJSON(..), Value(..), (.:))
 import Data.Char (toLower)
-import Control.Lens ((^.), makeLenses)
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
@@ -52,12 +54,10 @@ instance FromJSON CreatedNote where
     parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
 
 -- | Call 'notes/create' API and return result
-notesCreate :: APIRequest -> Misskey Note
+notesCreate :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
 notesCreate req = do
-    responce <- postRequest "/api/notes/create" body :: Misskey CreatedNote
-    case responce of
-        Left  e               -> return $ Left e
-        Right (CreatedNote n) -> return $ Right n
+    (CreatedNote n) <- postRequest "/api/notes/create" body :: (HasMisskeyEnv env) => RIO env CreatedNote
+    return n
     where
         nothingIfEmpty x      = if x == [] then Nothing else (Just x)
         visibilityBody        = createObj      "visibility"        (req^.visibility)

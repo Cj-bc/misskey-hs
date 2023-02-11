@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.User (
   User
 
@@ -14,6 +15,7 @@ module Web.Misskey.Type.User (
 , user_usePasswordLessLogin, user_securityKeys, user_isSilenced
 , user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
+import RIO
 import Control.Lens (makeLenses)
 import Data.Aeson
 import Data.Aeson.TH (deriveJSON)

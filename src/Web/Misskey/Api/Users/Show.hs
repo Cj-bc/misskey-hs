@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 {-|
 Module      : Web.Misskey.Api.Users.Show
@@ -18,13 +19,15 @@ usersShow
 
 where
 
+import RIO
 import Data.Aeson (encode, object, (.=), Value, decode', fromJSON, Result(..))
+import Data.List (singleton)
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class (liftIO)
 import Data.Either (Either(..))
 import Data.Maybe (fromJust, maybe)
 import Data.ByteString.Lazy (ByteString)
-import Control.Lens ((^.), makeLenses, makePrisms, over, _Right)
+import Control.Lens ((^.), makeLenses, makePrisms, _Right)
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)
@@ -42,10 +45,9 @@ makePrisms ''APIRequest
 -- This supports to post *only one of userId/userIds/username/host property*
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
-usersShow :: APIRequest -> Misskey [User]
+usersShow :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
 usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
-usersShow req          =
-    (postRequest "/api/users/show" body :: Misskey User) >>= return . over _Right (\u -> [u])
+usersShow req          = singleton <$> postRequest "/api/users/show" body
     where
         body = case req of
                 UserId i     -> ["userId"   .= i]

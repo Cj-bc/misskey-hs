@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.Poll (
   PollChoice
 , pollChoice_text
@@ -10,6 +11,7 @@ module Web.Misskey.Type.Poll (
 , poll_expiresAt
 , poll_choices
 ) where
+import RIO
 import Data.Aeson.TH (deriveJSON, fieldLabelModifier, defaultOptions)
 import Control.Lens (makeLenses)
 import Data.Time (UTCTime)
