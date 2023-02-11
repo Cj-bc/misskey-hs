@@ -1,9 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.Emoji (
   Emoji(..)
 , 
 ) where
 
+import RIO
 import Web.Misskey.Type.Common
 import Data.Text (Text)
 import Control.Lens (makeLenses, makePrisms)

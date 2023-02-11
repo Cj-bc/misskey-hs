@@ -9,6 +9,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly
 - Use org-mode format for documents
+- Replace all base library with 'RIO'
 
 *** Removed
 - Hpack file (due to direct usage of cabal file)

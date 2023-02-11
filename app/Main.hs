@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Main where
+import RIO
 import Control.Monad (when)
 import Data.Time (parseTimeM, defaultTimeLocale, UTCTime)
 import Data.Time.ISO8601 (parseISO8601)
@@ -11,6 +13,7 @@ import Data.Yaml (decodeFileEither, ParseException)
 import Text.Show.Unicode (ushow)
 import System.Environment (getArgs, getEnv)
 import System.Exit (die)
+import System.IO (print, putStrLn)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Web.Misskey.Type
@@ -24,7 +27,7 @@ import qualified Web.Misskey.Api.Users.Following as UFi
 import qualified Web.Misskey.Api.Notes.Create as NC
 import qualified Web.Misskey.Api.Notes.Timeline as NT
 import qualified Web.Misskey.Api.Notes.Show as NS
-import Control.Lens ((^.), review)
+import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 

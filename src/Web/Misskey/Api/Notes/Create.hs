@@ -1,5 +1,6 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
@@ -17,11 +18,12 @@ module Web.Misskey.Api.Notes.Create
 , Visibility(..)
 ) where
 
+import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
 import Data.Aeson (FromJSON(..), Value(..), (.:))
 import Data.Char (toLower)
-import Control.Lens ((^.), makeLenses)
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 

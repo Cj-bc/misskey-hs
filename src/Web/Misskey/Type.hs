@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Type
 Description : Type definitions for misskey-hs
@@ -65,8 +66,9 @@ module Web.Misskey.Type (
 , user_isSuspended, user_pinnedPage, user_pinnedPageId
 ) where
 
-import Control.Lens
+import RIO
 import Control.Monad.Trans.Reader (ReaderT, runReaderT)
+import Control.Lens (makeLenses)
 import Control.Monad ((=<<))
 import Data.Aeson
 import Data.Aeson.Types

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, LambdaCase #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Type.Common (
   -- * Some type synonyms
   Url, UserId, NoteId, Id
@@ -11,6 +12,7 @@ module Web.Misskey.Type.Common (
 , parseDate, parseDateUnsafe
 
 ) where
+import RIO
 import Control.Lens (makeLenses)
 import Data.Aeson (Object, (.:?), fieldLabelModifier)
 import Data.Aeson.TH (deriveJSON, defaultOptions)

@@ -1,5 +1,6 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Timeline
 Description : Misskey API Endpoint and Request for notes/timeline
@@ -19,8 +20,9 @@ module Web.Misskey.Api.Notes.Timeline
 , includeLocalRenotes, withFiles
 ) where
 
+import RIO
 import Data.Time (UTCTime)
-import Control.Lens (makeLenses, (^.))
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 {-|
 Module      : Web.Misskey.Api.Users.Show
@@ -18,13 +19,14 @@ usersShow
 
 where
 
+import RIO
 import Data.Aeson (encode, object, (.=), Value, decode', fromJSON, Result(..))
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class (liftIO)
 import Data.Either (Either(..))
 import Data.Maybe (fromJust, maybe)
 import Data.ByteString.Lazy (ByteString)
-import Control.Lens ((^.), makeLenses, makePrisms, over, _Right)
+import Control.Lens ((^.), makeLenses, makePrisms, _Right)
 import Network.HTTP.Client (method, requestBody, RequestBody(RequestBodyLBS), requestHeaders
                            , Response, parseRequest)
 import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatusCode)

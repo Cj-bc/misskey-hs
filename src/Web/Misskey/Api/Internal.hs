@@ -1,4 +1,5 @@
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Api.Internal
 ( -- * Creating objects
   createMaybeObj
@@ -8,8 +9,9 @@ module Web.Misskey.Api.Internal
 , postRequest
 ) where
 
+import RIO
 import Control.Monad.IO.Class (liftIO, MonadIO)
-import Control.Monad.Trans.Reader (ask, ReaderT)
+import Control.Monad.Trans.Reader (ReaderT)
 import Data.Aeson.Types (Pair, KeyValue, ToJSON)
 import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
 import Data.Time (UTCTime)

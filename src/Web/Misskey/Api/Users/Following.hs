@@ -1,5 +1,6 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : Web.Misskey.Api.Users.Following
 Description : Misskey API Endpoint and Request for users/following
@@ -15,8 +16,9 @@ module Web.Misskey.Api.Users.Following (
 , usersFollowing
 ) where
 
+import RIO
 import Data.Aeson (object)
-import Control.Lens ((^.), makeLenses)
+import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
