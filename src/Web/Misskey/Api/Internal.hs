@@ -70,26 +70,7 @@ postRequest apiPath body =  do
     case getResponseStatusCode response of
         200 -> case (fromJSON responseBody :: FromJSON a => Result a) of
                     Success a' -> return a'
-                    Error   e  -> do
-                      logError . fromString $ unlines [apiPath ++ ": error while decoding Result"
-                                                      , "FATAL: Please file those outputs to author(or PR is welcome)."
-                                                      , "========== raw ByteString =========="
-                                                      , show responseBody
-                                                      , "========== Error message =========="
-                                                      , show e
-                                                      ]
-                      fail ""
-        _   -> case fromJSON responseBody of
-                    Success a' -> do
-                      logError $ fromString a'
-                      fail ""
-                    Error   e  -> do
-                      logError . fromString $ unlines [apiPath ++ ": error while decoding APIError"
-                                                      , "FATAL: Please file those outputs to author(or PR is welcome)."
-                                                      , "========== raw ByteString =========="
-                                                      , show responseBody
-                                                      , "========== Error message =========="
-                                                      , show e
-                                                      ]
-                      fail ""
-
+                    Error   e  -> throwM $ ResponseParseFailed e
+        code -> case fromJSON responseBody of
+                    Success a' -> throwM $ InvalidStatusCodeReturned code a'
+                    Error   e  -> throwM $ ResponseParseFailed e
