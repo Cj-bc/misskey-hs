@@ -6,12 +6,15 @@ module Web.Misskey.Api.Notes.Show (
 ) where
 
 import RIO
-import Data.Aeson ((.=))
+import Data.Aeson ((.=), ToJSON(..), object)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
 data APIRequest = NoteId Id
 
+instance ToJSON APIRequest where
+  toJSON (NoteId i) = object ["noteId" .= i]
+
 -- | Call notes/show API
 notesShow :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
-notesShow (NoteId i) = postRequest "/api/notes/show" $ [ "noteId" .= i]
+notesShow = postRequest "/api/notes/show" . toJSON
