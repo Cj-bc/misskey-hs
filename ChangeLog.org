@@ -9,6 +9,8 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - =HasMisskeyEnv= type class & its instance for =MisskeyEnv=
 - =Exception= type class instance for =APIError=
 - =MisskeyLibraryException= data type that contains all exceptions thrown by this library
+- Some =ToJSON= instances for APIRequests:
+  - =Web.Misskey.Api.Notes.Create.APIRequest=
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly

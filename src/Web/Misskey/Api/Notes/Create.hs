@@ -21,7 +21,8 @@ module Web.Misskey.Api.Notes.Create
 import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
-import Data.Aeson (FromJSON(..), Value(..), (.:))
+import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(..))
+import qualified Data.Aeson.KeyMap as KM
 import Data.Char (toLower)
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
@@ -47,17 +48,8 @@ data APIRequest = APIRequest { _visibility        :: Visibility
                              }
 makeLenses ''APIRequest
 
--- | Object that wraps newly created 'Note' in response
-data CreatedNote = CreatedNote {createdNote :: Note}
-
-instance FromJSON CreatedNote where
-    parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
-
--- | Call 'notes/create' API and return result
-notesCreate :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
-notesCreate req = do
-    (CreatedNote n) <- postRequest "/api/notes/create" body :: (HasMisskeyEnv env) => RIO env CreatedNote
-    return n
+instance ToJSON APIRequest where
+  toJSON req = Object $ KM.fromList body
     where
         nothingIfEmpty x      = if x == [] then Nothing else (Just x)
         visibilityBody        = createObj      "visibility"        (req^.visibility)
@@ -79,3 +71,14 @@ notesCreate req = do
                                         , noExtractMentionsBody, noExtractHashtagsBody, noExtractEmojisBody
                                         , fileIdsBody, replyIdBody
                                         , renoteIdBody, pollBody]
+
+
+-- | Object that wraps newly created 'Note' in response
+data CreatedNote = CreatedNote {createdNote :: Note}
+
+instance FromJSON CreatedNote where
+    parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
+
+-- | Call 'notes/create' API and return result
+notesCreate :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
+notesCreate req = createdNote <$> postRequest "/api/notes/create" (toJSON req)
