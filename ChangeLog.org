@@ -12,6 +12,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - Some =ToJSON= instances for APIRequests:
   - =Web.Misskey.Api.Notes.Create.APIRequest=
   - =Web.Misskey.Api.Notes.Show.APIRequest=
+  - =Web.Misskey.Api.Notes.Timeline.APIRequest=
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly

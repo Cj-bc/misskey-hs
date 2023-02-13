@@ -25,6 +25,7 @@ import Data.Time (UTCTime)
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
+import Data.Aeson (ToJSON(..), object)
 
 data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
                              , _sinceId               :: Maybe String
@@ -38,9 +39,10 @@ data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
                              }
 makeLenses ''APIRequest
 
-
-notesTimeline :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
-notesTimeline req = postRequest "/api/notes/timeline" body
+-- | This can't be auto-generate because I need to convert 'UTCTime' to 'EpochTime', which
+-- default 'ToJSON' doesn't do
+instance ToJSON APIRequest where
+  toJSON req = object body
     where
         limitBody                 = createMaybeObj   "limit"                 (req^.limit)
         sinceIdBody               = createMaybeObj   "sinceId"               (req^.sinceId)
@@ -55,3 +57,6 @@ notesTimeline req = postRequest "/api/notes/timeline" body
                                             , sinceDateBody, untilDateBody, includeMyRenotesBody
                                             , includeRenotedMyNotesBody, includeLocalRenotesBody, withFilesBody
                                             ]
+  
+notesTimeline :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
+notesTimeline = postRequest "/api/notes/timeline" . toJSON
