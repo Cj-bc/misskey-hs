@@ -12,7 +12,7 @@ Call `users` Misskey API
 API document is: https://misskey.io/api-doc#operation/users
 -}
 module Web.Misskey.Api.Users.Users
-( APIRequest(..)
+( UsersUsers(..)
 , users
 , UsersSortParam(..)
 , UsersStateParam(..)
@@ -61,15 +61,15 @@ instance Show UsersOriginParam where
     show Remote   = "remote"
 -- }}}
 
-data APIRequest = APIRequest { _limit  :: Maybe Int -- [1..100]
+data UsersUsers = UsersUsers { _limit  :: Maybe Int -- [1..100]
                              , _offset :: Maybe Int
                              , _sort   :: Maybe UsersSortParam
                              , _state  :: Maybe UsersStateParam
                              , _origin :: Maybe UsersOriginParam
                              }
-makeLenses ''APIRequest
+makeLenses ''UsersUsers
 
-instance ToJSON APIRequest where
+instance ToJSON UsersUsers where
   toJSON req = object body
     where
       limitObj  = createMaybeObj "limit"  (req^.limit)
@@ -79,5 +79,5 @@ instance ToJSON APIRequest where
       originObj = createMaybeObj "origin" (fmap show (req^.origin))
       body      = mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]
 
-users :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+users :: (HasMisskeyEnv env) => UsersUsers -> RIO env [User]
 users = postRequest "/api/users" . toJSON

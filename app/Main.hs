@@ -34,7 +34,7 @@ import Options.Applicative.Types (readerAsk, Parser(NilP))
 data SubCmds = UsersShow      GeneralOption USh.UsersShow
              | UsersNotes     GeneralOption UN.UsersNotes
              | UsersSearch    GeneralOption USe.UsersSearch
-             | Users          GeneralOption US.APIRequest
+             | Users          GeneralOption US.UsersUsers
              | UsersFollowers GeneralOption UFr.UsersFollowers
              | UsersFollowing GeneralOption UFi.UsersFollowing
              | NotesCreate    GeneralOption NC.NotesCreate
@@ -124,7 +124,7 @@ usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDe
 
 -- usersParser {{{
 usersParser :: Parser SubCmds
-usersParser = Users NoOption <$> (US.APIRequest <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
+usersParser = Users NoOption <$> (US.UsersUsers <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
                                                 <*> option maybeAuto (long "offset" <> value Nothing <> metavar "OFFSET" <> help "Offset")
                                                 <*> option maybeAuto (long "sort"   <> value Nothing <> metavar "SORT"   <> help "Specify sorting. [+follow|-follow|+createdAt|-createdAt|+updatedAt|-updatedAt]")
                                                 <*> option maybeAuto (long "state"  <> value Nothing <> metavar "STATE"  <> help "Filter for role. [all|admin|moderator|adminOrModerator|alive]")
