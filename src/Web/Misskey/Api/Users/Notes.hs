@@ -14,7 +14,7 @@ API document is: https://misskey.io/api-doc#operation/users/notes
 
 module Web.Misskey.Api.Users.Notes
 ( usersNotes
-, APIRequest(..)
+, UsersNotes(..)
 ) where
 import RIO
 import Control.Lens (makeLenses)
@@ -25,7 +25,7 @@ import Data.Aeson ((.=), object, ToJSON (toJSON))
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, createUTCTimeObj)
 
-data APIRequest = APIRequest { _userId           :: Id
+data UsersNotes = UsersNotes { _userId           :: Id
                              , _includeReplies   :: Bool
                              , _limit            :: Maybe Int -- [1..100]
                              , _sinceId          :: Maybe String
@@ -37,9 +37,9 @@ data APIRequest = APIRequest { _userId           :: Id
                              , _fileType         :: Maybe [String]
                              , _excludeNsfw      :: Bool
                              }
-makeLenses ''APIRequest
+makeLenses ''UsersNotes
 
-instance ToJSON APIRequest where
+instance ToJSON UsersNotes where
   toJSON req = object body
     where
       userIdObj           = createObj        "userId"           (req^.userId)
@@ -57,7 +57,7 @@ instance ToJSON APIRequest where
                                     , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
                                     , withFilesObj, fileTypeObj, excludeNsfwObj]
 
-usersNotes :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
+usersNotes :: (HasMisskeyEnv env) => UsersNotes -> RIO env [Note]
 usersNotes = postRequest "/api/users/notes" . toJSON
 
 

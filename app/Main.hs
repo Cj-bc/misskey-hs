@@ -32,7 +32,7 @@ import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
 data SubCmds = UsersShow      GeneralOption USh.APIRequest
-             | UsersNotes     GeneralOption UN.APIRequest
+             | UsersNotes     GeneralOption UN.UsersNotes
              | UsersSearch    GeneralOption USe.APIRequest
              | Users          GeneralOption US.APIRequest
              | UsersFollowers GeneralOption UFr.UsersFollowers
@@ -100,7 +100,7 @@ usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (full
 
 -- usersNotesParser {{{
 usersNotesParser :: Parser SubCmds
-usersNotesParser = UsersNotes NoOption <$> (UN.APIRequest <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
+usersNotesParser = UsersNotes NoOption <$> (UN.UsersNotes <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
                                                           <*> switch (long "includeReplies" <> help "whether include replies or not")
                                                           <*> option maybeAuto
                                                                            (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
