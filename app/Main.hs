@@ -17,42 +17,41 @@ import System.IO (print, putStrLn)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Web.Misskey.Type
-import Web.Misskey.Api.Users.Search (usersSearch)
-import qualified Web.Misskey.Api.Users.Search as USe
-import qualified Web.Misskey.Api.Users.Notes  as UN
-import qualified Web.Misskey.Api.Users.Show   as USh
-import qualified Web.Misskey.Api.Users.Users  as US
-import qualified Web.Misskey.Api.Users.Followers as UFr
-import qualified Web.Misskey.Api.Users.Following as UFi
-import qualified Web.Misskey.Api.Notes.Create as NC
-import qualified Web.Misskey.Api.Notes.Timeline as NT
-import qualified Web.Misskey.Api.Notes.Show as NS
+import Web.Misskey.Api.Users.Search (UsersSearch(UsersSearch), usersSearch)
+import Web.Misskey.Api.Users.Notes (UsersNotes(UsersNotes), usersNotes)
+import Web.Misskey.Api.Users.Show (UsersShow, usersShow, _UserId, _UserIds, _UserName)
+import Web.Misskey.Api.Users.Users (UsersUsers(UsersUsers), users)
+import Web.Misskey.Api.Users.Followers (UsersFollowers(UsersFollowers), usersFollowers)
+import Web.Misskey.Api.Users.Following (UsersFollowing(UsersFollowing), usersFollowing)
+import Web.Misskey.Api.Notes.Create (NotesCreate(NotesCreate), notesCreate, Visibility(Public))
+import Web.Misskey.Api.Notes.Timeline (NotesTimeline(NotesTimeline), notesTimeline)
+import Web.Misskey.Api.Notes.Show (NotesShow(NoteId), notesShow)
 import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
-data SubCmds = UsersShow      GeneralOption USh.UsersShow
-             | UsersNotes     GeneralOption UN.UsersNotes
-             | UsersSearch    GeneralOption USe.UsersSearch
-             | Users          GeneralOption US.UsersUsers
-             | UsersFollowers GeneralOption UFr.UsersFollowers
-             | UsersFollowing GeneralOption UFi.UsersFollowing
-             | NotesCreate    GeneralOption NC.NotesCreate
-             | NotesTimeline  GeneralOption NT.NotesTimeline
-             | NotesShow      GeneralOption NS.NotesShow
+data SubCmds = CmdUsersShow      GeneralOption UsersShow
+             | CmdUsersNotes     GeneralOption UsersNotes
+             | CmdUsersSearch    GeneralOption UsersSearch
+             | CmdUsers          GeneralOption UsersUsers
+             | CmdUsersFollowers GeneralOption UsersFollowers
+             | CmdUsersFollowing GeneralOption UsersFollowing
+             | CmdNotesCreate    GeneralOption NotesCreate
+             | CmdNotesTimeline  GeneralOption NotesTimeline
+             | CmdNotesShow      GeneralOption NotesShow
 
 
 -- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
 applyGeneralOption :: SubCmds -> GeneralOption -> SubCmds
-applyGeneralOption (UsersShow      NoOption req) opt = UsersShow      opt req
-applyGeneralOption (UsersNotes     NoOption req) opt = UsersNotes     opt req
-applyGeneralOption (UsersSearch    NoOption req) opt = UsersSearch    opt req
-applyGeneralOption (Users          NoOption req) opt = Users          opt req
-applyGeneralOption (UsersFollowers NoOption req) opt = UsersFollowers opt req
-applyGeneralOption (UsersFollowing NoOption req) opt = UsersFollowing opt req
-applyGeneralOption (NotesCreate    NoOption req) opt = NotesCreate    opt req
-applyGeneralOption (NotesTimeline  NoOption req) opt = NotesTimeline    opt req
-applyGeneralOption (NotesShow      NoOption req) opt = NotesShow      opt req
+applyGeneralOption (CmdUsersShow      NoOption req) opt = CmdUsersShow      opt req
+applyGeneralOption (CmdUsersNotes     NoOption req) opt = CmdUsersNotes     opt req
+applyGeneralOption (CmdUsersSearch    NoOption req) opt = CmdUsersSearch    opt req
+applyGeneralOption (CmdUsers          NoOption req) opt = CmdUsers          opt req
+applyGeneralOption (CmdUsersFollowers NoOption req) opt = CmdUsersFollowers opt req
+applyGeneralOption (CmdUsersFollowing NoOption req) opt = CmdUsersFollowing opt req
+applyGeneralOption (CmdNotesCreate    NoOption req) opt = CmdNotesCreate    opt req
+applyGeneralOption (CmdNotesTimeline  NoOption req) opt = CmdNotesTimeline  opt req
+applyGeneralOption (CmdNotesShow      NoOption req) opt = CmdNotesShow      opt req
 applyGeneralOption other _ = other
 
 
@@ -75,9 +74,9 @@ reversedSwitch = flag False True
 -- usersShowParser {{{
 
 usersShowParser :: Parser SubCmds
-usersShowParser = UsersShow NoOption <$> ((review USh._UserId)        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
-                                          <|> (review USh._UserIds)   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
-                                          <|> (review USh._UserName)  <$> ((,) <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
+usersShowParser = CmdUsersShow NoOption <$> ((review _UserId)        <$> strOption       (long "id"       <> metavar "USER-ID"    <> help "Specify target with user id")
+                                          <|> (review _UserIds)   <$> some (strOption (long "ids"      <> metavar "USER-IDs"   <> help "Specify list of target user ids"))
+                                          <|> (review _UserName)  <$> ((,) <$> strOption       (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
                                                                               <*> option maybeStr
                                                                                         (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on")))
 
@@ -87,7 +86,7 @@ usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc
 
 -- usersSearchParser {{{
 usersSearchParser :: Parser SubCmds
-usersSearchParser = UsersSearch NoOption <$> (USe.UsersSearch <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
+usersSearchParser = CmdUsersSearch NoOption <$> (UsersSearch <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
                                                              <*> option maybeAuto  (long "offset" <> value Nothing <> help "Offset")
                                                              <*> option maybeAuto (long "limit"  <> value (Just 10) <> help "Number to grab")
                                                              <*> option maybeAuto (long "localOnly" <> value Nothing <> help "True to search for only local users")
@@ -100,7 +99,7 @@ usersSearchInfo = Options.Applicative.info (usersSearchParser <**> helper) (full
 
 -- usersNotesParser {{{
 usersNotesParser :: Parser SubCmds
-usersNotesParser = UsersNotes NoOption <$> (UN.UsersNotes <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
+usersNotesParser = CmdUsersNotes NoOption <$> (UsersNotes <$> strOption (long "id" <> metavar "USER-ID" <> help "Uesr id of the target user")
                                                           <*> switch (long "includeReplies" <> help "whether include replies or not")
                                                           <*> option maybeAuto
                                                                            (long "limit" <> value (Just 10) <> metavar "LIMIT" <> help "Maxmum amount")
@@ -124,7 +123,7 @@ usersNotesInfo = Options.Applicative.info (usersNotesParser <**> helper) (fullDe
 
 -- usersParser {{{
 usersParser :: Parser SubCmds
-usersParser = Users NoOption <$> (US.UsersUsers <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
+usersParser = CmdUsers NoOption <$> (UsersUsers <$> option maybeAuto (long "limit"  <> value Nothing <> metavar "LIMIT"  <> help "Maxmum amount")
                                                 <*> option maybeAuto (long "offset" <> value Nothing <> metavar "OFFSET" <> help "Offset")
                                                 <*> option maybeAuto (long "sort"   <> value Nothing <> metavar "SORT"   <> help "Specify sorting. [+follow|-follow|+createdAt|-createdAt|+updatedAt|-updatedAt]")
                                                 <*> option maybeAuto (long "state"  <> value Nothing <> metavar "STATE"  <> help "Filter for role. [all|admin|moderator|adminOrModerator|alive]")
@@ -137,7 +136,7 @@ usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> prog
 
 -- usersFollowersParser {{{
 usersFollowersParser :: Parser SubCmds
-usersFollowersParser = UsersFollowers NoOption <$> (UFr.UsersFollowers <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+usersFollowersParser = CmdUsersFollowers NoOption <$> (UsersFollowers <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
                                                                    <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
                                                                    <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
                                                                    <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
@@ -151,7 +150,7 @@ usersFollowersInfo = Options.Applicative.info (usersFollowersParser <**> helper)
 
 -- usersFollowingParser {{{
 usersFollowingParser :: Parser SubCmds
-usersFollowingParser = UsersFollowing NoOption <$> (UFi.UsersFollowing <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+usersFollowingParser = CmdUsersFollowing NoOption <$> (UsersFollowing <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
                                                                    <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
                                                                    <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
                                                                    <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
@@ -168,7 +167,7 @@ usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper)
 --
 -- __'Poll' is currently disabled__
 notesCreateParser :: Parser SubCmds
-notesCreateParser = NotesCreate NoOption <$> (NC.NotesCreate <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
+notesCreateParser = CmdNotesCreate NoOption <$> (NotesCreate <$> option auto (long "visibility" <> value Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
                                                             <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
                                                             <*> option maybeStr (long "text" <> value Nothing <> metavar "TEXT" <> help "Text to post")
                                                             <*> option maybeStr (long "cw"   <> value Nothing <> metavar "CW"   <> help "warning of content. This will hide note content")
@@ -189,7 +188,7 @@ notesCreateParserInfo = Options.Applicative.info (notesCreateParser <**> helper)
 
 -- notesTimelineParser {{{
 notesTimelineParser :: Parser SubCmds
-notesTimelineParser = NotesTimeline NoOption <$> (NT.NotesTimeline
+notesTimelineParser = CmdNotesTimeline NoOption <$> (NotesTimeline
         <$> option maybeAuto          (long "limit"                    <> help "Limit amount of Notes to fetch(default: 10)"               <> value Nothing <> metavar "LIMIT" )
         <*> option maybeStr           (long "sinceId"                  <> help "Grab notes since given id"                                 <> value Nothing <> metavar "SINCEID")
         <*> option maybeStr           (long "untilId"                  <> help "Grab notes until given id"                                 <> value Nothing <> metavar "UNTILID")
@@ -207,7 +206,7 @@ notesTimelineParserInfo = Options.Applicative.info (notesTimelineParser <**> hel
 
 -- {{{ notesShowParser 
 notesShowParser :: Parser SubCmds
-notesShowParser = NotesShow NoOption <$> (NS.NoteId <$> strArgument (metavar "NOTE_ID"))
+notesShowParser = CmdNotesShow NoOption <$> (NoteId <$> strArgument (metavar "NOTE_ID"))
 
 notesShowParserInfo :: ParserInfo SubCmds
 notesShowParserInfo = Options.Applicative.info (notesShowParser <**> helper) (fullDesc <> progDesc "call notes/show API")
@@ -255,15 +254,15 @@ main = do
 
     runRIO env $ do 
       case apiRequest of
-        UsersShow opt req      -> USh.usersShow req      >>= evalResult opt
-        UsersNotes opt req     -> UN.usersNotes req      >>= evalResult opt
-        UsersSearch opt req    -> USe.usersSearch req    >>= evalResult opt
-        Users opt req          -> US.users req           >>= evalResult opt
-        UsersFollowers opt req -> UFr.usersFollowers req >>= evalResult opt
-        UsersFollowing opt req -> UFi.usersFollowing req >>= evalResult opt
-        NotesCreate opt req    -> NC.notesCreate req     >>= evalResult opt
-        NotesTimeline opt req  -> NT.notesTimeline req   >>= evalResult opt
-        NotesShow opt req      -> NS.notesShow req       >>= evalResult opt
+        CmdUsersShow opt req      -> usersShow req      >>= evalResult opt
+        CmdUsersNotes opt req     -> usersNotes req     >>= evalResult opt
+        CmdUsersSearch opt req    -> usersSearch req    >>= evalResult opt
+        CmdUsers opt req          -> users req          >>= evalResult opt
+        CmdUsersFollowers opt req -> usersFollowers req >>= evalResult opt
+        CmdUsersFollowing opt req -> usersFollowing req >>= evalResult opt
+        CmdNotesCreate opt req    -> notesCreate req    >>= evalResult opt
+        CmdNotesTimeline opt req  -> notesTimeline req  >>= evalResult opt
+        CmdNotesShow opt req      -> notesShow req      >>= evalResult opt
         where
           evalResult NoOption = liftIO . putStrLn . ushow
           evalResult opt      = when (not $ quiet opt) . liftIO . putStrLn . ushow
