@@ -4,7 +4,7 @@
 {-|
 Module      : Web.Misskey.Api.Notes.Timeline
 Description : Misskey API Endpoint and Request for notes/timeline
-Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020-2023
 Maintainer  : cj.bc-sd@outlook.jp
 Stability   : experimental
 

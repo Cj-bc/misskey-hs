@@ -3,7 +3,7 @@
 {-|
 Module      : Web.Misskey.Api.Users.Search
 Description : Misskey API Endpoint and Request for users/search
-Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2019-2023
 Maintainer  : cj.bc-sd@outlook.jp
 Stability   : experimental
 

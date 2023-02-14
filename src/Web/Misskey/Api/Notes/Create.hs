@@ -4,7 +4,7 @@
 {-|
 Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
-Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020
+Copyright   : (c) Cj.bc_sd a.k.a Cj-bc, 2020-2023
 Maintainer  : cj.bc-sd@outlook.jp
 Stability   : experimental
 
