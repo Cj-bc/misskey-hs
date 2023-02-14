@@ -34,6 +34,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Notes.Show.APIRequest= to =NotesShow=
   - =Web.Misskey.Api.Notes.Timeline.APIRequest= to =NotesTimeline=
   - =Web.Misskey.Api.Users.Followers.APIRequest= to =UsersFollowers=
+  - =Web.Misskey.Api.Users.Following.APIRequest= to =UsersFollowing=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
 - =Misskey= monad & =runMisskey= function

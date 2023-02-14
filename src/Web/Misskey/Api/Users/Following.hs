@@ -12,7 +12,7 @@ Call `users/following` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/following
 -}
 module Web.Misskey.Api.Users.Following (
-  APIRequest(APIRequest)
+  UsersFollowing(UsersFollowing)
 , usersFollowing
 ) where
 
@@ -23,16 +23,16 @@ import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
 
-data APIRequest = APIRequest { _userId   :: Maybe String
-                             , _username :: Maybe String
-                             , _host     :: Maybe String
-                             , _sinceId  :: Maybe String
-                             , _untilId  :: Maybe String
-                             , _limit    :: Maybe Int
-                             }
-makeLenses ''APIRequest
+data UsersFollowing = UsersFollowing { _userId   :: Maybe String
+                                     , _username :: Maybe String
+                                     , _host     :: Maybe String
+                                     , _sinceId  :: Maybe String
+                                     , _untilId  :: Maybe String
+                                     , _limit    :: Maybe Int
+                                     }
+makeLenses ''UsersFollowing
 
-instance ToJSON APIRequest where
+instance ToJSON UsersFollowing where
   toJSON req = object body
     where
       userIdObj   = createMaybeObj "userId"   (req^.userId)
@@ -44,5 +44,5 @@ instance ToJSON APIRequest where
       body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
 
 -- | Call 'users/following' API and return result
-usersFollowing :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+usersFollowing :: (HasMisskeyEnv env) => UsersFollowing -> RIO env [User]
 usersFollowing = postRequest "/api/users/Following" . toJSON

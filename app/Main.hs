@@ -36,7 +36,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersSearch    GeneralOption USe.APIRequest
              | Users          GeneralOption US.APIRequest
              | UsersFollowers GeneralOption UFr.UsersFollowers
-             | UsersFollowing GeneralOption UFi.APIRequest
+             | UsersFollowing GeneralOption UFi.UsersFollowing
              | NotesCreate    GeneralOption NC.NotesCreate
              | NotesTimeline  GeneralOption NT.NotesTimeline
              | NotesShow      GeneralOption NS.NotesShow
@@ -151,7 +151,7 @@ usersFollowersInfo = Options.Applicative.info (usersFollowersParser <**> helper)
 
 -- usersFollowingParser {{{
 usersFollowingParser :: Parser SubCmds
-usersFollowingParser = UsersFollowing NoOption <$> (UFi.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+usersFollowingParser = UsersFollowing NoOption <$> (UFi.UsersFollowing <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
                                                                    <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
                                                                    <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
                                                                    <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
