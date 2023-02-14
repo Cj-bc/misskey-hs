@@ -25,7 +25,7 @@ import Data.Time (UTCTime)
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
-import Data.Aeson (ToJSON(..), object)
+import Data.Aeson (ToJSON(toJSON), object)
 
 data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
                              , _sinceId               :: Maybe String

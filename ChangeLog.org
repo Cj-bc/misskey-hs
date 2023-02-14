@@ -13,6 +13,13 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Notes.Create.APIRequest=
   - =Web.Misskey.Api.Notes.Show.APIRequest=
   - =Web.Misskey.Api.Notes.Timeline.APIRequest=
+  - =Web.Misskey.Api.Users.Followers.APIRequest=
+  - =Web.Misskey.Api.Users.Following.APIRequest=
+  - =Web.Misskey.Api.Users.Notes.APIRequest=
+  - =Web.Misskey.Api.Users.Search.APIRequest=
+  - =Web.Misskey.Api.Users.Show.APIRequest=
+  - =Web.Misskey.Api.Users.Users.APIRequest=
+
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
 - Use cabal file directly

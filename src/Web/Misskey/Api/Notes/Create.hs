@@ -21,7 +21,7 @@ module Web.Misskey.Api.Notes.Create
 import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
-import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(..))
+import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(toJSON))
 import qualified Data.Aeson.KeyMap as KM
 import Data.Char (toLower)
 import Control.Lens (makeLenses)

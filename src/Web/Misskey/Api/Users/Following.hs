@@ -17,7 +17,7 @@ module Web.Misskey.Api.Users.Following (
 ) where
 
 import RIO
-import Data.Aeson (object)
+import Data.Aeson (object, ToJSON (toJSON))
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
@@ -32,14 +32,17 @@ data APIRequest = APIRequest { _userId   :: Maybe String
                              }
 makeLenses ''APIRequest
 
+instance ToJSON APIRequest where
+  toJSON req = object body
+    where
+      userIdObj   = createMaybeObj "userId"   (req^.userId)
+      usernameObj = createMaybeObj "username" (req^.username)
+      hostObj     = createMaybeObj "host"     (req^.host)
+      sinceIdObj  = createMaybeObj "sinceId"  (req^.sinceId)
+      untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
+      limitObj    = createMaybeObj "limit"    (req^.limit)
+      body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
+
 -- | Call 'users/following' API and return result
 usersFollowing :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-usersFollowing req = postRequest "/api/users/Following" body
-        where
-            userIdObj   = createMaybeObj "userId"   (req^.userId)
-            usernameObj = createMaybeObj "username" (req^.username)
-            hostObj     = createMaybeObj "host"     (req^.host)
-            sinceIdObj  = createMaybeObj "sinceId"  (req^.sinceId)
-            untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
-            limitObj    = createMaybeObj "limit"    (req^.limit)
-            body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
+usersFollowing = postRequest "/api/users/Following" . toJSON

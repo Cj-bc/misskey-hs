@@ -21,7 +21,7 @@ module Web.Misskey.Api.Users.Search
 import RIO
 import Control.Monad.Trans.Reader (ask)
 import Control.Lens (makeLenses)
-import Data.Aeson ((.=), object)
+import Data.Aeson ((.=), object, ToJSON (toJSON))
 import Data.Maybe (isNothing)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createMaybeObj)
@@ -34,13 +34,15 @@ data APIRequest = APIRequest { _query     :: String
                              }
 makeLenses ''APIRequest
 
+instance ToJSON APIRequest where
+  toJSON (APIRequest q o l local d) = object body
+    where
+      offsetObj     = createMaybeObj "offset"    o
+      limitObj      = createMaybeObj "limit"     l
+      localOnlyObj  = createMaybeObj "localOnly" local
+      detailObj     = createMaybeObj "detail"    d
+      body          = ["query" .= q] ++ offsetObj ++ limitObj ++ localOnlyObj ++ detailObj
 
 
 usersSearch :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-usersSearch (APIRequest q o l local d) = postRequest "/api/users/search" body
-    where
-        offsetObj     = createMaybeObj "offset"    o
-        limitObj      = createMaybeObj "limit"     l
-        localOnlyObj  = createMaybeObj "localOnly" local
-        detailObj     = createMaybeObj "detail"    d
-        body          = ["query" .= q] ++ offsetObj ++ limitObj ++ localOnlyObj ++ detailObj
+usersSearch = postRequest "/api/users/search" . toJSON

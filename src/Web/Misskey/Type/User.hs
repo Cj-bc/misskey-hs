@@ -50,7 +50,7 @@ data User = User { _user_id                      :: UserId
                  , _user_url                     :: Maybe Url
                  , _user_avatarUrl               :: Maybe Url
                  , _user_bannerUrl               :: Maybe Url
-                 , _user_emojis                  :: Maybe [String]     -- ^ This is documented as 'any'
+                 , _user_emojis                  :: Maybe String     -- ^ This is documented as 'any'
                  , _user_host                    :: Maybe String
                  , _user_description             :: Maybe String
                  , _user_birthday                :: Maybe UTCTime
@@ -85,7 +85,9 @@ data User = User { _user_id                      :: UserId
                  } deriving (Show)
 
 makeLenses ''User
-
+-- | Ad
+-- avatarBlurhash
+-- badgeRoles
 instance FromJSON User where
     parseJSON (Object v) = User <$> v .:  "id"
                                 <*> v .:  "username"
@@ -105,7 +107,7 @@ instance FromJSON User where
                                 <*> v .:? "notesCount"
                                 <*> v .:? "isBot"
                                 <*> v .:? "pinnedNoteIds"
-                                <*> v .:? "pinnedNotes"
+                                <*> (pure Nothing) --v .:? "pinnedNotes"
                                 <*> v .:? "isCat"
                                 <*> v .:? "isAdmin"
                                 <*> v .:? "isModerator"

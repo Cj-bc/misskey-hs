@@ -19,7 +19,7 @@ module Web.Misskey.Api.Users.Notes
 import RIO
 import Control.Lens (makeLenses)
 import Data.Time (UTCTime)
-import Data.Aeson ((.=), object)
+import Data.Aeson ((.=), object, ToJSON (toJSON))
 
 
 import Web.Misskey.Type
@@ -39,23 +39,26 @@ data APIRequest = APIRequest { _userId           :: Id
                              }
 makeLenses ''APIRequest
 
-usersNotes :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
-usersNotes req = postRequest "/api/users/notes" body
+instance ToJSON APIRequest where
+  toJSON req = object body
     where
-        userIdObj           = createObj        "userId"           (req^.userId)
-        includeRepObj       = createObj        "includeReplies"   (req^.includeReplies)
-        limitObj            = createMaybeObj   "limit"            (req^.limit)
-        sinceIdObj          = createMaybeObj   "sinceId"          (req^.sinceId)
-        untilIdObj          = createMaybeObj   "untilId"          (req^.untilId)
-        sinceDateObj        = createUTCTimeObj "sinceDate"        (req^.sinceDate)
-        untilDateObj        = createUTCTimeObj "untilDate"        (req^.untilDate)
-        includeMyRenotesObj = createObj        "includeMyRenotes" (req^.includeMyRenotes)
-        withFilesObj        = createObj        "withFiles"        (req^.withFiles)
-        fileTypeObj         = createMaybeObj   "fileType"         (req^.fileType)
-        excludeNsfwObj      = createObj        "excludeNsfw"      (req^.excludeNsfw)
-        body                = mconcat [userIdObj, includeRepObj, limitObj, sinceIdObj
-                                      , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
-                                      , withFilesObj, fileTypeObj, excludeNsfwObj]
+      userIdObj           = createObj        "userId"           (req^.userId)
+      includeRepObj       = createObj        "includeReplies"   (req^.includeReplies)
+      limitObj            = createMaybeObj   "limit"            (req^.limit)
+      sinceIdObj          = createMaybeObj   "sinceId"          (req^.sinceId)
+      untilIdObj          = createMaybeObj   "untilId"          (req^.untilId)
+      sinceDateObj        = createUTCTimeObj "sinceDate"        (req^.sinceDate)
+      untilDateObj        = createUTCTimeObj "untilDate"        (req^.untilDate)
+      includeMyRenotesObj = createObj        "includeMyRenotes" (req^.includeMyRenotes)
+      withFilesObj        = createObj        "withFiles"        (req^.withFiles)
+      fileTypeObj         = createMaybeObj   "fileType"         (req^.fileType)
+      excludeNsfwObj      = createObj        "excludeNsfw"      (req^.excludeNsfw)
+      body                = mconcat [userIdObj, includeRepObj, limitObj, sinceIdObj
+                                    , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
+                                    , withFilesObj, fileTypeObj, excludeNsfwObj]
+
+usersNotes :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
+usersNotes = postRequest "/api/users/notes" . toJSON
 
 
 

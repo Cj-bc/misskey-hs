@@ -6,7 +6,7 @@ module Web.Misskey.Api.Notes.Show (
 ) where
 
 import RIO
-import Data.Aeson ((.=), ToJSON(..), object)
+import Data.Aeson ((.=), ToJSON(toJSON), object)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
