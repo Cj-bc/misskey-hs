@@ -37,7 +37,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | Users          GeneralOption US.APIRequest
              | UsersFollowers GeneralOption UFr.APIRequest
              | UsersFollowing GeneralOption UFi.APIRequest
-             | NotesCreate    GeneralOption NC.APIRequest
+             | NotesCreate    GeneralOption NC.NotesCreate
              | NotesTimeline  GeneralOption NT.APIRequest
              | NotesShow      GeneralOption NS.APIRequest
 
@@ -168,7 +168,7 @@ usersFollowingInfo = Options.Applicative.info (usersFollowingParser <**> helper)
 --
 -- __'Poll' is currently disabled__
 notesCreateParser :: Parser SubCmds
-notesCreateParser = NotesCreate NoOption <$> (NC.APIRequest <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
+notesCreateParser = NotesCreate NoOption <$> (NC.NotesCreate <$> option auto (long "visibility" <> value NC.Public <> metavar "VISIBILITY" <> help "Visibility range [Public|Home|Followers|Specified]")
                                                             <*> many (strOption (long "visibleUserId" <> metavar "VISIBLE-USER-ID" <> help "Users who can read the note(if visibility is 'Specified')"))
                                                             <*> option maybeStr (long "text" <> value Nothing <> metavar "TEXT" <> help "Text to post")
                                                             <*> option maybeStr (long "cw"   <> value Nothing <> metavar "CW"   <> help "warning of content. This will hide note content")
