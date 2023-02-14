@@ -11,10 +11,10 @@ Stability   : experimental
 Call `notes/timeline` Misskey API
 -}
 module Web.Misskey.Api.Notes.Timeline
-( APIRequest(APIRequest)
+( NotesTimeline(NotesTimeline)
 , notesTimeline
 
--- ** Lenses for APIRequest
+-- ** Lenses for NotesTimeline
 , limit, sinceId, untilId, sinceDate, untilDate
 , includeMyRenotes, includeRenotedMyNotes
 , includeLocalRenotes, withFiles
@@ -27,21 +27,21 @@ import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 import Data.Aeson (ToJSON(toJSON), object)
 
-data APIRequest = APIRequest { _limit                 :: Maybe Int -- [1..100]
-                             , _sinceId               :: Maybe String
-                             , _untilId               :: Maybe String
-                             , _sinceDate             :: Maybe UTCTime
-                             , _untilDate             :: Maybe UTCTime
-                             , _includeMyRenotes      :: Bool
-                             , _includeRenotedMyNotes :: Bool
-                             , _includeLocalRenotes   :: Bool
-                             , _withFiles             :: Bool
-                             }
-makeLenses ''APIRequest
+data NotesTimeline = NotesTimeline { _limit                 :: Maybe Int -- [1..100]
+                                   , _sinceId               :: Maybe String
+                                   , _untilId               :: Maybe String
+                                   , _sinceDate             :: Maybe UTCTime
+                                   , _untilDate             :: Maybe UTCTime
+                                   , _includeMyRenotes      :: Bool
+                                   , _includeRenotedMyNotes :: Bool
+                                   , _includeLocalRenotes   :: Bool
+                                   , _withFiles             :: Bool
+                                   }
+makeLenses ''NotesTimeline
 
 -- | This can't be auto-generate because I need to convert 'UTCTime' to 'EpochTime', which
 -- default 'ToJSON' doesn't do
-instance ToJSON APIRequest where
+instance ToJSON NotesTimeline where
   toJSON req = object body
     where
         limitBody                 = createMaybeObj   "limit"                 (req^.limit)
@@ -58,5 +58,5 @@ instance ToJSON APIRequest where
                                             , includeRenotedMyNotesBody, includeLocalRenotesBody, withFilesBody
                                             ]
   
-notesTimeline :: (HasMisskeyEnv env) => APIRequest -> RIO env [Note]
+notesTimeline :: (HasMisskeyEnv env) => NotesTimeline -> RIO env [Note]
 notesTimeline = postRequest "/api/notes/timeline" . toJSON

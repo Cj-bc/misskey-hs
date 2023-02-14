@@ -38,7 +38,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersFollowers GeneralOption UFr.APIRequest
              | UsersFollowing GeneralOption UFi.APIRequest
              | NotesCreate    GeneralOption NC.NotesCreate
-             | NotesTimeline  GeneralOption NT.APIRequest
+             | NotesTimeline  GeneralOption NT.NotesTimeline
              | NotesShow      GeneralOption NS.NotesShow
 
 
@@ -189,7 +189,7 @@ notesCreateParserInfo = Options.Applicative.info (notesCreateParser <**> helper)
 
 -- notesTimelineParser {{{
 notesTimelineParser :: Parser SubCmds
-notesTimelineParser = NotesTimeline NoOption <$> (NT.APIRequest
+notesTimelineParser = NotesTimeline NoOption <$> (NT.NotesTimeline
         <$> option maybeAuto          (long "limit"                    <> help "Limit amount of Notes to fetch(default: 10)"               <> value Nothing <> metavar "LIMIT" )
         <*> option maybeStr           (long "sinceId"                  <> help "Grab notes since given id"                                 <> value Nothing <> metavar "SINCEID")
         <*> option maybeStr           (long "untilId"                  <> help "Grab notes until given id"                                 <> value Nothing <> metavar "UNTILID")
