@@ -12,7 +12,7 @@ Call `users/followers` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/followers
 -}
 module Web.Misskey.Api.Users.Followers (
-  APIRequest(APIRequest)
+  UsersFollowers(UsersFollowers)
 , usersFollowers
 ) where
 
@@ -23,26 +23,26 @@ import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
 
-data APIRequest = APIRequest { _userId   :: Maybe String
-                             , _username :: Maybe String
-                             , _host     :: Maybe String
-                             , _sinceId  :: Maybe String
-                             , _untilId  :: Maybe String
-                             , _limit    :: Maybe Int
-                             }
-makeLenses ''APIRequest
+data UsersFollowers = UsersFollowers { _userId   :: Maybe String
+                                     , _username :: Maybe String
+                                     , _host     :: Maybe String
+                                     , _sinceId  :: Maybe String
+                                     , _untilId  :: Maybe String
+                                     , _limit    :: Maybe Int
+                                     }
+makeLenses ''UsersFollowers
 
-instance ToJSON APIRequest where
+instance ToJSON UsersFollowers where
   toJSON req = object body
-        where
-            userIdObj   = createMaybeObj "userId"   (req^.userId)
-            usernameObj = createMaybeObj "username" (req^.username)
-            hostObj     = createMaybeObj "host"     (req^.host)
-            sinceIdObj  = createMaybeObj "sinceId"  (req^.sinceId)
-            untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
-            limitObj    = createMaybeObj "limit"    (req^.limit)
-            body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
+    where
+      userIdObj   = createMaybeObj "userId"   (req^.userId)
+      usernameObj = createMaybeObj "username" (req^.username)
+      hostObj     = createMaybeObj "host"     (req^.host)
+      sinceIdObj  = createMaybeObj "sinceId"  (req^.sinceId)
+      untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
+      limitObj    = createMaybeObj "limit"    (req^.limit)
+      body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
 
 -- | Call 'users/followers' API and return result
-usersFollowers :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+usersFollowers :: (HasMisskeyEnv env) => UsersFollowers -> RIO env [User]
 usersFollowers = postRequest "/api/users/Followers" . toJSON

@@ -35,7 +35,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersNotes     GeneralOption UN.APIRequest
              | UsersSearch    GeneralOption USe.APIRequest
              | Users          GeneralOption US.APIRequest
-             | UsersFollowers GeneralOption UFr.APIRequest
+             | UsersFollowers GeneralOption UFr.UsersFollowers
              | UsersFollowing GeneralOption UFi.APIRequest
              | NotesCreate    GeneralOption NC.NotesCreate
              | NotesTimeline  GeneralOption NT.NotesTimeline
@@ -137,7 +137,7 @@ usersInfo = Options.Applicative.info (usersParser <**> helper) (fullDesc <> prog
 
 -- usersFollowersParser {{{
 usersFollowersParser :: Parser SubCmds
-usersFollowersParser = UsersFollowers NoOption <$> (UFr.APIRequest <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
+usersFollowersParser = UsersFollowers NoOption <$> (UFr.UsersFollowers <$> option maybeStr (long "userId"   <> value Nothing <> metavar "USER-ID"  <> help "Target user id")
                                                                    <*> option maybeStr (long "username" <> value Nothing <> metavar "USERNAME" <> help "Target user name")
                                                                    <*> option maybeStr (long "host"     <> value Nothing <> metavar "HOST"     <> help "Host")
                                                                    <*> option maybeStr (long "sinceId"  <> value Nothing <> metavar "SINCE-ID")
