@@ -33,7 +33,7 @@ import Options.Applicative.Types (readerAsk, Parser(NilP))
 
 data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersNotes     GeneralOption UN.UsersNotes
-             | UsersSearch    GeneralOption USe.APIRequest
+             | UsersSearch    GeneralOption USe.UsersSearch
              | Users          GeneralOption US.APIRequest
              | UsersFollowers GeneralOption UFr.UsersFollowers
              | UsersFollowing GeneralOption UFi.UsersFollowing
@@ -87,7 +87,7 @@ usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc
 
 -- usersSearchParser {{{
 usersSearchParser :: Parser SubCmds
-usersSearchParser = UsersSearch NoOption <$> (USe.APIRequest <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
+usersSearchParser = UsersSearch NoOption <$> (USe.UsersSearch <$> strOption (long "query" <> metavar "QUERY-STRING" <> help "Query string")
                                                              <*> option maybeAuto  (long "offset" <> value Nothing <> help "Offset")
                                                              <*> option maybeAuto (long "limit"  <> value (Just 10) <> help "Number to grab")
                                                              <*> option maybeAuto (long "localOnly" <> value Nothing <> help "True to search for only local users")
