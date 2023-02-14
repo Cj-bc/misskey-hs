@@ -20,7 +20,7 @@ usersShow
 where
 
 import RIO
-import Data.Aeson (encode, object, (.=), Value, decode', fromJSON, Result(..))
+import Data.Aeson (encode, object, (.=), Value, decode', fromJSON, Result(..), ToJSON(toJSON))
 import Data.List (singleton)
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class (liftIO)
@@ -40,15 +40,16 @@ data APIRequest = UserId   String
                 | UserName String (Maybe String)
 makePrisms ''APIRequest
 
+instance ToJSON APIRequest where
+  toJSON (UserIds is) = object ["userIds" .= is]
+  toJSON (UserId i) = object ["userId" .= i]
+  toJSON (UserName n h) = object ["username" .= n , "host" .= h]
+
 -- | Call API `users/show` and return result
 --
 -- This supports to post *only one of userId/userIds/username/host property*
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
 usersShow :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-usersShow (UserIds is) = postRequest "/api/users/show" $ ["userIds"  .= is]
-usersShow req          = singleton <$> postRequest "/api/users/show" body
-    where
-        body = case req of
-                UserId i     -> ["userId"   .= i]
-                UserName n h -> ["username" .= n , "host" .= h]
+usersShow req@(UserIds is) = postRequest "/api/users/show" $ toJSON req
+usersShow req              = singleton <$> postRequest "/api/users/show" (toJSON req)

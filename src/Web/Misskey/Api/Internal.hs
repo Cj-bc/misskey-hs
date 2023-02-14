@@ -12,10 +12,12 @@ module Web.Misskey.Api.Internal
 import RIO
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Trans.Reader (ReaderT)
-import Data.Aeson.Types (Pair, KeyValue, ToJSON)
+import Data.Aeson.Types (KeyValue, ToJSON, Value (Object))
 import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
+import qualified Data.Aeson.KeyMap as KM
 import Data.Time (UTCTime)
 import Data.Text (Text)
+import qualified Data.Text as T
 import System.Posix.Types (EpochTime)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Foreign.C.Types (CTime(..))
@@ -26,6 +28,7 @@ import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 
 import Web.Misskey.Type
 import Data.Aeson.Key (fromText)
+import Data.Aeson.KeyMap (KeyMap)
 
 -- | Create 'Data.Aeson.KeyValue' a Object
 createMaybeObj :: (KeyValue kv, ToJSON v) => Text -> Maybe v -> [kv]
@@ -53,11 +56,12 @@ uToE = CTime . truncate . utcTimeToPOSIXSeconds
 -- __This function will throw error__ if parsing response failed.
 -- As /Parsing error/ is fatal and should be fixed by Library author,
 -- not by user, this error should be reported as issue
-postRequest :: (FromJSON a, HasMisskeyEnv env) => String -> [Pair] -> RIO env a
+postRequest :: (FromJSON a, HasMisskeyEnv env) => String -> Value -> RIO env a
 postRequest apiPath body =  do
     (MisskeyEnv token url) <- view misskeyEnvL
     initReq <- parseRequest $ url ++ apiPath
-    let bodyWithToken = object $ ("i" .= token) : body
+    let (Object bodyContent) = body
+        bodyWithToken = Object $ KM.insert "i" (fromString token) bodyContent
         request       = initReq { method = "POST"
                                 , requestBody = RequestBodyLBS $ encode bodyWithToken
                                 , requestHeaders =

@@ -17,7 +17,7 @@ module Web.Misskey.Api.Users.Followers (
 ) where
 
 import RIO
-import Data.Aeson (object)
+import Data.Aeson (object, ToJSON(toJSON))
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
@@ -32,9 +32,8 @@ data APIRequest = APIRequest { _userId   :: Maybe String
                              }
 makeLenses ''APIRequest
 
--- | Call 'users/followers' API and return result
-usersFollowers :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-usersFollowers req = postRequest "/api/users/Followers" body
+instance ToJSON APIRequest where
+  toJSON req = object body
         where
             userIdObj   = createMaybeObj "userId"   (req^.userId)
             usernameObj = createMaybeObj "username" (req^.username)
@@ -43,3 +42,7 @@ usersFollowers req = postRequest "/api/users/Followers" body
             untilIdObj  = createMaybeObj "untilId"  (req^.untilId)
             limitObj    = createMaybeObj "limit"    (req^.limit)
             body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
+
+-- | Call 'users/followers' API and return result
+usersFollowers :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+usersFollowers = postRequest "/api/users/Followers" . toJSON

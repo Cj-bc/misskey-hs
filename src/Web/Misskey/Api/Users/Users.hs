@@ -20,7 +20,7 @@ module Web.Misskey.Api.Users.Users
 ) where
 
 import RIO
-import Data.Aeson (object)
+import Data.Aeson (object, ToJSON (toJSON))
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
@@ -69,12 +69,15 @@ data APIRequest = APIRequest { _limit  :: Maybe Int -- [1..100]
                              }
 makeLenses ''APIRequest
 
-users :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-users req = postRequest "/api/users" body
+instance ToJSON APIRequest where
+  toJSON req = object body
     where
-        limitObj  = createMaybeObj "limit"  (req^.limit)
-        offsetObj = createMaybeObj "offset" (req^.offset)
-        sortObj   = createMaybeObj "sort"   (fmap show (req^.sort))
-        stateObj  = createMaybeObj "state"  (fmap show (req^.state))
-        originObj = createMaybeObj "origin" (fmap show (req^.origin))
-        body      = mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]
+      limitObj  = createMaybeObj "limit"  (req^.limit)
+      offsetObj = createMaybeObj "offset" (req^.offset)
+      sortObj   = createMaybeObj "sort"   (fmap show (req^.sort))
+      stateObj  = createMaybeObj "state"  (fmap show (req^.state))
+      originObj = createMaybeObj "origin" (fmap show (req^.origin))
+      body      = mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]
+
+users :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+users = postRequest "/api/users" . toJSON
