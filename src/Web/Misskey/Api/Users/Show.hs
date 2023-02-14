@@ -13,7 +13,7 @@ API document is: https://misskey.io/api-doc#operation/users/show
 -}
 module Web.Misskey.Api.Users.Show (
 usersShow
-, APIRequest
+, UsersShow
 , _UserId, _UserIds, _UserName
 )
 
@@ -35,12 +35,12 @@ import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatu
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
-data APIRequest = UserId   String
+data UsersShow = UserId   String
                 | UserIds  [String]
                 | UserName String (Maybe String)
-makePrisms ''APIRequest
+makePrisms ''UsersShow
 
-instance ToJSON APIRequest where
+instance ToJSON UsersShow where
   toJSON (UserIds is) = object ["userIds" .= is]
   toJSON (UserId i) = object ["userId" .= i]
   toJSON (UserName n h) = object ["username" .= n , "host" .= h]
@@ -50,6 +50,6 @@ instance ToJSON APIRequest where
 -- This supports to post *only one of userId/userIds/username/host property*
 --
 -- Doc: https://misskey.io/api-doc#operation/users/show
-usersShow :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
+usersShow :: (HasMisskeyEnv env) => UsersShow -> RIO env [User]
 usersShow req@(UserIds is) = postRequest "/api/users/show" $ toJSON req
 usersShow req              = singleton <$> postRequest "/api/users/show" (toJSON req)

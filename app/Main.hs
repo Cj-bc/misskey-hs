@@ -31,7 +31,7 @@ import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
-data SubCmds = UsersShow      GeneralOption USh.APIRequest
+data SubCmds = UsersShow      GeneralOption USh.UsersShow
              | UsersNotes     GeneralOption UN.UsersNotes
              | UsersSearch    GeneralOption USe.UsersSearch
              | Users          GeneralOption US.APIRequest

@@ -37,6 +37,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Users.Following.APIRequest= to =UsersFollowing=
   - =Web.Misskey.Api.Users.Notes.APIRequest= to =UsersNotes=
   - =Web.Misskey.Api.Users.Search.APIRequest= to =UsersSearch=
+  - =Web.Misskey.Api.Users.Show.APIRequest= to =UsersShow=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
 - =Misskey= monad & =runMisskey= function
