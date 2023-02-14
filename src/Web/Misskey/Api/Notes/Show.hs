@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 module Web.Misskey.Api.Notes.Show (
-  APIRequest(..)
+  NotesShow(..)
 , notesShow
 ) where
 
@@ -10,11 +10,11 @@ import Data.Aeson ((.=), ToJSON(toJSON), object)
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
-data APIRequest = NoteId Id
+data NotesShow = NoteId Id
 
-instance ToJSON APIRequest where
+instance ToJSON NotesShow where
   toJSON (NoteId i) = object ["noteId" .= i]
 
 -- | Call notes/show API
-notesShow :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
+notesShow :: (HasMisskeyEnv env) => NotesShow -> RIO env Note
 notesShow = postRequest "/api/notes/show" . toJSON

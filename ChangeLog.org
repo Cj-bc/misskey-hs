@@ -31,6 +31,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - =Web.Misskey.Api.Internal.postRequest= requires ~Data.Aeson.Value~ rather than ~[Pair]~
 - =APIRequest= s are renamed based on their api endpoint:
   - =Web.Misskey.Api.Notes.Create.APIRequest= to =NotesCreate=
+  - =Web.Misskey.Api.Notes.Show.APIRequest= to =NotesShow=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
 - =Misskey= monad & =runMisskey= function

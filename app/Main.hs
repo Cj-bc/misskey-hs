@@ -39,7 +39,7 @@ data SubCmds = UsersShow      GeneralOption USh.APIRequest
              | UsersFollowing GeneralOption UFi.APIRequest
              | NotesCreate    GeneralOption NC.NotesCreate
              | NotesTimeline  GeneralOption NT.APIRequest
-             | NotesShow      GeneralOption NS.APIRequest
+             | NotesShow      GeneralOption NS.NotesShow
 
 
 -- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
