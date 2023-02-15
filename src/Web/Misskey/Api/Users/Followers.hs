@@ -1,6 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Users.Followers
 Description : Misskey API Endpoint and Request for users/followers
@@ -13,7 +14,6 @@ API document is: https://misskey.io/api-doc#operation/users/followers
 -}
 module Web.Misskey.Api.Users.Followers (
   UsersFollowers(UsersFollowers)
-, usersFollowers
 ) where
 
 import RIO
@@ -43,6 +43,6 @@ instance ToJSON UsersFollowers where
       limitObj    = createMaybeObj "limit"    (req^.limit)
       body        = mconcat [userIdObj, usernameObj, hostObj, sinceIdObj, untilIdObj, limitObj]
 
--- | Call 'users/followers' API and return result
-usersFollowers :: (HasMisskeyEnv env) => UsersFollowers -> RIO env [User]
-usersFollowers = postRequest "/api/users/Followers" . toJSON
+instance APIRequest UsersFollowers where
+  type APIResponse UsersFollowers = [User]
+  apiPath _ = "/api/users/Followers" 

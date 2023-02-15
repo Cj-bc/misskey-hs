@@ -17,15 +17,16 @@ import System.IO (print, putStrLn)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Web.Misskey.Type
-import Web.Misskey.Api.Users.Search (UsersSearch(UsersSearch), usersSearch)
-import Web.Misskey.Api.Users.Notes (UsersNotes(UsersNotes), usersNotes)
-import Web.Misskey.Api.Users.Show (UsersShow, usersShow, _UserId, _UserIds, _UserName)
-import Web.Misskey.Api.Users.Users (UsersUsers(UsersUsers), users)
-import Web.Misskey.Api.Users.Followers (UsersFollowers(UsersFollowers), usersFollowers)
-import Web.Misskey.Api.Users.Following (UsersFollowing(UsersFollowing), usersFollowing)
-import Web.Misskey.Api.Notes.Create (NotesCreate(NotesCreate), notesCreate, Visibility(Public))
-import Web.Misskey.Api.Notes.Timeline (NotesTimeline(NotesTimeline), notesTimeline)
-import Web.Misskey.Api.Notes.Show (NotesShow(NoteId), notesShow)
+import Web.Misskey.Api.Internal (call)
+import Web.Misskey.Api.Users.Search (UsersSearch(UsersSearch))
+import Web.Misskey.Api.Users.Notes (UsersNotes(UsersNotes))
+import Web.Misskey.Api.Users.Show (UsersShow, _UserId, _UserIds, _UserName)
+import Web.Misskey.Api.Users.Users (UsersUsers(UsersUsers))
+import Web.Misskey.Api.Users.Followers (UsersFollowers(UsersFollowers))
+import Web.Misskey.Api.Users.Following (UsersFollowing(UsersFollowing))
+import Web.Misskey.Api.Notes.Create (NotesCreate(NotesCreate), Visibility(Public))
+import Web.Misskey.Api.Notes.Timeline (NotesTimeline(NotesTimeline))
+import Web.Misskey.Api.Notes.Show (NotesShow(NoteId))
 import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
@@ -254,15 +255,15 @@ main = do
 
     runRIO env $ do 
       case apiRequest of
-        CmdUsersShow opt req      -> usersShow req      >>= evalResult opt
-        CmdUsersNotes opt req     -> usersNotes req     >>= evalResult opt
-        CmdUsersSearch opt req    -> usersSearch req    >>= evalResult opt
-        CmdUsers opt req          -> users req          >>= evalResult opt
-        CmdUsersFollowers opt req -> usersFollowers req >>= evalResult opt
-        CmdUsersFollowing opt req -> usersFollowing req >>= evalResult opt
-        CmdNotesCreate opt req    -> notesCreate req    >>= evalResult opt
-        CmdNotesTimeline opt req  -> notesTimeline req  >>= evalResult opt
-        CmdNotesShow opt req      -> notesShow req      >>= evalResult opt
+        CmdUsersShow opt req      -> call req >>= evalResult opt
+        CmdUsersNotes opt req     -> call req >>= evalResult opt
+        CmdUsersSearch opt req    -> call req >>= evalResult opt
+        CmdUsers opt req          -> call req >>= evalResult opt
+        CmdUsersFollowers opt req -> call req >>= evalResult opt
+        CmdUsersFollowing opt req -> call req >>= evalResult opt
+        CmdNotesCreate opt req    -> call req >>= evalResult opt
+        CmdNotesTimeline opt req  -> call req >>= evalResult opt
+        CmdNotesShow opt req      -> call req >>= evalResult opt
         where
           evalResult NoOption = liftIO . putStrLn . ushow
           evalResult opt      = when (not $ quiet opt) . liftIO . putStrLn . ushow

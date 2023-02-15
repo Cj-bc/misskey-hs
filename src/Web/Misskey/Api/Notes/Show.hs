@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 module Web.Misskey.Api.Notes.Show (
   NotesShow(..)
-, notesShow
 ) where
 
 import RIO
@@ -15,6 +15,6 @@ data NotesShow = NoteId Id
 instance ToJSON NotesShow where
   toJSON (NoteId i) = object ["noteId" .= i]
 
--- | Call notes/show API
-notesShow :: (HasMisskeyEnv env) => NotesShow -> RIO env Note
-notesShow = postRequest "/api/notes/show" . toJSON
+instance APIRequest NotesShow where
+  type APIResponse NotesShow = Note
+  apiPath _ = "/api/notes/show" 

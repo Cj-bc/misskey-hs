@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Users.Notes
 Description : Misskey API Endpoint and Request for users/notes
@@ -13,8 +14,7 @@ API document is: https://misskey.io/api-doc#operation/users/notes
 -}
 
 module Web.Misskey.Api.Users.Notes
-( usersNotes
-, UsersNotes(..)
+( UsersNotes(..)
 ) where
 import RIO
 import Control.Lens (makeLenses)
@@ -23,7 +23,7 @@ import Data.Aeson ((.=), object, ToJSON (toJSON))
 
 
 import Web.Misskey.Type
-import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, createUTCTimeObj)
+import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, createUTCTimeObj, APIRequest(..))
 
 data UsersNotes = UsersNotes { _userId           :: Id
                              , _includeReplies   :: Bool
@@ -57,8 +57,6 @@ instance ToJSON UsersNotes where
                                     , untilIdObj, sinceDateObj, untilDateObj, includeMyRenotesObj
                                     , withFilesObj, fileTypeObj, excludeNsfwObj]
 
-usersNotes :: (HasMisskeyEnv env) => UsersNotes -> RIO env [Note]
-usersNotes = postRequest "/api/users/notes" . toJSON
-
-
-
+instance APIRequest UsersNotes where
+  type APIResponse UsersNotes = [Note]
+  apiPath _ = "/api/users/notes" 

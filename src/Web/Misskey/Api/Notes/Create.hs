@@ -1,6 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
@@ -13,15 +14,14 @@ Call `notes/create` Misskey API
 API document is: https://virtual-kaf.fun/api-doc#operation/notes/create
 -}
 module Web.Misskey.Api.Notes.Create
-( notesCreate
-, NotesCreate(..)
+( NotesCreate(..)
 , Visibility(..)
 ) where
 
 import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
-import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(toJSON))
+import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(toJSON), fromJSON, Result(Error, Success))
 import qualified Data.Aeson.KeyMap as KM
 import Data.Char (toLower)
 import Control.Lens (makeLenses)
@@ -79,6 +79,9 @@ data CreatedNote = CreatedNote {createdNote :: Note}
 instance FromJSON CreatedNote where
     parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
 
--- | Call 'notes/create' API and return result
-notesCreate :: (HasMisskeyEnv env) => NotesCreate -> RIO env Note
-notesCreate req = createdNote <$> postRequest "/api/notes/create" (toJSON req)
+instance APIRequest NotesCreate where
+  type APIResponse NotesCreate = Note
+  apiPath _ = "/api/notes/create"
+  parseResponse _ value = case createdNote <$> fromJSON value of
+                            Error e -> throwM (ResponseParseFailed e)
+                            Success v -> return v

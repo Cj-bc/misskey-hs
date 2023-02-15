@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Users.Users
 Description : Misskey API Endpoint and Request for users
@@ -13,7 +14,6 @@ API document is: https://misskey.io/api-doc#operation/users
 -}
 module Web.Misskey.Api.Users.Users
 ( UsersUsers(..)
-, users
 , UsersSortParam(..)
 , UsersStateParam(..)
 , UsersOriginParam(..)
@@ -23,7 +23,7 @@ import RIO
 import Data.Aeson (object, ToJSON (toJSON))
 import Control.Lens (makeLenses)
 import Web.Misskey.Type
-import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj)
+import Web.Misskey.Api.Internal (postRequest, createObj, createMaybeObj, APIRequest(APIResponse, apiPath))
 
 data UsersSortParam = FollowerInc   | FollowerDec
                     | CreatedAtInc  | CreatedAtDec
@@ -79,5 +79,6 @@ instance ToJSON UsersUsers where
       originObj = createMaybeObj "origin" (fmap show (req^.origin))
       body      = mconcat [limitObj, offsetObj, sortObj, stateObj, originObj]
 
-users :: (HasMisskeyEnv env) => UsersUsers -> RIO env [User]
-users = postRequest "/api/users" . toJSON
+instance APIRequest UsersUsers where
+  type APIResponse UsersUsers = [User]
+  apiPath _ = "/api/users"

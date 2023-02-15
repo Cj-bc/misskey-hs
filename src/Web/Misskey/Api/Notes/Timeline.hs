@@ -1,6 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Timeline
 Description : Misskey API Endpoint and Request for notes/timeline
@@ -12,7 +13,6 @@ Call `notes/timeline` Misskey API
 -}
 module Web.Misskey.Api.Notes.Timeline
 ( NotesTimeline(NotesTimeline)
-, notesTimeline
 
 -- ** Lenses for NotesTimeline
 , limit, sinceId, untilId, sinceDate, untilDate
@@ -58,5 +58,6 @@ instance ToJSON NotesTimeline where
                                             , includeRenotedMyNotesBody, includeLocalRenotesBody, withFilesBody
                                             ]
   
-notesTimeline :: (HasMisskeyEnv env) => NotesTimeline -> RIO env [Note]
-notesTimeline = postRequest "/api/notes/timeline" . toJSON
+instance APIRequest NotesTimeline where
+  type APIResponse NotesTimeline = [Note]
+  apiPath _ = "/api/notes/timeline" 

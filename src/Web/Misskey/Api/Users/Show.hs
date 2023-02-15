@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 
 {-|
 Module      : Web.Misskey.Api.Users.Show
@@ -12,8 +13,7 @@ Call `users/show` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/show
 -}
 module Web.Misskey.Api.Users.Show (
-usersShow
-, UsersShow
+  UsersShow
 , _UserId, _UserIds, _UserName
 )
 
@@ -35,6 +35,11 @@ import Network.HTTP.Simple (httpLbs, httpJSON, getResponseBody, getResponseStatu
 import Web.Misskey.Type
 import Web.Misskey.Api.Internal
 
+-- | Call API `users/show` and return result
+--
+-- This supports to post *only one of userId/userIds/username/host property*
+--
+-- Doc: https://misskey.io/api-doc#operation/users/show
 data UsersShow = UserId   String
                 | UserIds  [String]
                 | UserName String (Maybe String)
@@ -45,11 +50,12 @@ instance ToJSON UsersShow where
   toJSON (UserId i) = object ["userId" .= i]
   toJSON (UserName n h) = object ["username" .= n , "host" .= h]
 
--- | Call API `users/show` and return result
---
--- This supports to post *only one of userId/userIds/username/host property*
---
--- Doc: https://misskey.io/api-doc#operation/users/show
-usersShow :: (HasMisskeyEnv env) => UsersShow -> RIO env [User]
-usersShow req@(UserIds is) = postRequest "/api/users/show" $ toJSON req
-usersShow req              = singleton <$> postRequest "/api/users/show" (toJSON req)
+instance APIRequest UsersShow where
+  type APIResponse UsersShow = [User] 
+  apiPath _ = "/api/users/show"
+  parseResponse req response = case responseParser req response of
+                                 Error e -> throwM (ResponseParseFailed e)
+                                 Success v -> return v
+    where
+      responseParser (UserIds _) = fromJSON :: Value -> Result [User]
+      responseParser _           = fmap singleton . (fromJSON :: Value -> Result User)
