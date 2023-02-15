@@ -19,6 +19,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Users.Search.APIRequest=
   - =Web.Misskey.Api.Users.Show.APIRequest=
   - =Web.Misskey.Api.Users.Users.APIRequest=
+- =Web.Misskey.Api.Internal.APIRequest= type class: define 'call' function that calls API
 
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
