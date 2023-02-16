@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Web.Misskey.Api
       Web.Misskey.Api.Internal
       Web.Misskey.Api.Notes.Create
       Web.Misskey.Api.Notes.Show
