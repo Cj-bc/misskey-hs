@@ -19,6 +19,17 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Users.Search.APIRequest=
   - =Web.Misskey.Api.Users.Show.APIRequest=
   - =Web.Misskey.Api.Users.Users.APIRequest=
+- =Web.Misskey.Api.Internal.APIRequest= type class: define 'call' function that calls API
+- Instances of =Web.Misskey.Api.Internal.APIRequest= for:
+  - =Web.Misskey.Api.Notes.Create.NotesCreate=
+  - =Web.Misskey.Api.Notes.Show.NotesShow=
+  - =Web.Misskey.Api.Notes.Timeline.NotesTimeline=
+  - =Web.Misskey.Api.Users.Followers.UsersFollowers=
+  - =Web.Misskey.Api.Users.Following.UsersFollowing=
+  - =Web.Misskey.Api.Users.Notes.UsersNotes=
+  - =Web.Misskey.Api.Users.Search.UsersSearch=
+  - =Web.Misskey.Api.Users.Show.UsersShow=
+  - =Web.Misskey.Api.Users.Users.UsersUsers=
 
 *** Changed
 - Update haskell LTS from 14.18 to 20.10
@@ -29,9 +40,29 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
 - =Web.Misskey.Api.Internal.postRequest= type: =Misskey a= to =RIO env a=
 - ALl api caller function type: =Misskey a= to =RIO env a=
 - =Web.Misskey.Api.Internal.postRequest= requires ~Data.Aeson.Value~ rather than ~[Pair]~
+- =APIRequest= s are renamed based on their api endpoint:
+  - =Web.Misskey.Api.Notes.Create.APIRequest= to =NotesCreate=
+  - =Web.Misskey.Api.Notes.Show.APIRequest= to =NotesShow=
+  - =Web.Misskey.Api.Notes.Timeline.APIRequest= to =NotesTimeline=
+  - =Web.Misskey.Api.Users.Followers.APIRequest= to =UsersFollowers=
+  - =Web.Misskey.Api.Users.Following.APIRequest= to =UsersFollowing=
+  - =Web.Misskey.Api.Users.Notes.APIRequest= to =UsersNotes=
+  - =Web.Misskey.Api.Users.Search.APIRequest= to =UsersSearch=
+  - =Web.Misskey.Api.Users.Show.APIRequest= to =UsersShow=
+  - =Web.Misskey.Api.Users.Users.APIRequest= to =UsersUsers=
 *** Removed
 - Hpack file (due to direct usage of cabal file)
 - =Misskey= monad & =runMisskey= function
+- All caller functions (Use =call= of =APIRequest= type class instead):
+  - =Web.Misskey.Api.Notes.Create.notesCreate=
+  - =Web.Misskey.Api.Notes.Show.notesShow=
+  - =Web.Misskey.Api.Notes.Timeline.notesTimeline=
+  - =Web.Misskey.Api.Users.Followers.usersFollowers=
+  - =Web.Misskey.Api.Users.Following.usersFollowing=
+  - =Web.Misskey.Api.Users.Notes.usersNotes=
+  - =Web.Misskey.Api.Users.Search.usersSearch=
+  - =Web.Misskey.Api.Users.Show.usersShow=
+  - =Web.Misskey.Api.Users.Users.usersUsers=
 
 ** [0.2.0.0] - 2020-05-05
 *** Changed

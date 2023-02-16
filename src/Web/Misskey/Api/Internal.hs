@@ -1,5 +1,7 @@
 {-# Language OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts #-}
 module Web.Misskey.Api.Internal
 ( -- * Creating objects
   createMaybeObj
@@ -7,12 +9,15 @@ module Web.Misskey.Api.Internal
 , createUTCTimeObj
 -- * IO related
 , postRequest
+
+-- * API calling stuff.
+, APIRequest(..)
 ) where
 
 import RIO
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Trans.Reader (ReaderT)
-import Data.Aeson.Types (KeyValue, ToJSON, Value (Object))
+import Data.Aeson.Types (KeyValue, ToJSON (toJSON), Value (Object))
 import Data.Aeson (Value, encode, FromJSON, (.=), fromJSON, Result(..), object)
 import qualified Data.Aeson.KeyMap as KM
 import Data.Time (UTCTime)
@@ -78,3 +83,32 @@ postRequest apiPath body =  do
         code -> case fromJSON responseBody of
                     Success a' -> throwM $ InvalidStatusCodeReturned code a'
                     Error   e  -> throwM $ ResponseParseFailed e
+
+-- | A data type that represents Request for specific API
+class (ToJSON request, FromJSON (APIResponse request)) => APIRequest request where
+  -- | Result data type of given @request@ type
+  type APIResponse request
+
+  -- | The actual API path this request is for
+  apiPath :: request -> FilePath
+
+  -- | Call actual API request and retrive result
+  -- Most of time, it's enough to use default implementation
+  -- (which does 1. encode APIRequest 2. post it 3. decode APIResponse)
+  call :: HasMisskeyEnv env => request -> RIO env (APIResponse request) 
+  call req = call' req >>= parseResponse req
+
+  -- | Call actual API request and retrive result as json 'Value'
+  --
+  -- Internally used 
+  call' :: HasMisskeyEnv env => request -> RIO env Value
+  call' req = postRequest (apiPath req) (toJSON req)
+
+  -- | Modify result
+  -- default implementation will convert 'Value' into 'APIResponse request'.
+  -- If you want to do some other stuff (i.e. "/api/notes/create" endpoint
+  -- should unwrap "CreatedNote" object), you can do so.
+  parseResponse :: request -> Value -> RIO env (APIResponse request)
+  parseResponse _ response = case fromJSON response of
+                                Error e -> throwM (ResponseParseFailed e)
+                                Success v -> return v

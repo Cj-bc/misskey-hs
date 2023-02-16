@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Users.Search
 Description : Misskey API Endpoint and Request for users/search
@@ -11,10 +12,9 @@ Call `users/search` Misskey API
 API document is: https://misskey.io/api-doc#operation/users/search
 -}
 module Web.Misskey.Api.Users.Search
-( usersSearch
-, APIRequest(APIRequest)
+( UsersSearch(UsersSearch)
 
--- ** Lenses for APIRequest
+-- ** Lenses for UsersSearch
 , query, offset, limit, localOnly, detail
 ) where
 
@@ -24,18 +24,18 @@ import Control.Lens (makeLenses)
 import Data.Aeson ((.=), object, ToJSON (toJSON))
 import Data.Maybe (isNothing)
 import Web.Misskey.Type
-import Web.Misskey.Api.Internal (postRequest, createMaybeObj)
+import Web.Misskey.Api.Internal (postRequest, createMaybeObj, APIRequest(APIResponse, apiPath))
 
-data APIRequest = APIRequest { _query     :: String
-                             , _offset    :: Maybe Int
-                             , _limit     :: Maybe Int
-                             , _localOnly :: Maybe Bool
-                             , _detail    :: Maybe Bool
-                             }
-makeLenses ''APIRequest
+data UsersSearch = UsersSearch { _query     :: String
+                               , _offset    :: Maybe Int
+                               , _limit     :: Maybe Int
+                               , _localOnly :: Maybe Bool
+                               , _detail    :: Maybe Bool
+                               }
+makeLenses ''UsersSearch
 
-instance ToJSON APIRequest where
-  toJSON (APIRequest q o l local d) = object body
+instance ToJSON UsersSearch where
+  toJSON (UsersSearch q o l local d) = object body
     where
       offsetObj     = createMaybeObj "offset"    o
       limitObj      = createMaybeObj "limit"     l
@@ -44,5 +44,6 @@ instance ToJSON APIRequest where
       body          = ["query" .= q] ++ offsetObj ++ limitObj ++ localOnlyObj ++ detailObj
 
 
-usersSearch :: (HasMisskeyEnv env) => APIRequest -> RIO env [User]
-usersSearch = postRequest "/api/users/search" . toJSON
+instance APIRequest UsersSearch where
+  type APIResponse UsersSearch = [User]
+  apiPath _ = "/api/users/search" 

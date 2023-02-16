@@ -1,6 +1,7 @@
 {-# Language TemplateHaskell #-}
 {-# Language OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TypeFamilies #-}
 {-|
 Module      : Web.Misskey.Api.Notes.Create
 Description : Misskey API Endpoint and Request for notes/create
@@ -13,15 +14,14 @@ Call `notes/create` Misskey API
 API document is: https://virtual-kaf.fun/api-doc#operation/notes/create
 -}
 module Web.Misskey.Api.Notes.Create
-( notesCreate
-, APIRequest(..)
+( NotesCreate(..)
 , Visibility(..)
 ) where
 
 import RIO hiding (poll)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson.TH (deriveJSON, defaultOptions, constructorTagModifier)
-import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(toJSON))
+import Data.Aeson (FromJSON(..), Value(..), (.:), ToJSON(toJSON), fromJSON, Result(Error, Success))
 import qualified Data.Aeson.KeyMap as KM
 import Data.Char (toLower)
 import Control.Lens (makeLenses)
@@ -32,7 +32,7 @@ data Visibility = Public | Home | Followers | Specified deriving (Read)
 $(deriveJSON defaultOptions {constructorTagModifier = map toLower} ''Visibility)
 
 
-data APIRequest = APIRequest { _visibility        :: Visibility
+data NotesCreate = NotesCreate { _visibility        :: Visibility
                              , _visibleUserIds    :: [Id]
                              , _text              :: Maybe String
                              , _cw                :: Maybe String
@@ -46,9 +46,9 @@ data APIRequest = APIRequest { _visibility        :: Visibility
                              , _renoteId          :: Id
                              , _poll              :: Maybe Poll
                              }
-makeLenses ''APIRequest
+makeLenses ''NotesCreate
 
-instance ToJSON APIRequest where
+instance ToJSON NotesCreate where
   toJSON req = Object $ KM.fromList body
     where
         nothingIfEmpty x      = if x == [] then Nothing else (Just x)
@@ -79,6 +79,9 @@ data CreatedNote = CreatedNote {createdNote :: Note}
 instance FromJSON CreatedNote where
     parseJSON (Object v) = CreatedNote <$> v .: "createdNote"
 
--- | Call 'notes/create' API and return result
-notesCreate :: (HasMisskeyEnv env) => APIRequest -> RIO env Note
-notesCreate req = createdNote <$> postRequest "/api/notes/create" (toJSON req)
+instance APIRequest NotesCreate where
+  type APIResponse NotesCreate = Note
+  apiPath _ = "/api/notes/create"
+  parseResponse _ value = case createdNote <$> fromJSON value of
+                            Error e -> throwM (ResponseParseFailed e)
+                            Success v -> return v
