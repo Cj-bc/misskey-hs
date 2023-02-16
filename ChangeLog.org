@@ -30,6 +30,7 @@ The format is based on [[https://keepachangelog.com/ja/1.0.0/][keep a changelog]
   - =Web.Misskey.Api.Users.Search.UsersSearch=
   - =Web.Misskey.Api.Users.Show.UsersShow=
   - =Web.Misskey.Api.Users.Users.UsersUsers=
+- =Web.Misskey.Api= module that exports all API request data types and =APIRequest= type class
 
 *** Changed
 - Update haskell LTS from 14.18 to 20.10

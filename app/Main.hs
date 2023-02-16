@@ -17,16 +17,7 @@ import System.IO (print, putStrLn)
 import Network.HTTP.Client
 import Network.HTTP.Simple
 import Web.Misskey.Type
-import Web.Misskey.Api.Internal (call)
-import Web.Misskey.Api.Users.Search (UsersSearch(UsersSearch))
-import Web.Misskey.Api.Users.Notes (UsersNotes(UsersNotes))
-import Web.Misskey.Api.Users.Show (UsersShow, _UserId, _UserIds, _UserName)
-import Web.Misskey.Api.Users.Users (UsersUsers(UsersUsers))
-import Web.Misskey.Api.Users.Followers (UsersFollowers(UsersFollowers))
-import Web.Misskey.Api.Users.Following (UsersFollowing(UsersFollowing))
-import Web.Misskey.Api.Notes.Create (NotesCreate(NotesCreate), Visibility(Public))
-import Web.Misskey.Api.Notes.Timeline (NotesTimeline(NotesTimeline))
-import Web.Misskey.Api.Notes.Show (NotesShow(NoteId))
+import Web.Misskey.Api
 import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
