@@ -31,6 +31,11 @@ import Control.Lens (review)
 import Options.Applicative
 import Options.Applicative.Types (readerAsk, Parser(NilP))
 
+-- | Sum type of all Subcommands.
+-- I need this because all 'Command's should have same type.
+--
+-- Defining sum-type is also recommended in optparse-applicative's README:
+-- <https://hackage.haskell.org/package/optparse-applicative-0.17.0.0#commands>
 data SubCmds = CmdUsersShow      GeneralOption UsersShow
              | CmdUsersNotes     GeneralOption UsersNotes
              | CmdUsersSearch    GeneralOption UsersSearch
@@ -227,6 +232,11 @@ commandParser = subparser $ command    "users/show"     usersShowInfo
 data GeneralOption = NoOption
                    | GeneralOption { quiet :: Bool
                                    }
+instance Semigroup GeneralOption where
+  NoOption <> opt = opt
+  opt <> NoOption = opt
+  opt <> _        = opt
+  
 generalOptionParser = GeneralOption <$> switch (long "quiet" <> short 'q' <> help "Quiet output")
 
 -- }}}
