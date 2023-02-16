@@ -46,19 +46,33 @@ data SubCmds = CmdUsersShow      GeneralOption UsersShow
              | CmdNotesTimeline  GeneralOption NotesTimeline
              | CmdNotesShow      GeneralOption NotesShow
 
+-- | 'Lens' for Subcommand 'GeneralOption'
+cmdOpt :: Lens' SubCmds GeneralOption
+cmdOpt = lens getter setter
+  where
+    getter (CmdUsersShow      opt _) = opt
+    getter (CmdUsersNotes     opt _) = opt
+    getter (CmdUsersSearch    opt _) = opt
+    getter (CmdUsers          opt _) = opt
+    getter (CmdUsersFollowers opt _) = opt
+    getter (CmdUsersFollowing opt _) = opt
+    getter (CmdNotesCreate    opt _) = opt
+    getter (CmdNotesTimeline  opt _) = opt
+    getter (CmdNotesShow      opt _) = opt
+
+    setter (CmdUsersShow      _ req) opt = CmdUsersShow      opt req
+    setter (CmdUsersNotes     _ req) opt = CmdUsersNotes     opt req
+    setter (CmdUsersSearch    _ req) opt = CmdUsersSearch    opt req
+    setter (CmdUsers          _ req) opt = CmdUsers          opt req
+    setter (CmdUsersFollowers _ req) opt = CmdUsersFollowers opt req
+    setter (CmdUsersFollowing _ req) opt = CmdUsersFollowing opt req
+    setter (CmdNotesCreate    _ req) opt = CmdNotesCreate    opt req
+    setter (CmdNotesTimeline  _ req) opt = CmdNotesTimeline  opt req
+    setter (CmdNotesShow      _ req) opt = CmdNotesShow      opt req
 
 -- | Apply GeneralOption to SubCmds if it doesn't have GeneralOption
 applyGeneralOption :: SubCmds -> GeneralOption -> SubCmds
-applyGeneralOption (CmdUsersShow      NoOption req) opt = CmdUsersShow      opt req
-applyGeneralOption (CmdUsersNotes     NoOption req) opt = CmdUsersNotes     opt req
-applyGeneralOption (CmdUsersSearch    NoOption req) opt = CmdUsersSearch    opt req
-applyGeneralOption (CmdUsers          NoOption req) opt = CmdUsers          opt req
-applyGeneralOption (CmdUsersFollowers NoOption req) opt = CmdUsersFollowers opt req
-applyGeneralOption (CmdUsersFollowing NoOption req) opt = CmdUsersFollowing opt req
-applyGeneralOption (CmdNotesCreate    NoOption req) opt = CmdNotesCreate    opt req
-applyGeneralOption (CmdNotesTimeline  NoOption req) opt = CmdNotesTimeline  opt req
-applyGeneralOption (CmdNotesShow      NoOption req) opt = CmdNotesShow      opt req
-applyGeneralOption other _ = other
+applyGeneralOption subcmd opt = subcmd&cmdOpt%~(<> opt)
 
 
 -- Custom readers for optparse {{{
