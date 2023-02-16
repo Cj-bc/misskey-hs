@@ -287,22 +287,18 @@ main = do
     home <- getEnv "HOME"
     cfgEither <- decodeFileEither $ home ++ "/.config/misskey-hs/config.yaml" :: IO (Either ParseException ConfigFile)
 
-    when (isLeft cfgEither) $ die $ show cfgEither
-
-    let (Right cfg) = cfgEither
-        env         = MisskeyEnv (token cfg) $ "https://" ++ (instance_url cfg)
-
-    runRIO env $ do 
-      case apiRequest of
-        CmdUsersShow opt req      -> call req >>= evalResult opt
-        CmdUsersNotes opt req     -> call req >>= evalResult opt
-        CmdUsersSearch opt req    -> call req >>= evalResult opt
-        CmdUsers opt req          -> call req >>= evalResult opt
-        CmdUsersFollowers opt req -> call req >>= evalResult opt
-        CmdUsersFollowing opt req -> call req >>= evalResult opt
-        CmdNotesCreate opt req    -> call req >>= evalResult opt
-        CmdNotesTimeline opt req  -> call req >>= evalResult opt
-        CmdNotesShow opt req      -> call req >>= evalResult opt
-        where
+    flip (either (die . show)) cfgEither $ \cfg -> 
+      let env = MisskeyEnv (token cfg) $ "https://" <> (instance_url cfg)
           evalResult NoOption = liftIO . putStrLn . ushow
           evalResult opt      = when (not $ quiet opt) . liftIO . putStrLn . ushow
+      in runRIO env $ do 
+        case apiRequest of
+          CmdUsersShow opt req      -> call req >>= evalResult opt
+          CmdUsersNotes opt req     -> call req >>= evalResult opt
+          CmdUsersSearch opt req    -> call req >>= evalResult opt
+          CmdUsers opt req          -> call req >>= evalResult opt
+          CmdUsersFollowers opt req -> call req >>= evalResult opt
+          CmdUsersFollowing opt req -> call req >>= evalResult opt
+          CmdNotesCreate opt req    -> call req >>= evalResult opt
+          CmdNotesTimeline opt req  -> call req >>= evalResult opt
+          CmdNotesShow opt req      -> call req >>= evalResult opt
