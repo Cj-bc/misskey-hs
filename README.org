@@ -47,18 +47,23 @@ Available commands:
 ** As Library
 This package adds modules below:
 
-| module                            | description                                                                                                                  |
-|-----------------------------------+------------------------------------------------------------------------------------------------------------------------------|
-| =Web.Misskey.Type=                | Provide types for general usage                                                                                              |
-| =Web.Misskey.Api.Users.Show=      | Command and APIRequest for =users/show=                                                                                      |
-| =Web.Misskey.Api.Users.Search=    | Command and APIRequest for =users/search=                                                                                    |
-| =Web.Misskey.Api.Users.Notes=     | Command and APIRequest for =users/Notes=                                                                                     |
-| =Web.Misskey.Api.Users.Users=     | Command and APIRequest for =users=                                                                                           |
-| =Web.Misskey.Api.Users.Following= | Command and APIRequest for =users/following | |=Web.Misskey.Api.Users.Followers=| Command and APIRequest for=users/followers |
-| =Web.Misskey.Api.Notes.Create=    | Command and APIRequest for =notes/create=                                                                                    |
-| =Web.Misskey.Api.Notes.Timeline=  | Command and APIRequest for =notes/timeline=                                                                                  |
+| module                            | description                                                |
+|-----------------------------------+------------------------------------------------------------|
+| =Web.Misskey.Type=                | Provide types for general usage                            |
+| =Web.Misskey.Api=                 | Expose all data types and =call= function                  |
+| =Web.Misskey.Api.Internal=        | For internal usage                                         |
+| =Web.Misskey.Api.Users.Show=      | API Request data types and instances for =users/show=      |
+| =Web.Misskey.Api.Users.Search=    | API Request data types and instances for =users/search=    |
+| =Web.Misskey.Api.Users.Notes=     | API Request data types and instances for =users/Notes=     |
+| =Web.Misskey.Api.Users.Users=     | API Request data types and instances for =users=           |
+| =Web.Misskey.Api.Users.Following= | API Request data types and instances for =users/following= |
+| =Web.Misskey.Api.Users.Followers= | API Request data types and instances for =users/followers= |
+| =Web.Misskey.Api.Notes.Create=    | API Request data types and instances for =notes/create=    |
+| =Web.Misskey.Api.Notes.Timeline=  | API Request data types and instances for =notes/timeline=  |
 
 *** Basic usage
+API request is represented as one data type in =Web.Misskey.Api.*= 
+
 All API-calling functions are placed in =Web.Misskey.Api.*=
 You can pick one(e.g. =usersShow=), give it APIRequest(defined in each
 module), and do =runMisskey= with =MisskeyEnv= to send API request.
