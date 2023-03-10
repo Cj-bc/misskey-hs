@@ -72,21 +72,20 @@ APIを呼び出す関数は =Web.Misskey.Api.*= にあります。
 例. =users/show=
 APIリクエストを筆者(=cj_bc_sd@virtual-kaf.fun=)について飛ばして結果を出力する
 
-#+begin_src haskell
-import Web.Misskey.Api.Users.Show (usersShow, APIRequest(..))
-import Web.Misskey.Type (User(..), MisskeyEnv(..))
+#+begin_src haskell :compile yes
+  import Web.Misskey.Api (call, _UserName)
+  import Control.Lens (re, (^.))
+  import Web.Misskey.Type (MisskeyEnv(..))
+  import RIO (runRIO)
 
+  main = do
+      let env = MisskeyEnv ""                       -- Misskey token.今回は必要ないので空文字列にします。
+                           "https://misskey.io"     -- APIリクエストを飛ばすドメイン
+          req = ("cj_bc_sd", Nothing)^.re _UserName -- '/api/users/show' エンドポイントへのリクエストを作成します
 
-main :: IO ()
-main = do
-    let env = MisskeyEnv ""                -- Misskey token.今回は必要ないので空文字列にします。
-                         "virtual-kaf.fun" -- APIリクエストを飛ばすドメイン
-        req = UserName "cj_bc_sd"          -- `UserName`は`usersShow`用のAPIRequestの値コンストラクターです
-
-    -- APIを叩き、結果を返します
-    usr <- runMisskey (usersShow req) env
-
-    print usr
+      -- Post API Request and get result
+      usr <- runRIO env $ call req
+      print usr
 #+end_src
 
 詳細は[[https://misskey-hub.net/docs/api/endpoints.html][misskey-hubのapi document]](少し情報が欠けている模様)とHaddockを確認してください。
