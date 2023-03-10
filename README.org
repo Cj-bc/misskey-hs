@@ -71,21 +71,22 @@ module), and do =runMisskey= with =MisskeyEnv= to send API request.
 e.g. Sending =users/show= API request to me(=cj_bc_sd@virtual-kaf.fun=),
 and print result.
 
-#+begin_src haskell
-import Web.Misskey.Api.Users.Show (usersShow, APIRequest(..))
-import Web.Misskey.Type (User(..), MisskeyEnv(..))
+#+begin_src haskell :compile yes
+  import Web.Misskey.Api (call, _UserName)
+  import Control.Lens (re, (^.))
+  import Web.Misskey.Type (MisskeyEnv(..))
+  import RIO (runRIO)
 
 
-main :: IO ()
-main = do
-    let env = MisskeyEnv ""                -- A Misskey token. I omit this because we don't need it in this time
-                         "virtual-kaf.fun" -- Domain which to send API request
-        req = UserName "cj_bc_sd"          -- `UserName` is value constructor of APIRequest (for `usersShow`)
+  main :: IO ()
+  main = do
+      let env = MisskeyEnv ""                       -- A Misskey token. I omit this because we don't need it in this time
+                           "https://misskey.io"     -- Domain which to send API request
+          req = ("cj_bc_sd", Nothing)^.re _UserName -- Create request for '/api/users/show' endpoint
 
-    -- Post API Request and get result
-    usr <- runMisskey (usersShow req) env
-
-    print usr
+      -- Post API Request and get result
+      usr <- runRIO env $ call req
+      print usr
 #+end_src
 
 See haddock and [[https://misskey-hub.net/docs/api/endpoints.html][api document in misskey-hub]](Currently lacks some data)
