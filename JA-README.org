@@ -3,7 +3,7 @@
 --------------
 
 * misskey-hs
-[[https://github.com/syuilo/misskey][syuilo/Misskey]]のAPIのHaskellライブラリ
+[[https://github.com/misskey-dev/misskey][misskey-dev/misskey]] のAPIのHaskellライブラリ
 
 * 使用方法
 ** CLIツールとして
@@ -89,4 +89,4 @@ main = do
     print usr
 #+end_src
 
-詳細は[[https://misskey.io/api-doc][misskey's api document]](少し情報が欠けている模様)とHaddockを確認してください。
+詳細は[[https://misskey-hub.net/docs/api/endpoints.html][misskey-hubのapi document]](少し情報が欠けている模様)とHaddockを確認してください。

@@ -1,6 +1,6 @@
 [[file:JA-README.org][日本語]]
 * misskey-hs
-A Haskell library for [[https://github.com/syuilo/misskey][syuilo/Misskey]]'s API
+A Haskell library for [[https://github.com/misskey-dev/misskey][misskey-dev/misskey]]'s API
 
 * Usage
 ** As CLI tool
@@ -88,4 +88,4 @@ main = do
     print usr
 #+end_src
 
-See haddock and [[https://misskey.io/api-doc][misskey's api document]](Currently lacks some data)
+See haddock and [[https://misskey-hub.net/docs/api/endpoints.html][api document in misskey-hub]](Currently lacks some data)
