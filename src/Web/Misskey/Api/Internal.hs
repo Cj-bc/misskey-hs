@@ -34,7 +34,6 @@ import Network.HTTP.Simple (httpJSON, getResponseBody, getResponseStatusCode)
 import Web.Misskey.Type
 import Data.Aeson.Key (fromText)
 import Data.Aeson.KeyMap (KeyMap)
-import Data.Bool (bool)
 
 -- | Create 'Data.Aeson.KeyValue' a Object
 createMaybeObj :: (KeyValue kv, ToJSON v) => Text -> Maybe v -> [kv]
@@ -67,7 +66,7 @@ postRequest apiPath body =  do
     (MisskeyEnv token url) <- view misskeyEnvL
     initReq <- parseRequest $ url ++ apiPath
     let (Object bodyContent) = body
-        bodyWithToken = Object $ bool id (KM.insert "i" $ fromString token) (token == "") bodyContent
+        bodyWithToken = Object $ maybe id (KM.insert "i" . fromString) token bodyContent
         request       = initReq { method = "POST"
                                 , requestBody = RequestBodyLBS $ encode bodyWithToken
                                 , requestHeaders =
