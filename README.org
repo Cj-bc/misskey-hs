@@ -81,7 +81,7 @@ and print result.
   main :: IO ()
   main = do
       let env = MisskeyEnv Nothing                  -- A Misskey token. If you don't need it, put Nothing
-                           "https://misskey.io"     -- Domain which to send API request
+                           "https://misskey.io"     -- Url which to send API request. You should include protocol too.
           req = ("cj_bc_sd", Nothing)^.re _UserName -- Create request for '/api/users/show' endpoint
 
       -- Post API Request and get result

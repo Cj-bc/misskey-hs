@@ -80,7 +80,7 @@ APIリクエストを筆者(=cj_bc_sd@virtual-kaf.fun=)について飛ばして�
 
   main = do
       let env = MisskeyEnv Nothing                  -- Misskey token.必要なければNothingで良いです
-                           "https://misskey.io"     -- APIリクエストを飛ばすドメイン
+                           "https://misskey.io"     -- APIリクエストを飛ばすUrl。プロトコルも含めてください
           req = ("cj_bc_sd", Nothing)^.re _UserName -- '/api/users/show' エンドポイントへのリクエストを作成します
 
       -- Post API Request and get result
