@@ -79,7 +79,7 @@ APIリクエストを筆者(=cj_bc_sd@virtual-kaf.fun=)について飛ばして�
   import RIO (runRIO)
 
   main = do
-      let env = MisskeyEnv ""                       -- Misskey token.今回は必要ないので空文字列にします。
+      let env = MisskeyEnv Nothing                  -- Misskey token.必要なければNothingで良いです
                            "https://misskey.io"     -- APIリクエストを飛ばすドメイン
           req = ("cj_bc_sd", Nothing)^.re _UserName -- '/api/users/show' エンドポイントへのリクエストを作成します
 

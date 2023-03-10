@@ -66,7 +66,7 @@ postRequest apiPath body =  do
     (MisskeyEnv token url) <- view misskeyEnvL
     initReq <- parseRequest $ url ++ apiPath
     let (Object bodyContent) = body
-        bodyWithToken = Object $ KM.insert "i" (fromString token) bodyContent
+        bodyWithToken = Object $ maybe id (KM.insert "i" . fromString) token bodyContent
         request       = initReq { method = "POST"
                                 , requestBody = RequestBodyLBS $ encode bodyWithToken
                                 , requestHeaders =

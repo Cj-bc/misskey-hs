@@ -262,7 +262,7 @@ generalOptionParser = GeneralOption <$> switch (long "quiet" <> short 'q' <> hel
 -- }}}
 
 -- Config File related {{{
-data ConfigFile = ConfigFile {token         :: String
+data ConfigFile = ConfigFile {token         :: Maybe String
                              , instance_url :: String
                              } deriving (Show)
 $(deriveJSON defaultOptions ''ConfigFile)
