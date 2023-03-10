@@ -91,8 +91,8 @@ usersShowParser = CmdUsersShow NoOption <$> (fmap (review _UserId ) userId
   where
     userId   = strOption             (long "id"  <> metavar "USER-ID"  <> help "Specify target with user id")
     userIds  = some (strOption       (long "ids" <> metavar "USER-IDs" <> help "Specify list of target user ids"))
-    username = ((,) <$> strOption    (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
-                 <*> option maybeStr (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on"))
+    username = (,) <$> strOption    (long "username" <> metavar "USER-NAME"  <> help "Specify target with user name")
+                 <*> option maybeStr (long "host" <> metavar "HOST" <> value Nothing <> help "Specify host instance that target user is on")
 
 usersShowInfo :: ParserInfo SubCmds
 usersShowInfo = Options.Applicative.info (usersShowParser <**> helper) (fullDesc <> progDesc "call users/show API")
@@ -279,9 +279,9 @@ main = do
     cfgEither <- decodeFileEither $ home ++ "/.config/misskey-hs/config.yaml" :: IO (Either ParseException ConfigFile)
 
     flip (either (die . show)) cfgEither $ \cfg -> 
-      let env = MisskeyEnv (token cfg) $ "https://" <> (instance_url cfg)
+      let env = MisskeyEnv (token cfg) $ "https://" <> instance_url cfg
           evalResult NoOption = liftIO . putStrLn . ushow
-          evalResult opt      = when (not $ quiet opt) . liftIO . putStrLn . ushow
+          evalResult opt      = unless (quiet opt) . liftIO . putStrLn . ushow
       in runRIO env $ do 
         case apiRequest of
           CmdUsersShow opt req      -> call req >>= evalResult opt
